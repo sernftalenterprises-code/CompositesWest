@@ -1,0 +1,161 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { hex3rWraps, hex3rEpoxies } from '../data/products';
+
+const resources = [
+  { href: '/specifications/', label: 'Data sheets' },
+  { href: '/selection/', label: 'Resin selection guide' },
+  { href: '/general-installation-instructions/', label: 'Installation instructions' },
+  { href: '/fibranchor-installation-instructions/', label: 'FibrAnchor installation' },
+  { href: '/research/', label: 'Research' },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Hex-3R Products', item: 'https://compositeswest.com/hex-3r-products/' },
+  ],
+};
+---
+
+<Base
+  title="Hex-3R Structural Strengthening System | Composites West"
+  description="The Hex-3R system: FRP wraps (unidirectional and bidirectional carbon and glass), structural epoxies, FireLam fire coatings, and FibrAnchors for concrete strengthening and seismic retrofit."
+  jsonLd={[breadcrumbLd]}
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:gap-8">
+        <div class="lg:col-span-8">
+          <p class="eyebrow text-stone-500">FRP strengthening system</p>
+          <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+            Hex-3R structural strengthening system
+          </h1>
+          <div class="tracer mt-6"></div>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+            A complete FRP (fiber-reinforced polymer) system for concrete repair,
+            strengthening, and seismic retrofit: carbon and glass wraps, matched structural
+            epoxies, FireLam fire-resistant coatings, and FibrAnchor shear anchors.
+          </p>
+        </div>
+        <div class="lg:col-span-4 lg:border-l lg:border-line lg:pl-8">
+          <p class="eyebrow text-stone-500">Resources</p>
+          <ul class="mt-5 border-t border-line">
+            {resources.map((link, i) => (
+              <li class="flex items-baseline gap-5 border-b border-line py-3">
+                <a href={link.href} class="underline-draw font-mono text-[13px] font-medium text-ink-950">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wrap fabrics -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="max-w-2xl">
+          <p class="eyebrow text-stone-500">Wrap fabrics</p>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Hex-3R Wrap fabrics</h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 text-lg leading-8 text-stone-600">
+            Unidirectional and bidirectional carbon and glass reinforcement fabrics engineered
+            for the Hex-3R system.
+          </p>
+        </div>
+        <div class="table-wrap mt-10">
+          <table class="table-spec">
+            <thead>
+              <tr>
+                <th scope="col">Fabric style</th>
+                <th scope="col">Description</th>
+                <th scope="col">Width</th>
+                <th scope="col">Length</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {hex3rWraps.map((row) => (
+                <tr>
+                  <td class="whitespace-nowrap">
+                    <span class="font-mono text-[13px] font-medium text-ink-950">{row.style}</span>
+                  </td>
+                  <td>{row.description}</td>
+                  <td class="whitespace-nowrap font-mono">{row.width}</td>
+                  <td class="whitespace-nowrap font-mono">{row.length}</td>
+                  <td>
+                    {row.note ? (
+                      row.note === 'Special order' ? (
+                        <span class="chip">{row.note}</span>
+                      ) : (
+                        <span class="inline-flex items-center whitespace-nowrap bg-brand px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-ink-950">
+                          {row.note}
+                        </span>
+                      )
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Epoxy systems -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="max-w-2xl">
+          <p class="eyebrow text-stone-500">Epoxy systems</p>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Hex-3R Epoxy systems</h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 text-lg leading-8 text-stone-600">
+            Matched two-part epoxies for priming, saturating, leveling, and finishing — plus
+            FireLam fire-protection coatings. See the <a href="/selection/" class="underline-draw font-semibold text-ink-950">resin selection guide</a> for choosing the right product per application.
+          </p>
+        </div>
+        <div class="table-wrap mt-10">
+          <table class="table-spec">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Description</th>
+                <th scope="col">Package sizes</th>
+                <th scope="col">Mix ratio (by weight)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {hex3rEpoxies.map((row) => (
+                <tr>
+                  <td class="whitespace-nowrap">
+                    <span class="font-mono text-[13px] font-medium text-ink-950">{row.product}</span>
+                  </td>
+                  <td>{row.description}</td>
+                  <td class="font-mono">{row.sizes}</td>
+                  <td class="whitespace-nowrap font-mono">{row.ratio}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Planning a strengthening project?"
+    text="We'll help you select the right wraps, epoxies, and anchors — and connect you with data sheets and installation guidance."
+  />
+</Base>

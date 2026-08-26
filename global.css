@@ -1,0 +1,304 @@
+/* @font-face rules live in Fonts.astro (script-injected) — see that file. */
+@import "tailwindcss";
+
+/*
+  Composites West design system — "engineering datasheet × racing heritage".
+  Light-first: technical paper + carbon ink + one hazard yellow used as a
+  marker, always paired with ink text (never yellow-on-light type).
+  Depth comes from hairlines, not shadows. Corners are sharp. Numbers are mono.
+*/
+
+@theme {
+  /* Tailwind's stone-500 (#79716b) is 4.46:1 on --color-paper — just under
+     the 4.5:1 WCAG AA minimum for small text. A hair darker clears it
+     everywhere (4.8:1 on paper, 5.2:1 on white). */
+  --color-stone-500: #746c66;
+
+  /* Carbon ink — warm-neutral, deliberately NOT blue */
+  --color-ink-950: #0a0a0b;
+  --color-ink-900: #111113;
+  --color-ink-800: #1a1a1e;
+  --color-ink-700: #26262b;
+  --color-ink-600: #3f3f45;
+
+  /* Technical paper + hairlines */
+  --color-paper: #f7f7f5;
+  --color-line: #e4e4df;
+
+  /* Hazard yellow — matched to the wordmark */
+  --color-brand: #ffd400;
+  --color-brand-bright: #ffdf33;
+  --color-brand-deep: #eac200;
+
+  --font-sans: "Inter Variable", "Inter Fallback", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Archivo Variable", "Archivo Fallback", "Inter Variable",
+    ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+/*
+  Metric-matched fallbacks for the async-loaded web fonts (see Fonts.astro).
+  size-adjust is tuned slightly WIDE of the real font on purpose: the swap
+  must never paint text larger than the fallback did, or Chrome emits a new
+  (later) LCP candidate tied to the font request. Ascent/descent overrides
+  keep line boxes stable so the swap causes no vertical layout shift.
+*/
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.4%;
+  ascent-override: 90.2%;
+  descent-override: 22.48%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial');
+  size-adjust: 112%;
+  ascent-override: 88%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+html {
+  /* Keep skip-link / anchor jumps clear of the sticky header */
+  scroll-padding-top: 6rem;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Wide-width Archivo for display headings and big numerals */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 115;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* Mono uppercase micro-label: `01 / SECTION` */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* 2px hazard-yellow rule — the "tracer thread" */
+.tracer {
+  width: 3rem;
+  height: 2px;
+  background: var(--color-brand);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.625rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  font-variation-settings: "wdth" 110;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  border: 1px solid transparent;
+  transition: background-color 0.18s ease-out, color 0.18s ease-out,
+    border-color 0.18s ease-out;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+.btn-primary:hover {
+  background: var(--color-ink-950);
+  color: var(--color-brand);
+}
+
+.btn-dark {
+  background: var(--color-ink-950);
+  color: #fff;
+}
+.btn-dark:hover {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+
+.btn-outline {
+  border-color: var(--color-ink-950);
+  color: var(--color-ink-950);
+}
+.btn-outline:hover {
+  background: var(--color-ink-950);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+/* Hairline card; border darkens on hover */
+.card {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  transition: border-color 0.2s ease-out;
+}
+.card:hover {
+  border-color: var(--color-ink-950);
+}
+
+/* Mono spec chip: `3K TOW` `197 GSM` */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3125rem 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-600);
+  background: #fff;
+  white-space: nowrap;
+}
+/* Feathered mask: the hero photo dissolves into the paper ground on all
+   four edges (two linear fades intersected, keeping the rectangular form) */
+.img-fade {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.55) 12%, #000 26%, #000 74%, rgb(0 0 0 / 0.55) 88%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.55) 12%, #000 26%, #000 74%, rgb(0 0 0 / 0.55) 88%, transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.55) 12%, #000 26%, #000 74%, rgb(0 0 0 / 0.55) 88%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.55) 12%, #000 26%, #000 74%, rgb(0 0 0 / 0.55) 88%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Drafting-sheet rails: hairlines down both sides of the content column */
+.frame-x {
+  --frame-line: var(--color-line);
+}
+@media (min-width: 768px) {
+  .frame-x {
+    border-inline: 1px solid var(--frame-line);
+  }
+}
+
+/* ----------------------------------------------------------------- tables */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  background: #fff;
+}
+.table-spec {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+.table-spec th {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-600);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-ink-950);
+  white-space: nowrap;
+}
+.table-spec td {
+  font-size: 0.875rem;
+  color: var(--color-ink-600);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+.table-spec tbody tr:last-child td {
+  border-bottom: 0;
+}
+.table-spec tbody tr {
+  transition: background-color 0.15s ease-out;
+}
+.table-spec tbody tr:hover {
+  background: var(--color-paper);
+}
+
+/* ------------------------------------------------------------------ links */
+
+/* Underline that draws in from the left */
+.underline-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: left calc(100% - 0.05em);
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease-out;
+}
+.underline-draw:hover {
+  background-size: 100% 1px;
+}
+
+/* Below-the-fold sections: skip rendering work until they approach the
+   viewport. The 800px estimate stands in until the real size is measured. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* ------------------------------------------------------------------ print */
+
+/* Product pages print as clean datasheets: chrome and CTAs are stripped
+   (print:hidden), spec content keeps its hairline structure. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  header,
+  footer {
+    display: none !important;
+  }
+  .cv-auto {
+    content-visibility: visible;
+  }
+  .frame-x {
+    border-inline: 0;
+  }
+  .img-fade {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  a {
+    text-decoration: none;
+  }
+}

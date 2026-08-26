@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { company } from '../data/products';
+---
+
+<Base
+  title="Order Received | Composites West, Inc."
+  description="Thanks for your order. Composites West will confirm shipping details shortly."
+  noindex
+>
+  <section class="relative isolate overflow-hidden bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+
+      <div class="flex flex-col items-center py-24 text-center sm:py-32">
+        <p class="eyebrow flex items-center gap-3 text-stone-500">
+          <span class="inline-block h-0.5 w-8 bg-brand" aria-hidden="true"></span>
+          Order received
+          <span class="inline-block h-0.5 w-8 bg-brand" aria-hidden="true"></span>
+        </p>
+        <h1 class="type-display mt-6 text-4xl uppercase text-ink-950 sm:text-5xl">
+          Thank you
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-stone-600">
+          Your payment went through and a receipt is on its way to your inbox.
+          We&rsquo;ll follow up with shipping details, usually within one business day.
+        </p>
+        <p class="mt-4 max-w-xl font-mono text-sm text-stone-500">
+          Questions about your order? Call {company.phone} or email {company.email}.
+        </p>
+        <div class="mt-9 flex flex-wrap justify-center gap-3">
+          <a href="/all-products/" class="btn btn-primary">
+            Keep shopping
+          </a>
+          <a href="/" class="btn btn-outline">Home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

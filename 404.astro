@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Page Not Found | Composites West, Inc."
+  description="The page you're looking for could not be found. Browse Composites West's carbon fiber fabrics and composite materials."
+>
+  <section class="relative isolate overflow-hidden bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+
+      <div class="flex flex-col items-center py-24 text-center sm:py-32">
+        <p class="eyebrow flex items-center gap-3 text-stone-500">
+          <span class="inline-block h-0.5 w-8 bg-brand" aria-hidden="true"></span>
+          Doc not found &mdash; check the register
+          <span class="inline-block h-0.5 w-8 bg-brand" aria-hidden="true"></span>
+        </p>
+        <p class="type-display mt-6 text-8xl text-ink-950 sm:text-[11rem] lg:text-[13rem]">
+          404
+        </p>
+        <h1 class="type-display mt-4 text-3xl uppercase text-ink-950 sm:text-4xl">
+          Page not found
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-stone-600">
+          That page seems to have delaminated. Try one of these instead:
+        </p>
+        <div class="mt-9 flex flex-wrap justify-center gap-3">
+          <a href="/" class="btn btn-primary">Home</a>
+          <a href="/all-products/" class="btn btn-outline">Shop fabrics</a>
+          <a href="/contact/" class="btn btn-outline">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

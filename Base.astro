@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import Fonts from '../components/Fonts.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { company } from '../data/products';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Extra JSON-LD blocks to inject (already-built objects). */
+  jsonLd?: object[];
+  ogImage?: string;
+  ogType?: string;
+  /** Keep the page out of search results (e.g. checkout confirmation). */
+  noindex?: boolean;
+}
+
+const { title, description, jsonLd = [], ogImage, ogType = 'website', noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage ?? '/og-default.png', Astro.site);
+
+const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://compositeswest.com/#organization',
+  name: company.name,
+  url: 'https://compositeswest.com/',
+  logo: new URL('/logo.png', Astro.site).toString(),
+  foundingDate: company.founded,
+  description:
+    'Composites West is a carbon fiber and advanced composites reinforcement supplier serving aerospace, marine, automotive, sporting goods, and infrastructure markets.',
+  email: company.email,
+  telephone: company.phoneHref,
+  faxNumber: company.fax,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.physicalAddress.street,
+    addressLocality: company.physicalAddress.city,
+    addressRegion: company.physicalAddress.state,
+    postalCode: company.physicalAddress.zip,
+    addressCountry: 'US',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: company.phoneHref,
+    contactType: 'sales',
+    email: company.email,
+    areaServed: 'US',
+  },
+};
+
+const allJsonLd = [organizationLd, ...jsonLd];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Fonts />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={company.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {allJsonLd.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-white font-sans text-stone-800 antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink-950 focus:px-4 focus:py-2 focus:text-white"
+    >
+      Skip to content
+    </a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

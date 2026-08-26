@@ -1,0 +1,244 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { products, company, formatUsd } from '../../data/products';
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props;
+
+const images = import.meta.glob<{ default: ImageMetadata }>('../../assets/products/*.png', { eager: true });
+const image = images[`../../assets/products/${product.image}.png`].default;
+const ogImage = await getImage({ src: image, width: 1200, format: 'jpeg' });
+
+const related = products.filter((p) => p.slug !== product.slug && p.weave === product.weave).slice(0, 3);
+const relatedFill = related.length
+  ? related
+  : products.filter((p) => p.slug !== product.slug).slice(0, 3);
+
+const specs: [string, string][] = [
+  ['Brand', product.brand],
+  ['Construction', product.weaveLabel],
+  ...(product.tow ? ([['Tow size', product.tow]] as [string, string][]) : []),
+  ['Areal weight', `${product.weightOz} oz/yd² (${product.weightGsm} gsm)`],
+  ['Width', `${product.widthIn}″`],
+  ['Roll length', `${product.lengthIn}″ (${Math.round(product.lengthIn / 12)} ft / ${(product.lengthIn / 36).toFixed(1)} yd)`],
+  ['Features', product.features.join(', ')],
+];
+
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.description,
+  image: new URL(ogImage.src, Astro.site).toString(),
+  sku: product.slug,
+  brand: { '@type': 'Brand', name: product.brand },
+  url: `https://compositeswest.com/product/${product.slug}/`,
+  offers: {
+    '@type': 'Offer',
+    availability: 'https://schema.org/InStock',
+    priceSpecification: {
+      '@type': 'PriceSpecification',
+      price: product.priceUsd ?? 0,
+      priceCurrency: 'USD',
+    },
+    ...(product.priceUsd
+      ? {}
+      : { description: 'Quote-based pricing — contact Composites West to order.' }),
+    seller: { '@id': 'https://compositeswest.com/#organization' },
+  },
+  additionalProperty: [
+    { '@type': 'PropertyValue', name: 'Areal weight', value: `${product.weightGsm} gsm` },
+    { '@type': 'PropertyValue', name: 'Width', value: `${product.widthIn} in` },
+    { '@type': 'PropertyValue', name: 'Weave', value: product.weaveLabel },
+    ...(product.tow ? [{ '@type': 'PropertyValue', name: 'Tow size', value: product.tow }] : []),
+  ],
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'All Products', item: 'https://compositeswest.com/all-products/' },
+    { '@type': 'ListItem', position: 3, name: product.shortName, item: `https://compositeswest.com/product/${product.slug}/` },
+  ],
+};
+---
+
+<Base
+  title={`${product.name} | Composites West`}
+  description={product.seoDescription}
+  jsonLd={[productLd, breadcrumbLd]}
+  ogImage={ogImage.src}
+  ogType="product"
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+
+      <div class="py-14 sm:py-20">
+        <nav aria-label="Breadcrumb" class="print:hidden">
+          <ol class="eyebrow flex flex-wrap items-center gap-2.5 text-stone-500">
+            <li><a href="/" class="underline-draw transition-colors hover:text-ink-950">Home</a></li>
+            <li aria-hidden="true" class="text-stone-500">/</li>
+            <li><a href="/all-products/" class="underline-draw transition-colors hover:text-ink-950">All Products</a></li>
+            <li aria-hidden="true" class="text-stone-500">/</li>
+            <li aria-current="page" class="text-ink-950">{product.shortName}</li>
+          </ol>
+        </nav>
+
+        <p class="eyebrow mt-10 text-stone-500">{product.brand} · {product.weaveLabel}</p>
+        <h1 class="type-display mt-4 max-w-4xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+          {product.shortName}
+        </h1>
+        <p class="mt-5 max-w-3xl font-mono text-sm leading-6 text-stone-500">{product.name}</p>
+        <div class="tracer mt-6"></div>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          {product.tow && <span class="chip">{product.tow} tow</span>}
+          <span class="chip">{product.weightOz} oz/yd&sup2;</span>
+          <span class="chip">{product.weightGsm} gsm</span>
+          <span class="chip">{product.widthIn}&Prime; wide</span>
+        </div>
+
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-stone-600">{product.description}</p>
+
+        {product.priceUsd && (
+          <p class="mt-7 font-mono text-2xl text-ink-950">
+            {formatUsd(product.priceUsd)} <span class="text-sm text-stone-500">/ roll</span>
+          </p>
+        )}
+
+        <p class="hidden font-mono text-xs leading-6 text-stone-600 print:block">
+          Composites West, Inc. &middot; {company.phone} &middot; {company.email} &middot; compositeswest.com
+        </p>
+
+        <div class="mt-9 flex flex-wrap gap-3 print:hidden">
+          {product.stripePaymentLink ? (
+            <Fragment>
+              <a href={product.stripePaymentLink} class="btn btn-primary">
+                Buy now
+              </a>
+              <a href={`/contact/?product=${encodeURIComponent(product.name)}`} class="btn btn-outline">
+                Request a quote
+              </a>
+            </Fragment>
+          ) : (
+            <a href={`/contact/?product=${encodeURIComponent(product.name)}`} class="btn btn-primary">
+              Request a quote
+            </a>
+          )}
+          <a href={`tel:${company.phoneHref}`} class="btn btn-outline">
+            Call {company.phone}
+          </a>
+        </div>
+        <p class="mt-4 font-mono text-xs tracking-wide text-stone-500 print:hidden">
+          {product.stripePaymentLink
+            ? 'In stock and ready to ship. Secure checkout by Stripe.'
+            : 'In stock and ready to ship. Quote-based pricing — we respond fast.'}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specifications -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-14 py-20 sm:py-24 lg:grid-cols-2 lg:gap-16">
+        <figure>
+          <div class="relative border border-line bg-paper">
+            <Image
+              src={image}
+              alt={product.name}
+              widths={[600, 1200]}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="w-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+            <span class="absolute left-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
+          </div>
+          <figcaption class="eyebrow mt-3 flex justify-between text-stone-500">
+            <span>{product.weaveLabel}</span>
+            <span>{product.widthIn}&Prime; width</span>
+          </figcaption>
+        </figure>
+
+        <div>
+          <div class="flex items-baseline justify-between gap-4">
+            <p class="eyebrow text-stone-500">Datasheet</p>
+            <button
+              id="print-datasheet"
+              type="button"
+              class="eyebrow underline-draw cursor-pointer text-stone-500 transition-colors hover:text-ink-950 print:hidden"
+            >
+              Print datasheet
+            </button>
+          </div>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Specifications</h2>
+          <div class="tracer mt-5"></div>
+          <div class="table-wrap mt-8">
+            <table class="table-spec">
+              <thead>
+                <tr>
+                  <th scope="col">Property</th>
+                  <th scope="col">Specification</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specs.map(([label, value]) => (
+                  <tr>
+                    <td class="w-40 text-stone-500 sm:w-48">{label}</td>
+                    <td class="font-mono text-ink-950">{value}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td class="w-40 text-stone-500 sm:w-48">Typical use</td>
+                  <td>
+                    <div class="flex flex-wrap gap-1.5">
+                      {product.typicalUse.map((use) => (
+                        <span class="chip">{use}</span>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related products -->
+  <section class="border-b border-line bg-paper print:hidden">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div>
+          <p class="eyebrow text-stone-500">Related</p>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Related products</h2>
+        </div>
+        <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          {relatedFill.map((p) => (
+            <ProductCard product={p} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Need a different size or spec?"
+    text="Other sizes may be available, and we source hard-to-find materials daily. Tell us what you need."
+  />
+</Base>
+
+<script>
+  document.getElementById('print-datasheet')?.addEventListener('click', () => window.print());
+</script>

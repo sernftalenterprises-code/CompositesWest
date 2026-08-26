@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const howToLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Hex-3R General Installation / Application Procedures',
+  description: 'General procedures for installing the Hex-3R FRP strengthening system on concrete surfaces.',
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Prepare surface', text: 'Sandblast, water blast, or wire brush the concrete; epoxy-inject cracks greater than 0.010 inches; drill anchor holes if specified.' },
+    { '@type': 'HowToStep', position: 2, name: 'Prime', text: 'Mix Hex-3R Epoxy parts A and B for 5 minutes and roller-apply one prime coat; wait at least 1 hour until tacky.' },
+    { '@type': 'HowToStep', position: 3, name: 'Prepare fabric', text: 'Cut Hex-3R Wrap cleanly and fully saturate it with epoxy by hand or with a mechanical fabric saturator.' },
+    { '@type': 'HowToStep', position: 4, name: 'Wrap fabric', text: 'Apply the wet fabric per engineering specifications with uniform pressure, eliminating air bubbles; wait at least 1 hour between layers.' },
+    { '@type': 'HowToStep', position: 5, name: 'Finishing', text: 'Apply surfacing, FireLam fire coatings, or paint per the application and the engineer’s specifications.' },
+  ],
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Hex-3R Products', item: 'https://compositeswest.com/hex-3r-products/' },
+    { '@type': 'ListItem', position: 3, name: 'Installation Instructions', item: 'https://compositeswest.com/general-installation-instructions/' },
+  ],
+};
+---
+
+<Base
+  title="Hex-3R General Installation Instructions | Composites West"
+  description="Step-by-step Hex-3R FRP installation procedures for concrete: surface preparation, epoxy priming, fabric saturation, wrapping, and finishing including FireLam fire coatings."
+  jsonLd={[howToLd, breadcrumbLd]}
+>
+  <!-- Page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-14 sm:py-20">
+        <p class="eyebrow text-stone-500">Hex-3R System</p>
+        <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+          General installation / application procedures
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+          The following procedures relate primarily to concrete surfaces.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation procedure -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="max-w-4xl py-16 sm:py-20">
+        <p class="eyebrow text-stone-500">Installation procedure</p>
+
+        <div class="mt-8 border-t border-line">
+          <article class="border-b border-line py-10 sm:py-12 md:grid md:grid-cols-12 md:gap-8">
+            <div class="mb-5 md:col-span-2 md:mb-0">
+              <span class="font-mono text-2xl font-medium leading-none text-ink-950 sm:text-3xl">01</span>
+            </div>
+            <div class="md:col-span-10">
+              <h2 class="type-display text-2xl text-ink-950 sm:text-3xl">Prepare surface</h2>
+              <div class="mt-5 space-y-4 leading-7 text-stone-600">
+                <p>
+                  Surfaces to receive the application must be sound and free of dust, grease,
+                  compounds, and other foreign particles. Concrete substrate is prepared by
+                  either sandblasting, water blasting, or wire brushing. Allow concrete to dry
+                  completely. Cracks greater than 0.010&Prime; (0.25 mm) must be epoxy injected, and
+                  other surface irregularities may need to be ground down or repaired per the
+                  engineer's inspection.
+                </p>
+                <p>If specified, anchor holes should be drilled per specifications.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="border-b border-line py-10 sm:py-12 md:grid md:grid-cols-12 md:gap-8">
+            <div class="mb-5 md:col-span-2 md:mb-0">
+              <span class="font-mono text-2xl font-medium leading-none text-ink-950 sm:text-3xl">02</span>
+            </div>
+            <div class="md:col-span-10">
+              <h2 class="type-display text-2xl text-ink-950 sm:text-3xl">Prime</h2>
+              <div class="mt-5 space-y-4 leading-7 text-stone-600">
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">A. Mix epoxy primer</h3>
+                <p>
+                  Hand mix or use an automatic mixer to mix parts A and B from the Hex-3R Epoxy
+                  A and B component drums. Mix thoroughly for 5 minutes, as per instructions,
+                  using a paddle-style mixer. Be sure to refer to the resin data sheets for
+                  information on pot life and mixing ratios.
+                </p>
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">B. Apply epoxy primer</h3>
+                <p>
+                  All areas to be treated should be primed with Hex-3R Epoxy. Use a roller to
+                  apply one coat of the epoxy to the wrapping area. Wait a minimum of 1 hour for
+                  the surface to become "tacky" and sufficient substrate penetration to occur.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="border-b border-line py-10 sm:py-12 md:grid md:grid-cols-12 md:gap-8">
+            <div class="mb-5 md:col-span-2 md:mb-0">
+              <span class="font-mono text-2xl font-medium leading-none text-ink-950 sm:text-3xl">03</span>
+            </div>
+            <div class="md:col-span-10">
+              <h2 class="type-display text-2xl text-ink-950 sm:text-3xl">Prepare fabric</h2>
+              <div class="mt-5 space-y-4 leading-7 text-stone-600">
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">A. Cut fabric</h3>
+                <p>
+                  Fabric should be pre-cut to appropriate lengths or cut using commercial
+                  heavy-duty scissors/shears. Care should be taken to clean-cut the edges, as
+                  frayed or worn fabric can degrade performance.
+                </p>
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">B. Saturate fabric</h3>
+                <p>
+                  The fabric is fully impregnated with epoxy resin (see the <a href="/selection/" class="font-semibold text-ink-950 underline decoration-brand decoration-2 underline-offset-4 transition-colors hover:decoration-ink-950">resin selection table</a> or refer to the engineer's specifications for appropriate product selection)
+                  mixed according to the instructions in Step 2A and applied by hand or by using
+                  a mechanical fabric saturator.
+                </p>
+                <h4 class="eyebrow pt-2 text-stone-500">Hand saturation</h4>
+                <p>
+                  Cover a smooth, flat, level surface with polyethylene sheeting (0.5 mm
+                  [20 mil] plastic film) approximately the same length as the Hex-3R Wrap sheets
+                  to be used. Pour a bead of the mixed epoxy down the center of the sheet and
+                  spread, using a spatula, to cover the entire surface.
+                </p>
+                <p>
+                  Lay the cut Hex-3R Wrap sheet onto the primed plastic sheeting, and apply
+                  another bead of epoxy to the top surface.
+                </p>
+                <p>
+                  Fully saturate the wrap sheet by using either a spatula or roller to smoothly
+                  spread the epoxy over the fabric surface. Saturation is achieved when the
+                  fiberglass appears clear and transparent, or the surface of the carbon fabric
+                  has a sheen to it yet still appears to have some texture.
+                </p>
+                <h4 class="eyebrow pt-2 text-stone-500">Fabric saturator</h4>
+                <p>
+                  Refer to the operating instructions for the mechanical fabric saturator.
+                  Saturated fabric should be used immediately.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="border-b border-line py-10 sm:py-12 md:grid md:grid-cols-12 md:gap-8">
+            <div class="mb-5 md:col-span-2 md:mb-0">
+              <span class="font-mono text-2xl font-medium leading-none text-ink-950 sm:text-3xl">04</span>
+            </div>
+            <div class="md:col-span-10">
+              <h2 class="type-display text-2xl text-ink-950 sm:text-3xl">Wrap fabric</h2>
+              <div class="mt-5 space-y-4 leading-7 text-stone-600">
+                <p>
+                  The wet fabric is applied to the surface as per the engineering
+                  specifications. Fabric should be wrapped applying uniform pressure using a
+                  spatula or surface roller to eliminate air bubbles. Where specified, multiple
+                  layers should be applied individually, waiting a minimum of 1 hour between
+                  each application.
+                </p>
+                <p>
+                  Immediately after each layer is applied, use a wetted roller to apply
+                  additional epoxy in any areas that do not appear to be fully saturated.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="border-b border-line py-10 sm:py-12 md:grid md:grid-cols-12 md:gap-8">
+            <div class="mb-5 md:col-span-2 md:mb-0">
+              <span class="font-mono text-2xl font-medium leading-none text-ink-950 sm:text-3xl">05</span>
+            </div>
+            <div class="md:col-span-10">
+              <h2 class="type-display text-2xl text-ink-950 sm:text-3xl">Finishing</h2>
+              <div class="mt-5 space-y-4 leading-7 text-stone-600">
+                <p>
+                  Dependent upon the application and engineer's specifications, one or more of
+                  the following finishing options may be used:
+                </p>
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">A. Surfacing (for aesthetic value)</h3>
+                <p>
+                  The following surfacing should be applied within the cure time of the prior
+                  layer (see data sheets), while the surface is tacky. If the prior layer has
+                  cured, sand or bead blast before surfacing:
+                </p>
+                <ul class="list-[square] space-y-2 pl-5 marker:text-stone-500">
+                  <li>For a concrete-textured surface: trowel Hex-3R Epoxy 301T over the final layer of reinforcement.</li>
+                  <li>For a smooth surface: roll or brush Hex-3R Epoxy 301 over the final layer of reinforcement.</li>
+                  <li>For a canvas-textured surface: roll or brush one layer of Hex-3R 106 fiberglass saturated with Hex-3R Epoxy 300 resin. While tacky, coat with Hex-3R Epoxy 301.</li>
+                </ul>
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">B. Fire coatings (for increased fire resistance)</h3>
+                <p>
+                  While the prior layer is tacky (within the cure time as shown on the product
+                  data sheets), trowel on Hex-3R FireLam 505 37 mils thick. Allow to cure 20
+                  hours, then brush, roll, or spray Hex-3R FireLam 506 in 3 coats at 0.04
+                  pounds per square foot, waiting until each coat dries (at least 4 hours)
+                  before applying the next coat.
+                </p>
+                <h3 class="pt-3 font-display text-base font-semibold text-ink-950">C. Paint (for aesthetic value and UV protection)</h3>
+                <p>
+                  While the prior layer is dry but still tacky, paint the surface with acrylic
+                  or linear urethane paint. If the surface has completely cured before painting,
+                  sand or bead blast prior to painting.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand heading="Questions about installation?" text="Our team can walk you through product selection, saturation, and application details." />
+</Base>
