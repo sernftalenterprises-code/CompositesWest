@@ -1,0 +1,105 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const rows = [
+  { app: 'Priming bare concrete — good surface', overhead: 'Hex-3R Epoxy 306', vertical: 'Hex-3R Epoxy 306', horizontal: 'Hex-3R Epoxy 306' },
+  { app: 'Priming bare concrete — poor surface', overhead: 'Hex-3R Epoxy 300', vertical: 'Hex-3R Epoxy 300', horizontal: 'Hex-3R Epoxy 300' },
+  { app: 'Filling small voids', overhead: 'Hex-3R Epoxy 301T or 306', vertical: 'Hex-3R Epoxy 301T or 306', horizontal: 'Hex-3R Epoxy 301T or 306' },
+  { app: 'Leveling depressions', overhead: 'Hex-3R Epoxy 301T', vertical: 'Hex-3R Epoxy 301T', horizontal: 'Hex-3R Epoxy 301T' },
+  { app: 'Impregnating fabric (lighter weights, <13 oz/ft²)', overhead: 'Hex-3R Epoxy 306', vertical: 'Hex-3R Epoxy 300', horizontal: 'Hex-3R Epoxy 300' },
+  { app: 'Impregnating fabric (heavier weights, ≥13 oz/ft²)', overhead: 'Hex-3R Epoxy 306', vertical: 'Hex-3R Epoxy 306', horizontal: 'Hex-3R Epoxy 300' },
+  { app: 'Finish coat — smooth finish', overhead: 'Hex-3R Epoxy 301', vertical: 'Hex-3R Epoxy 301', horizontal: 'Hex-3R Epoxy 301' },
+  { app: 'Finish coat — concrete-like finish', overhead: 'Hex-3R Epoxy 301T', vertical: 'Hex-3R Epoxy 301T', horizontal: 'Hex-3R Epoxy 301T' },
+  { app: 'Finish coat — canvas finish', overhead: 'Hex-3R Epoxy 301 over 1 layer of Hex-3R Wrap 106', vertical: 'Hex-3R Epoxy 301 over 1 layer of Hex-3R Wrap 106', horizontal: 'Hex-3R Epoxy 301 over 1 layer of Hex-3R Wrap 106' },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Hex-3R Products', item: 'https://compositeswest.com/hex-3r-products/' },
+    { '@type': 'ListItem', position: 3, name: 'Selection', item: 'https://compositeswest.com/selection/' },
+  ],
+};
+---
+
+<Base
+  title="Hex-3R Resin Selection Guide | Composites West"
+  description="Choose the right Hex-3R epoxy for each application and surface orientation — priming, void filling, fabric impregnation, and finish coats on overhead, vertical, and horizontal concrete surfaces."
+  jsonLd={[breadcrumbLd]}
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-14 sm:py-20">
+        <p class="eyebrow text-stone-500">CW / Selection — Hex-3R System</p>
+        <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+          Resin selection guide
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+          The right Hex-3R epoxy for each application, by surface orientation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 / Selection matrix -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <p class="reveal eyebrow text-stone-500">01 / Selection matrix</p>
+        <div class="reveal reveal-delay-1 table-wrap mt-6">
+          <table class="table-spec">
+            <thead>
+              <tr>
+                <th scope="col">Application / location</th>
+                <th scope="col">Overhead</th>
+                <th scope="col">Vertical surfaces</th>
+                <th scope="col">Horizontal surfaces</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr>
+                  <th scope="row" class="row-head">{row.app}</th>
+                  <td>{row.overhead}</td>
+                  <td>{row.vertical}</td>
+                  <td>{row.horizontal}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-6 max-w-3xl text-sm leading-6 text-stone-600">
+          Always refer to the <a href="/specifications/" class="underline-draw font-semibold text-ink-950">product data sheets</a> for
+          pot life, mixing ratios, and cure schedules, and defer to the project engineer's
+          specifications where they differ from this table.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand heading="Not sure which resin fits your project?" text="Send us the application details and we'll recommend the right Hex-3R system components." />
+</Base>
+
+<style>
+  /* Row headers stay semantic <th scope="row"> but read as body cells,
+     not mono column labels. */
+  .table-spec tbody th.row-head {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--color-ink-950);
+    white-space: normal;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  .table-spec tbody tr:last-child th.row-head {
+    border-bottom: 0;
+  }
+</style>

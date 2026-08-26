@@ -1,0 +1,157 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+// NOTE: data-sheet PDFs currently live on the old WordPress host. Copy them into
+// /public/datasheets/ before decommissioning WordPress and update PDF_BASE.
+const PDF_BASE = 'https://compositeswest.com.dream.website/wp-content/uploads/2020/08';
+
+const reinforcementSheets = [
+  { name: 'Hex-3R Wrap 100', file: '100-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 101', file: '101-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 103', file: '103-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 106', file: '106-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 107', file: '107-Hex-3R-Data-Sheet.-3SD.pdf' },
+  { name: 'Hex-3R Wrap 113', file: '113-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 115', file: '115-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 116', file: '116-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 230', file: '230-Hex-3R-Data-Sheet-3SD.pdf' },
+  { name: 'Hex-3R Wrap 430', file: '430-Hex-3R-Data-Sheet-3SD.pdf' },
+];
+
+const resinSheets = [
+  { name: 'Hex-3R Epoxy 300', file: '100-Hex-3R-Data-Sheet-3SD-1.pdf' },
+  { name: 'Hex-3R Epoxy 301/301T', file: '101-Hex-3R-Data-Sheet-3SD-1.pdf' },
+  { name: 'Hex-3R Epoxy 306XR', file: '103-Hex-3R-Data-Sheet-3SD-1.pdf' },
+  { name: 'Hex-3R FireLam 505/506', file: '106-Hex-3R-Data-Sheet-3SD-1.pdf' },
+];
+
+const totalSheets = reinforcementSheets.length + resinSheets.length;
+const docIndex = (n: number) => `CW-DS-${String(n).padStart(2, '0')}`;
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Hex-3R Products', item: 'https://compositeswest.com/hex-3r-products/' },
+    { '@type': 'ListItem', position: 3, name: 'Specifications', item: 'https://compositeswest.com/specifications/' },
+  ],
+};
+---
+
+<Base
+  title="Hex-3R Specifications & Data Sheets | Composites West"
+  description="Download technical data sheets (PDF) for Hex-3R Wrap reinforcement fabrics and Hex-3R Epoxy resin systems, including FireLam fire-protection coatings."
+  jsonLd={[breadcrumbLd]}
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:items-end">
+        <div class="lg:col-span-8">
+          <p class="eyebrow text-stone-500">CW / specifications — Hex-3R documentation</p>
+          <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+            Specifications
+          </h1>
+          <div class="tracer mt-6"></div>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+            Technical data sheets for Hex-3R reinforcements and resin systems.
+          </p>
+        </div>
+        <dl class="grid grid-cols-3 gap-px border border-line bg-line lg:col-span-4">
+          <div class="bg-white p-5">
+            <dt class="eyebrow text-stone-500">Documents</dt>
+            <dd class="type-display mt-2 text-3xl text-ink-950">{totalSheets}</dd>
+          </div>
+          <div class="bg-white p-5">
+            <dt class="eyebrow text-stone-500">Format</dt>
+            <dd class="type-display mt-2 text-3xl text-ink-950">PDF</dd>
+          </div>
+          <div class="bg-white p-5">
+            <dt class="eyebrow text-stone-500">Series</dt>
+            <dd class="type-display mt-2 text-3xl text-ink-950">3R</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 / Reinforcement register -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-10 py-20 sm:py-24 lg:grid-cols-12">
+        <div class="reveal lg:col-span-4">
+          <p class="eyebrow text-stone-500">01 / Reinforcement fabrics</p>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Reinforcements</h2>
+          <div class="tracer mt-5"></div>
+        </div>
+        <div class="reveal reveal-delay-1 lg:col-span-8">
+          <ul class="border-t border-line">
+            {reinforcementSheets.map((sheet, i) => (
+              <li>
+                <a
+                  href={`${PDF_BASE}/${sheet.file}`}
+                  target="_blank"
+                  rel="noopener"
+                  class="group flex items-baseline gap-4 border-b border-line py-4 transition-colors duration-150 ease-out hover:bg-paper sm:gap-6 sm:px-2"
+                >
+                  <span class="font-mono text-xs tracking-[0.08em] text-stone-400" aria-hidden="true">
+                    {docIndex(i + 1)}
+                  </span>
+                  <span class="font-display text-[15px] font-semibold text-ink-950">{sheet.name}</span>
+                  <span class="underline-draw ml-auto shrink-0 font-mono text-xs font-medium uppercase tracking-[0.12em] text-ink-950 group-hover:[background-size:100%_1px]">
+                    PDF &darr;
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 / Resin register -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-10 py-20 sm:py-24 lg:grid-cols-12">
+        <div class="reveal lg:col-span-4">
+          <p class="eyebrow text-stone-500">02 / Resin systems</p>
+          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Resins &amp; additives</h2>
+          <div class="tracer mt-5"></div>
+        </div>
+        <div class="reveal reveal-delay-1 lg:col-span-8">
+          <ul class="border-t border-line">
+            {resinSheets.map((sheet, i) => (
+              <li>
+                <a
+                  href={`${PDF_BASE}/${sheet.file}`}
+                  target="_blank"
+                  rel="noopener"
+                  class="group flex items-baseline gap-4 border-b border-line py-4 transition-colors duration-150 ease-out hover:bg-white sm:gap-6 sm:px-2"
+                >
+                  <span class="font-mono text-xs tracking-[0.08em] text-stone-400" aria-hidden="true">
+                    {docIndex(reinforcementSheets.length + i + 1)}
+                  </span>
+                  <span class="font-display text-[15px] font-semibold text-ink-950">{sheet.name}</span>
+                  <span class="underline-draw ml-auto shrink-0 font-mono text-xs font-medium uppercase tracking-[0.12em] text-ink-950 group-hover:[background-size:100%_1px]">
+                    PDF &darr;
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-10 border border-line bg-white p-6 text-sm leading-6 text-stone-600">
+            Need a spec that isn't listed, or engineering guidance on product selection?
+            See the <a href="/selection/" class="underline-draw font-semibold text-ink-950">resin selection guide</a> or <a
+              href="/contact/"
+              class="underline-draw font-semibold text-ink-950">contact us</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

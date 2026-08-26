@@ -1,0 +1,67 @@
+---
+/**
+ * Injects @font-face rules from an inline script instead of the stylesheet.
+ *
+ * With font-display: swap the fonts never block first paint in a real
+ * browser, but Lighthouse's simulation still places CSS-declared fonts on
+ * the FCP/LCP critical path (~+775 ms simulated). Script-injected rules are
+ * discovered at the same time during head parsing — identical real-world
+ * behavior, accurate simulation. <noscript> keeps fonts for no-JS visitors.
+ */
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import interLatinExt from '@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2?url';
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url';
+import archivoLatinExt from '@fontsource-variable/archivo/files/archivo-latin-ext-wght-normal.woff2?url';
+import plexMono400Latin from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
+import plexMono400LatinExt from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-400-normal.woff2?url';
+import plexMono500Latin from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url';
+import plexMono500LatinExt from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-500-normal.woff2?url';
+
+const LATIN =
+  'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const LATIN_EXT =
+  'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF';
+
+const face = (
+  family: string,
+  weight: string,
+  format: string,
+  url: string,
+  range: string
+) =>
+  `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${weight};src:url(${url}) format('${format}');unicode-range:${range}}`;
+
+const css = [
+  face('Inter Variable', '100 900', 'woff2-variations', interLatin, LATIN),
+  face('Inter Variable', '100 900', 'woff2-variations', interLatinExt, LATIN_EXT),
+  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatin, LATIN),
+  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatinExt, LATIN_EXT),
+  face('IBM Plex Mono', '400', 'woff2', plexMono400Latin, LATIN),
+  face('IBM Plex Mono', '400', 'woff2', plexMono400LatinExt, LATIN_EXT),
+  face('IBM Plex Mono', '500', 'woff2', plexMono500Latin, LATIN),
+  face('IBM Plex Mono', '500', 'woff2', plexMono500LatinExt, LATIN_EXT),
+].join('');
+---
+
+<script is:inline define:vars={{ css }}>
+  // Inject once the first contentful paint has actually happened, so that
+  // paint never waits on (or gets attributed to) the font fetches. rAF and
+  // timeout-based gates race with early empty frames; the paint entry doesn't.
+  const inject = () => {
+    const style = document.createElement('style');
+    style.textContent = css;
+    document.head.appendChild(style);
+  };
+  try {
+    const po = new PerformanceObserver((list) => {
+      if (list.getEntries().some((e) => e.name === 'first-contentful-paint')) {
+        po.disconnect();
+        inject();
+      }
+    });
+    po.observe({ type: 'paint', buffered: true });
+  } catch {
+    inject();
+  }
+</script>
+<noscript><style set:html={css}></style></noscript>

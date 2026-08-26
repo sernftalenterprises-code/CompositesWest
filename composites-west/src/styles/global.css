@@ -1,0 +1,367 @@
+/* @font-face rules live in Fonts.astro (script-injected) — see that file. */
+@import "tailwindcss";
+
+/*
+  Composites West design system — "engineering datasheet × racing heritage".
+  Carbon ink + technical paper + one hazard yellow used as a marker.
+  Depth comes from hairlines, not shadows. Corners are sharp. Numbers are mono.
+*/
+
+@theme {
+  /* Carbon ink — warm-neutral, deliberately NOT blue */
+  --color-ink-950: #0a0a0b;
+  --color-ink-900: #111113;
+  --color-ink-800: #1a1a1e;
+  --color-ink-700: #26262b;
+  --color-ink-600: #3f3f45;
+
+  /* Technical paper + hairlines */
+  --color-paper: #f7f7f5;
+  --color-line: #e4e4df;
+
+  /* Hazard yellow — matched to the wordmark */
+  --color-brand: #ffd400;
+  --color-brand-bright: #ffdf33;
+  --color-brand-deep: #eac200;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Archivo Variable", "Inter Variable", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Wide-width Archivo for display headings and big numerals */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 115;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* Mono uppercase micro-label: `01 / SECTION` */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* 2px hazard-yellow rule — the "tracer thread" */
+.tracer {
+  width: 3rem;
+  height: 2px;
+  background: var(--color-brand);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.625rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  font-variation-settings: "wdth" 110;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  border: 1px solid transparent;
+  transition: background-color 0.18s ease-out, color 0.18s ease-out,
+    border-color 0.18s ease-out;
+  cursor: pointer;
+}
+
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.18s ease-out;
+}
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+.btn-primary:hover {
+  background: var(--color-ink-950);
+  color: var(--color-brand);
+}
+
+.btn-dark {
+  background: var(--color-ink-950);
+  color: #fff;
+}
+.btn-dark:hover {
+  background: var(--color-brand);
+  color: var(--color-ink-950);
+}
+
+.btn-outline {
+  border-color: var(--color-ink-950);
+  color: var(--color-ink-950);
+}
+.btn-outline:hover {
+  background: var(--color-ink-950);
+  color: #fff;
+}
+
+.btn-outline-light {
+  border-color: rgb(255 255 255 / 0.3);
+  color: #fff;
+}
+.btn-outline-light:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+/* ------------------------------------------------------------------ cards */
+
+/* Hairline card with hazard corner brackets on hover */
+.card {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  transition: border-color 0.2s ease-out;
+}
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--color-brand);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+.card::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+.card:hover {
+  border-color: var(--color-ink-950);
+}
+.card:hover::before,
+.card:hover::after {
+  opacity: 1;
+}
+
+/* Mono spec chip: `3K TOW` `197 GSM` */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3125rem 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-600);
+  background: #fff;
+  white-space: nowrap;
+}
+.chip-dark {
+  border-color: rgb(255 255 255 / 0.15);
+  color: #d6d3d1;
+  background: transparent;
+}
+
+/* --------------------------------------------------------------- textures */
+
+/* Authentic 2×2 twill: two crossing diagonal thread systems over carbon ink */
+.twill {
+  background-color: var(--color-ink-950);
+  background-image:
+    repeating-linear-gradient(45deg,
+      rgb(255 255 255 / 0.022) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg,
+      rgb(255 255 255 / 0.014) 0 2px, transparent 2px 7px),
+    radial-gradient(ellipse 120% 80% at 50% -20%,
+      rgb(255 255 255 / 0.05), transparent 55%);
+}
+
+/* Drafting-sheet rails: hairlines down both sides of the content column */
+.frame-x {
+  --frame-line: var(--color-line);
+}
+@media (min-width: 768px) {
+  .frame-x {
+    border-inline: 1px solid var(--frame-line);
+  }
+}
+.frame-dark {
+  --frame-line: rgb(255 255 255 / 0.1);
+}
+
+/* `+` registration mark (needs absolute positioning by the caller) */
+.crosshair {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  color: #c9c9c2;
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+  pointer-events: none;
+}
+.crosshair-dark {
+  color: rgb(255 255 255 / 0.25);
+}
+
+/* Dimension-line divider: ——|————————|—— */
+.dim-rule {
+  position: relative;
+  height: 9px;
+  color: var(--color-line);
+  background: linear-gradient(currentColor, currentColor) center / 100% 1px
+    no-repeat;
+}
+.dim-rule::before,
+.dim-rule::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: currentColor;
+}
+.dim-rule::before { left: 0; }
+.dim-rule::after { right: 0; }
+
+/* ----------------------------------------------------------------- tables */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  background: #fff;
+}
+.table-spec {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+.table-spec th {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-600);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-ink-950);
+  white-space: nowrap;
+}
+.table-spec td {
+  font-size: 0.875rem;
+  color: var(--color-ink-600);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+.table-spec tbody tr:last-child td {
+  border-bottom: 0;
+}
+.table-spec tbody tr {
+  transition: background-color 0.15s ease-out;
+}
+.table-spec tbody tr:hover {
+  background: var(--color-paper);
+}
+
+/* ------------------------------------------------------------------ links */
+
+/* Underline that draws in from the left */
+.underline-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: left calc(100% - 0.05em);
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease-out;
+}
+.underline-draw:hover {
+  background-size: 100% 1px;
+}
+
+/* Below-the-fold sections: skip rendering work until they approach the
+   viewport. The 800px estimate stands in until the real size is measured. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* ----------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.08s; }
+  .reveal-delay-2 { transition-delay: 0.16s; }
+  .reveal-delay-3 { transition-delay: 0.24s; }
+
+  /* Start at 0.01 (not 0): a first paint at opacity 0 permanently disqualifies
+     the h1 from LCP candidacy in Chrome, shifting LCP to a smaller element. */
+  @keyframes hero-fade-up {
+    from { opacity: 0.01; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  .hero-enter { animation: hero-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .hero-enter-1 { animation-delay: 0.07s; }
+  .hero-enter-2 { animation-delay: 0.14s; }
+  .hero-enter-3 { animation-delay: 0.21s; }
+  .hero-enter-4 { animation-delay: 0.28s; }
+
+  @keyframes hero-clip {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  .hero-clip { animation: hero-clip 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-track { animation: ticker 36s linear infinite; }
+  .ticker-track:hover { animation-play-state: paused; }
+}
