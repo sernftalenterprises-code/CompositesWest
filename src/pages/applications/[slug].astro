@@ -1,0 +1,335 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { applications } from '../../data/applications';
+import { products, company } from '../../data/products';
+
+export function getStaticPaths() {
+  return applications.map((application) => ({
+    params: { slug: application.slug },
+    props: { application },
+  }));
+}
+
+const { application } = Astro.props;
+
+/* Real material photography lives at the top of assets/; canoe.jpg sits under
+   markets/. Glob both so `photo` can name either. */
+const photos = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/{*,markets/*}.{png,jpg,jpeg}',
+  { eager: true }
+);
+const photoEntry = Object.entries(photos).find(([path]) =>
+  /(^|\/)([^/]+)\.(png|jpg|jpeg)$/.test(path) &&
+  path.replace(/^.*\//, '').replace(/\.(png|jpg|jpeg)$/, '') === application.photo
+);
+const image = photoEntry![1].default;
+const ogImage = await getImage({ src: image, width: 1200, format: 'jpeg' });
+
+const recommended = application.recommended
+  .map((slug) => products.find((p) => p.slug === slug))
+  .filter((p): p is (typeof products)[number] => Boolean(p));
+
+const others = applications.filter((a) => a.slug !== application.slug);
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: application.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Applications', item: 'https://compositeswest.com/applications/' },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: application.shortName,
+      item: `https://compositeswest.com/applications/${application.slug}/`,
+    },
+  ],
+};
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: application.name,
+  description: application.seoDescription,
+  image: new URL(ogImage.src, Astro.site).toString(),
+  url: `https://compositeswest.com/applications/${application.slug}/`,
+  publisher: { '@id': 'https://compositeswest.com/#organization' },
+  about: application.shortName,
+};
+---
+
+<Base
+  title={`${application.name} | Composites West`}
+  description={application.seoDescription}
+  jsonLd={[articleLd, faqLd, breadcrumbLd]}
+  ogImage={ogImage.src}
+  ogType="article"
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+      <span class="crosshair left-4 top-8 sm:left-6" aria-hidden="true"></span>
+      <span class="crosshair right-4 top-8 sm:right-6" aria-hidden="true"></span>
+
+      <div class="py-14 sm:py-20">
+        <nav aria-label="Breadcrumb">
+          <ol class="eyebrow flex flex-wrap items-center gap-2.5 text-stone-500">
+            <li><a href="/" class="underline-draw transition-colors hover:text-ink-950">Home</a></li>
+            <li aria-hidden="true" class="text-stone-400">/</li>
+            <li><a href="/applications/" class="underline-draw transition-colors hover:text-ink-950">Applications</a></li>
+            <li aria-hidden="true" class="text-stone-400">/</li>
+            <li aria-current="page" class="text-ink-950">{application.shortName}</li>
+          </ol>
+        </nav>
+
+        <p class="eyebrow mt-10 text-stone-500">CW / Applications — {application.shortName}</p>
+        <h1 class="type-display mt-4 max-w-4xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+          {application.name}
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">{application.tagline}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 / The market -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-14 py-20 sm:py-24 lg:grid-cols-2 lg:gap-16">
+        <div class="reveal">
+          <p class="eyebrow text-stone-500">01 / The market</p>
+          <p class="mt-6 text-lg leading-8 text-stone-600">{application.intro}</p>
+
+          <h2 class="type-display mt-12 text-2xl text-ink-950 sm:text-3xl">
+            {application.challenge.heading}
+          </h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 leading-8 text-stone-600">{application.challenge.body}</p>
+        </div>
+
+        <figure class="reveal reveal-delay-1 relative lg:sticky lg:top-32 lg:self-start">
+          <div class="relative border border-line">
+            <Image
+              src={image}
+              alt={application.photoCaption}
+              widths={[600, 1200]}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="aspect-[4/3] w-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
+            <span class="absolute left-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
+          </div>
+          <figcaption class="eyebrow mt-3 flex justify-between gap-4 text-stone-500">
+            <span>Fig. 01 — {application.photoCaption}</span>
+            <span class="shrink-0">{application.shortName}</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 / What drives the decision -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal max-w-2xl">
+          <p class="eyebrow text-stone-500">02 / Selection</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            What drives the decision
+          </h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 text-lg leading-8 text-stone-600">
+            In priority order — the properties that actually narrow the field for this
+            application.
+          </p>
+        </div>
+
+        <ol class="reveal reveal-delay-1 mt-12 border-t border-line">
+          {application.criteria.map((item, i) => (
+            <li class="group grid gap-x-8 gap-y-3 border-b border-line py-8 lg:grid-cols-12">
+              <div class="flex items-baseline gap-4 lg:col-span-4">
+                <span class="eyebrow text-stone-400" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="font-display text-lg font-semibold text-ink-950">{item.label}</h3>
+              </div>
+              <p class="leading-7 text-stone-600 lg:col-span-8">{item.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 / Constructions -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal max-w-2xl">
+          <p class="eyebrow text-stone-500">03 / Construction</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            Which construction, and when
+          </h2>
+          <div class="tracer mt-5"></div>
+        </div>
+        <div class="reveal reveal-delay-1 mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          {application.constructions.map((c, i) => (
+            <article class="card group p-7">
+              <div class="flex items-baseline justify-between gap-4">
+                <h3 class="font-display text-lg font-semibold text-ink-950">{c.name}</h3>
+                <span class="eyebrow text-stone-400" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <div
+                class="mt-3 h-0.5 w-8 bg-line transition-all duration-200 group-hover:w-14 group-hover:bg-brand"
+              >
+              </div>
+              <p class="mt-4 text-sm leading-6 text-stone-600">{c.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 / Recommended materials -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal flex flex-wrap items-end justify-between gap-6">
+          <div class="max-w-2xl">
+            <p class="eyebrow text-stone-500">04 / Materials</p>
+            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+              Where we'd start
+            </h2>
+            <div class="tracer mt-5"></div>
+            <p class="mt-6 text-lg leading-8 text-stone-600">
+              In-stock fabrics that fit this application. Not a prescription — a starting
+              point we're happy to argue about with your specifics in hand.
+            </p>
+          </div>
+          <a
+            href="/all-products/"
+            class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950"
+          >
+            View all fabrics <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+        <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          {recommended.map((product, i) => (
+            <div class:list={['reveal', i > 0 && `reveal-delay-${i}`]}>
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+
+        <div class="reveal reveal-delay-2 mt-10 flex flex-col items-start justify-between gap-6 border border-line bg-white p-7 md:flex-row md:items-center">
+          <div class="max-w-xl">
+            <h3 class="font-display text-lg font-semibold text-ink-950">
+              Want it narrowed to your specific part?
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-stone-600">
+              Answer four questions about geometry, load, priority, and size — the Material
+              Finder ranks every fabric we stock against them and shows its reasoning.
+            </p>
+          </div>
+          <a href="/material-finder/" class="btn btn-dark shrink-0">
+            Find my material <span class="btn-arrow">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 / FAQ -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-12 py-20 sm:py-24 lg:grid-cols-12">
+        <div class="reveal lg:col-span-4">
+          <p class="eyebrow text-stone-500">05 / FAQ</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            Common questions
+          </h2>
+          <div class="tracer mt-5"></div>
+        </div>
+        <div class="reveal reveal-delay-1 lg:col-span-8">
+          <div class="border-t border-line">
+            {application.faq.map((item) => (
+              <details class="group border-b border-line">
+                <summary
+                  class="flex cursor-pointer list-none items-baseline gap-5 py-5 pr-2 [&::-webkit-details-marker]:hidden"
+                >
+                  <span
+                    class="font-mono text-sm text-stone-400 transition-colors group-open:text-brand-deep"
+                    aria-hidden="true"
+                  >
+                    <span class="group-open:hidden">+</span><span class="hidden group-open:inline">&minus;</span>
+                  </span>
+                  <span class="font-display text-base font-semibold text-ink-950">{item.q}</span>
+                </summary>
+                <p class="pb-6 pl-9 text-base leading-7 text-stone-600">{item.a}</p>
+              </details>
+            ))}
+          </div>
+
+          {application.advisory && (
+            <aside
+              class="mt-10 border-l-2 border-brand bg-paper px-6 py-5"
+              aria-label="Engineering advisory"
+            >
+              <p class="eyebrow text-stone-500">Engineering advisory</p>
+              <p class="mt-3 text-sm leading-7 text-stone-600">{application.advisory}</p>
+            </aside>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 / Other applications -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-16 sm:py-20">
+        <p class="reveal eyebrow text-stone-500">06 / More applications</p>
+        <ul class="reveal reveal-delay-1 mt-8 border-t border-line">
+          {others.map((other) => (
+            <li>
+              <a
+                href={`/applications/${other.slug}/`}
+                class="group flex items-baseline gap-5 border-b border-line py-4 transition-colors hover:bg-white"
+              >
+                <span class="font-display text-base font-semibold text-ink-950">
+                  {other.shortName}
+                </span>
+                <span class="hidden text-sm text-stone-500 sm:block">{other.tagline}</span>
+                <span
+                  class="ml-auto h-px w-6 shrink-0 self-center bg-line transition-all duration-200 group-hover:w-12 group-hover:bg-brand"
+                ></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading={`Working on ${application.shortName.toLowerCase()}?`}
+    text={`Tell us the part, the loads, and the process — we'll point you at the right reinforcement. Call ${company.phone} or send the details.`}
+  />
+</Base>

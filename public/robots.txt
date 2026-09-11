@@ -1,0 +1,29 @@
+# Composites West — compositeswest.com
+# All crawlers welcome, including AI search crawlers.
+
+User-agent: *
+Allow: /
+
+# AI search / answer engines (explicitly welcomed)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://compositeswest.com/sitemap-index.xml

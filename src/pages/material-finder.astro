@@ -1,0 +1,914 @@
+---
+import { getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { products, company } from '../data/products';
+
+/* Client-side scoring needs resolved image URLs, so pre-render thumbnails here
+   rather than reaching for astro:assets from the browser. */
+const productImages = import.meta.glob<{ default: ImageMetadata }>('../assets/products/*.png', {
+  eager: true,
+});
+
+const catalog = await Promise.all(
+  products.map(async (p) => {
+    const src = productImages[`../assets/products/${p.image}.png`].default;
+    const thumb = await getImage({ src, width: 260, height: 195, fit: 'cover', format: 'webp' });
+    return {
+      slug: p.slug,
+      shortName: p.shortName,
+      brand: p.brand,
+      weave: p.weave,
+      weaveLabel: p.weaveLabel,
+      tow: p.tow ?? null,
+      weightOz: p.weightOz,
+      weightGsm: p.weightGsm,
+      widthIn: p.widthIn,
+      features: p.features,
+      thumb: thumb.src,
+    };
+  })
+);
+
+/* Each question is one axis of the scoring model. Detail strings stay short so
+   every option fits on a single row inside its column. */
+const questions = [
+  {
+    id: 'geometry',
+    label: 'Geometry',
+    hint: 'How much curvature?',
+    options: [
+      { value: 'flat', label: 'Flat or simple', detail: 'sheets, tubes' },
+      { value: 'curved', label: 'Gentle curves', detail: '2D bends' },
+      { value: 'compound', label: 'Compound curves', detail: 'curves two ways' },
+    ],
+  },
+  {
+    id: 'load',
+    label: 'Primary load',
+    hint: 'Which way does it work?',
+    options: [
+      { value: 'uniaxial', label: 'One axis', detail: 'bending, tension' },
+      { value: 'biaxial', label: 'Two axes', detail: '0° and 90°' },
+      { value: 'torsion', label: 'Torsion / shear', detail: 'twist, diagonal' },
+      { value: 'mixed', label: 'Mixed', detail: 'general purpose' },
+    ],
+  },
+  {
+    id: 'priority',
+    label: 'Priority',
+    hint: 'What matters most?',
+    options: [
+      { value: 'light', label: 'Lowest weight', detail: 'thin, fine control' },
+      { value: 'stiff', label: 'Max stiffness', detail: 'deflection governs' },
+      { value: 'cosmetic', label: 'Visible finish', detail: 'weave is the surface' },
+      { value: 'fast', label: 'Fewest plies', detail: 'build fast' },
+    ],
+  },
+  {
+    id: 'size',
+    label: 'Part size',
+    hint: 'Roll width needed?',
+    options: [
+      { value: 'large', label: 'Large', detail: 'wider than ~4 ft' },
+      { value: 'medium', label: 'Medium', detail: 'typical parts' },
+      { value: 'narrow', label: 'Narrow', detail: 'strips, spar caps' },
+    ],
+  },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Material Finder', item: 'https://compositeswest.com/material-finder/' },
+  ],
+};
+
+const webAppLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Composites West Material Finder',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Any',
+  url: 'https://compositeswest.com/material-finder/',
+  description:
+    'Interactive tool that recommends a carbon fiber reinforcement based on part geometry, load direction, design priority, and part size — with the reasoning and trade-offs shown for every match.',
+  offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' },
+  publisher: { '@id': 'https://compositeswest.com/#organization' },
+};
+---
+
+<Base
+  title="Material Finder | Find the Right Carbon Fiber Fabric | Composites West"
+  description="Answer four quick questions about your part — geometry, load direction, priority, and size — and see which carbon fiber reinforcements fit, why they fit, and what each one trades away."
+  jsonLd={[webAppLd, breadcrumbLd]}
+>
+  <!-- Compact page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+      <span class="crosshair left-4 top-6 sm:left-6" aria-hidden="true"></span>
+      <span class="crosshair right-4 top-6 sm:right-6" aria-hidden="true"></span>
+      <div class="py-10 sm:py-12">
+        <p class="eyebrow text-stone-500">CW / material-finder — Interactive</p>
+        <div class="mt-3 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div>
+            <h1 class="type-display text-3xl text-ink-950 sm:text-4xl lg:text-5xl">
+              Find your material
+            </h1>
+            <div class="tracer mt-4"></div>
+          </div>
+          <p class="max-w-md text-base leading-7 text-stone-600">
+            Four quick questions. Every fabric we stock gets ranked against them, with the
+            reasoning shown. No email required.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The tool -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-8 sm:py-10">
+        <!-- Control bar -->
+        <div class="border border-ink-950 bg-white">
+          <div class="flex items-center justify-between gap-4 bg-ink-950 px-4 py-2.5 sm:px-5">
+            <p class="eyebrow text-brand">Specify the part</p>
+            <div class="flex items-center gap-5">
+              <p id="progress" class="eyebrow text-stone-400" aria-live="polite">0 / 4</p>
+              <button
+                type="button"
+                id="reset"
+                class="eyebrow cursor-pointer text-stone-400 transition-colors hover:text-white"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <form id="finder" class="grid sm:grid-cols-2 lg:grid-cols-4">
+            {questions.map((q, qi) => (
+              <fieldset
+                class:list={[
+                  'border-line px-4 py-4 sm:px-5',
+                  qi > 0 && 'border-t sm:border-t-0',
+                  qi % 2 === 1 && 'sm:border-l',
+                  qi >= 2 && 'sm:border-t lg:border-t-0',
+                  qi > 0 && 'lg:border-l lg:border-t-0',
+                ]}
+              >
+                <legend class="eyebrow text-ink-950">{q.label}</legend>
+                <p class="mt-1 text-xs leading-5 text-stone-500">{q.hint}</p>
+                <div class="mt-3 flex flex-col gap-1.5">
+                  {q.options.map((opt) => (
+                    <label class="opt">
+                      <input type="radio" name={q.id} value={opt.value} class="sr-only" />
+                      <span class="opt-face">
+                        <span class="opt-label">{opt.label}</span>
+                        <span class="opt-detail">{opt.detail}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
+          </form>
+
+          <div class="h-1 w-full bg-line" role="presentation">
+            <div id="progress-bar" class="h-full w-0 bg-brand transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="mt-10">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-ink-950 pb-3">
+            <p class="eyebrow text-stone-500">Ranked results</p>
+            <p id="result-status" class="eyebrow text-ink-950" aria-live="polite">
+              Awaiting input
+            </p>
+          </div>
+
+          <div id="empty" class="border border-dashed border-line bg-paper px-6 py-12 text-center">
+            <p class="type-display text-xl text-ink-950">Answer any question to start</p>
+            <p class="mx-auto mt-2.5 max-w-md text-sm leading-6 text-stone-600">
+              The ranking updates as you go — one answer is enough to see something useful.
+              All four gives the sharpest result.
+            </p>
+            <p class="eyebrow mt-6 text-stone-400">{catalog.length} fabrics in stock</p>
+          </div>
+
+          <ol id="results" class="hidden"></ol>
+
+          <!-- Fires when the top match carries a real trade-off. That tension is
+               the natural moment to offer sourcing — not a dead end, an opening. -->
+          <div
+            id="sourcing"
+            class="mt-6 hidden border-l-2 border-brand bg-paper px-6 py-5"
+            role="status"
+          >
+            <p class="font-display text-base font-semibold text-ink-950">
+              There's one trade-off in that result worth talking through.
+            </p>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
+              The match above does most of what you need, but it gives something up — and
+              we may be able to source something that doesn't. Stocked material is what
+              ships immediately; finding the harder reinforcement is a large part of what
+              we actually do.
+            </p>
+            <a href="/contact/" class="btn btn-dark mt-4">
+              Tell us what you need <span class="btn-arrow">&rarr;</span>
+            </a>
+          </div>
+
+          <p class="mt-6 text-sm leading-6 text-stone-600">
+            This ranks what we stock — and we source well beyond it.{' '}
+            <a href="/contact/" class="underline-draw font-semibold text-ink-950">Tell us the requirement.</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method strip -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-10 sm:py-12">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+          <h2 class="type-display text-2xl text-ink-950">No black box</h2>
+          <p class="max-w-2xl text-sm leading-6 text-stone-600">
+            Every match shows its reasoning and what it gives up. This is a starting point
+            built on how these materials behave — not a substitute for talking to someone
+            who has specified them since 2001.
+          </p>
+        </div>
+        <dl class="mt-8 grid gap-x-8 gap-y-4 border-t border-line pt-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { t: 'Geometry', d: 'Drape and crimp decide whether a fabric conforms or fights you.' },
+            { t: 'Load direction', d: 'Fiber has to sit along the load path. Bias load needs bias fiber.' },
+            { t: 'Priority', d: 'Weight, stiffness, finish, and build speed pull against each other.' },
+            { t: 'Size', d: 'Roll width decides whether a panel needs a seam it should not have.' },
+          ].map((item) => (
+            <div class="flex gap-3">
+              <span class="mt-2 h-px w-4 shrink-0 bg-brand" aria-hidden="true"></span>
+              <div>
+                <dt class="font-display text-sm font-semibold text-ink-950">{item.t}</dt>
+                <dd class="mt-1 text-sm leading-6 text-stone-600">{item.d}</dd>
+              </div>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    heading="Want a second opinion on the match?"
+    text={`Send us what you're building and we'll tell you if the tool got it right. Call ${company.phone} — we'd rather get it right than sell you a roll you don't need.`}
+  />
+</Base>
+
+<script define:vars={{ catalog }} is:inline>
+  window.__CW_CATALOG = catalog;
+</script>
+
+<style>
+  /* Compact option rows — label left, detail right, one line each */
+  .opt {
+    display: block;
+    cursor: pointer;
+  }
+  .opt-face {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    transition:
+      border-color 0.15s ease-out,
+      background-color 0.15s ease-out;
+  }
+  .opt-label {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    line-height: 1.3;
+    color: var(--color-ink-950);
+  }
+  .opt-detail {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.02em;
+    color: #a8a29e;
+  }
+  .opt:hover .opt-face {
+    border-color: var(--color-ink-950);
+  }
+  .opt input:focus-visible + .opt-face {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+  .opt input:checked + .opt-face {
+    border-color: var(--color-ink-950);
+    background: var(--color-brand);
+  }
+  .opt input:checked + .opt-face .opt-detail {
+    color: #6b5900;
+  }
+
+  /* Result styles live in the is:global block below — Astro's scoped styles
+     never reach elements created at runtime via innerHTML. */
+</style>
+
+<style is:global>
+  /* --------------------------------------------------------------- results
+     Injected at runtime, so these need global, hand-written CSS on two counts:
+     Astro's scoping attribute is never applied to them, and Tailwind's
+     build-time scanner cannot see class names that exist only inside a
+     template string. Namespaced under #results so nothing leaks. */
+  #results {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* --- best match ------------------------------------------------------- */
+  #results .res-best {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    border: 2px solid var(--color-ink-950);
+    background: #fff;
+  }
+  @media (min-width: 640px) {
+    #results .res-best {
+      grid-template-columns: 116px 1fr;
+    }
+  }
+  #results .res-best-thumb {
+    display: block;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    border: 1px solid var(--color-line);
+    object-fit: cover;
+  }
+  #results .res-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+  }
+  #results .res-rank {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #78716c;
+  }
+  #results .res-rank b {
+    font-weight: 600;
+    color: var(--color-brand-deep);
+  }
+  #results .res-fit {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-950);
+  }
+  #results .res-title {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-ink-950);
+  }
+  #results .res-specs {
+    margin: 0.55rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: #78716c;
+  }
+  #results .res-list {
+    margin: 0.7rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #57534e;
+  }
+  #results .res-list li {
+    display: flex;
+    gap: 0.55rem;
+  }
+  #results .res-list li::before {
+    content: "";
+    flex: none;
+    width: 4px;
+    height: 4px;
+    margin-top: 0.5em;
+    background: var(--color-brand-deep);
+  }
+  #results .res-list li.is-tradeoff::before {
+    background: #d6d3d1;
+  }
+  #results .res-list li.is-tradeoff {
+    color: #78716c;
+  }
+  #results .res-cta {
+    margin: 0.9rem 0 0;
+  }
+
+  /* --- compact alternatives --------------------------------------------- */
+  #results .res-alt {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.85rem 0.25rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  #results .res-alt:hover {
+    background: var(--color-paper);
+  }
+  #results .res-alt-thumb {
+    display: block;
+    aspect-ratio: 1 / 1;
+    width: 52px;
+    border: 1px solid var(--color-line);
+    object-fit: cover;
+  }
+  #results .res-alt-body {
+    min-width: 0;
+  }
+  #results .res-alt-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.15rem 0.75rem;
+  }
+  #results .res-alt-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-ink-950);
+  }
+  /* Qualitative band replaces a raw percentage — see grade() for why. */
+  #results .res-grade {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #a8a29e;
+  }
+  #results .res-grade.is-strong {
+    color: var(--color-brand-deep);
+  }
+
+  #results .res-alt-why {
+    margin: 0.2rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: #57534e;
+  }
+  #results .res-alt-tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a8a29e;
+  }
+  #results .res-alt-caveat {
+    margin: 0.2rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: #a8a29e;
+  }
+  #results .res-alt-specs {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: #a8a29e;
+  }
+
+  #results .meter {
+    height: 3px;
+    margin-top: 0.55rem;
+    background: var(--color-line);
+  }
+  #results .meter > span {
+    display: block;
+    height: 100%;
+    background: var(--color-brand);
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #results .meter-sm {
+    height: 2px;
+    margin-top: 0.4rem;
+    max-width: 180px;
+  }
+  #results .meter-sm > span {
+    background: var(--color-brand-deep);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #results > li {
+      animation: res-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes res-in {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+</style>
+
+<script>
+  interface Item {
+    slug: string;
+    shortName: string;
+    brand: string;
+    weave: string;
+    weaveLabel: string;
+    tow: string | null;
+    weightOz: number;
+    weightGsm: number;
+    widthIn: number;
+    features: string[];
+    thumb: string;
+  }
+
+  const catalog: Item[] = (window as any).__CW_CATALOG ?? [];
+  const form = document.getElementById('finder') as HTMLFormElement | null;
+  const results = document.getElementById('results')!;
+  const empty = document.getElementById('empty')!;
+  const status = document.getElementById('result-status')!;
+  const progress = document.getElementById('progress')!;
+  const bar = document.getElementById('progress-bar')!;
+  const resetBtn = document.getElementById('reset')!;
+  const sourcing = document.getElementById('sourcing')!;
+  if (!form) throw new Error('finder form missing');
+
+  const KEYS = ['geometry', 'load', 'priority', 'size'] as const;
+  type Key = (typeof KEYS)[number];
+  type Answers = Partial<Record<Key, string>>;
+
+  /* --- Scoring model -------------------------------------------------------
+     Each axis contributes points plus human-readable reasons. Weights reflect
+     how much each question actually narrows the field: load direction matters
+     most, part size least. */
+
+  const GEOMETRY: Record<string, Record<string, [number, string]>> = {
+    flat: {
+      Plain: [3, 'Most stable architecture for holding weave angle on flat work'],
+      Twill: [2.2, 'Handles flat work comfortably'],
+      Knit: [2.2, 'Stitched knit lies flat without distortion'],
+      Unidirectional: [2, 'Tape lies flat along the axis'],
+      Satin: [1.4, 'Works flat, though its drape is wasted here'],
+    },
+    curved: {
+      Twill: [3, 'Conforms to single-direction curvature with few crimps'],
+      Satin: [2.6, 'Drapes readily over curvature'],
+      Knit: [2.4, 'Non-crimp knit follows gentle curves well'],
+      Unidirectional: [1.6, 'Tape follows a curve along its length'],
+      Plain: [1.3, 'Plain weave will follow a gentle bend'],
+    },
+    compound: {
+      Satin: [3, '8-harness satin drapes over compound curvature without wrinkling'],
+      Twill: [2.5, 'Conforms to complex contours with fewer stress concentrations'],
+      Knit: [1.9, 'Conforms reasonably on compound shapes'],
+      Unidirectional: [1.1, 'Placeable on compound shapes in narrow strips'],
+      Plain: [0.5, 'Plain weave resists compound curvature'],
+    },
+  };
+
+  const LOAD: Record<string, Record<string, [number, string]>> = {
+    uniaxial: {
+      Unidirectional: [4, 'Zero crimp — every fiber runs straight along your load axis'],
+      Satin: [1.6, 'Low crimp helps axial efficiency'],
+      Twill: [1.5, 'Carries axial load through crimped fiber'],
+      Plain: [1.5, 'Carries axial load through crimped fiber'],
+      Knit: [1.4, 'Bias fibers carry axial load inefficiently'],
+    },
+    biaxial: {
+      Plain: [3.5, 'Balanced 0/90 — equal properties in both axes'],
+      Twill: [3.5, 'Balanced weave delivers matched 0/90 properties'],
+      Satin: [3.2, 'Balanced satin covers both axes with low crimp'],
+      Knit: [1.5, '±45° fiber is off-axis for 0/90 load'],
+      Unidirectional: [1, 'Needs cross-plies to cover a second axis'],
+    },
+    torsion: {
+      Knit: [4, '±45° fibers sit directly along the shear and torsional load path'],
+      Twill: [2, 'Resists twist better than plain weave'],
+      Satin: [1.9, 'Carries some off-axis load'],
+      Plain: [1.4, 'Orthogonal fiber is poorly aligned for twist'],
+      Unidirectional: [1, 'Single-direction tape does little against torsion'],
+    },
+    mixed: {
+      Twill: [3, 'A balanced twill is the safe general-purpose choice'],
+      Knit: [2.8, 'Bias knit covers shear that woven fabric misses'],
+      Satin: [2.6, 'Versatile across load cases'],
+      Plain: [2.2, 'Predictable general-purpose fabric'],
+      Unidirectional: [1.5, 'A supporting ply in a mixed laminate'],
+    },
+  };
+
+  const COSMETIC: Record<string, [number, string]> = {
+    Twill: [3, 'The 2×2 twill pattern is the recognizable cosmetic carbon surface'],
+    Plain: [2, 'Clean, uniform checkerboard surface'],
+    Satin: [1.4, 'Directional face, less symmetric on show surfaces'],
+    Knit: [0.5, 'Stitching is visible — not a finish surface'],
+    Unidirectional: [0.5, 'No weave pattern to show'],
+  };
+
+  const STIFF: Record<string, [number, string]> = {
+    Unidirectional: [3, 'Straight, uncrimped fiber gives the highest stiffness per gram'],
+    Knit: [2.4, 'Non-crimp construction keeps fibers straight and working'],
+    Satin: [2, 'Low crimp preserves fiber efficiency'],
+    Twill: [1.6, 'Moderate crimp costs some stiffness'],
+    Plain: [1.4, 'The tightest weave has the most crimp, costing stiffness'],
+  };
+
+  const weights = catalog.map((c) => c.weightOz);
+  const minW = Math.min(...weights);
+  const maxW = Math.max(...weights);
+  const norm = (v: number) => (maxW === minW ? 0.5 : (v - minW) / (maxW - minW));
+
+  interface Scored {
+    item: Item;
+    pct: number;
+    reasons: string[];
+    tradeoffs: string[];
+  }
+
+  function score(item: Item, a: Answers): Scored {
+    let total = 0;
+    let max = 0;
+    const reasons: string[] = [];
+    const tradeoffs: string[] = [];
+
+    if (a.geometry) {
+      const [pts, why] = GEOMETRY[a.geometry][item.weave] ?? [1, ''];
+      total += pts;
+      max += 3;
+      if (pts >= 2.4 && why) reasons.push(why);
+      else if (pts <= 1.3 && why) tradeoffs.push(why);
+    }
+
+    if (a.load) {
+      const [pts, why] = LOAD[a.load][item.weave] ?? [1, ''];
+      total += pts;
+      max += 4;
+      if (pts >= 2.8 && why) reasons.push(why);
+      else if (pts <= 1.5 && why) tradeoffs.push(why);
+    }
+
+    if (a.priority) {
+      max += 3;
+      if (a.priority === 'light') {
+        const pts = 3 * (1 - norm(item.weightOz));
+        total += pts;
+        if (pts >= 2.2) reasons.push(`At ${item.weightOz} oz/yd² it is among the lightest we stock`);
+        else if (pts <= 1) tradeoffs.push(`At ${item.weightOz} oz/yd² this is a heavy option`);
+      } else if (a.priority === 'fast') {
+        const pts = 3 * norm(item.weightOz);
+        total += pts;
+        if (pts >= 2.2) reasons.push(`${item.weightOz} oz/yd² builds thickness in few plies`);
+        else if (pts <= 1) tradeoffs.push(`Light at ${item.weightOz} oz/yd² — expect more plies`);
+      } else if (a.priority === 'cosmetic') {
+        const [pts, why] = COSMETIC[item.weave] ?? [1, ''];
+        total += pts;
+        if (pts >= 2 && why) reasons.push(why);
+        else if (pts <= 1 && why) tradeoffs.push(why);
+      } else if (a.priority === 'stiff') {
+        const [pts, why] = STIFF[item.weave] ?? [1, ''];
+        const bonus = item.features.includes('Non-crimp') ? 0.4 : 0;
+        total += Math.min(pts + bonus, 3);
+        if (pts >= 2.2 && why) reasons.push(why);
+        else if (pts <= 1.5 && why) tradeoffs.push(why);
+      }
+    }
+
+    if (a.size) {
+      max += 2;
+      const w = item.widthIn;
+      if (a.size === 'large') {
+        total += w >= 60 ? 2 : w >= 50 ? 1.5 : 0.4;
+        if (w >= 60) reasons.push(`${w}″ roll covers large panels without a seam`);
+        else if (w < 50) tradeoffs.push(`${w}″ width means piecing together a large panel`);
+      } else if (a.size === 'medium') {
+        total += w >= 50 ? 2 : 1;
+        if (w >= 50) reasons.push(`${w}″ roll suits typical part sizes`);
+      } else {
+        total += w <= 25 ? 2 : 1.2;
+        if (w <= 25) reasons.push(`${w}″ width is sized for strips and local reinforcement`);
+      }
+    }
+
+    return { item, pct: Math.round((total / max) * 100), reasons, tradeoffs };
+  }
+
+  function readAnswers(): Answers {
+    const data = new FormData(form!);
+    const a: Answers = {};
+    for (const k of KEYS) {
+      const v = data.get(k);
+      if (typeof v === 'string' && v) a[k] = v;
+    }
+    return a;
+  }
+
+  function syncUrl(a: Answers) {
+    const params = new URLSearchParams();
+    for (const k of KEYS) if (a[k]) params.set(k, a[k]!);
+    const qs = params.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  const esc = (s: string) =>
+    s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  /* A raw percentage reads as a grade — "68% fit" looks like failure when it
+     actually means "this works, with one trade-off." Bands say the same thing
+     without implying a perfect fabric exists. */
+  function grade(pct: number): { label: string; strong: boolean } {
+    if (pct >= 82) return { label: 'Strong match', strong: true };
+    if (pct >= 68) return { label: 'Good match', strong: true };
+    if (pct >= 55) return { label: 'Workable', strong: false };
+    return { label: 'Worth a conversation', strong: false };
+  }
+
+  /* Alternatives should answer "why would I pick this instead?" — so contrast
+     them against the best match rather than repeating its reasoning. */
+  const WEAVE_SWAP: Record<string, string> = {
+    Twill: 'Woven twill — adds a cosmetic face and balanced 0/90 properties',
+    Plain: 'Plain weave — the most stable option for holding weave angle',
+    Satin: 'Satin — the best drape of the woven constructions',
+    Knit: '±45° knit — adds torsional and shear stiffness',
+    Unidirectional: 'Unidirectional — all fiber on a single axis, zero crimp',
+  };
+
+  /* `seenWeaves` stops three twills all reading "woven twill instead" — the
+     construction swap is only news the first time, after that differentiate
+     the siblings on weight and width. */
+  function contrast(alt: Item, best: Item, seenWeaves: Set<string>): string {
+    if (alt.weave !== best.weave && !seenWeaves.has(alt.weave)) {
+      seenWeaves.add(alt.weave);
+      return WEAVE_SWAP[alt.weave] ?? 'A different construction';
+    }
+
+    const dw = alt.weightOz - best.weightOz;
+    if (Math.abs(dw) >= 1.5) {
+      return dw > 0
+        ? `Heavier at ${alt.weightOz} oz/yd² — reaches thickness in fewer plies`
+        : `Lighter at ${alt.weightOz} oz/yd² — finer thickness control, more plies`;
+    }
+
+    if (alt.widthIn !== best.widthIn) {
+      return alt.widthIn > best.widthIn
+        ? `Wider roll at ${alt.widthIn}″ — fewer seams on large parts`
+        : `Narrower roll at ${alt.widthIn}″`;
+    }
+
+    if (alt.brand !== best.brand) return `Same construction from ${alt.brand}`;
+    if (alt.tow && best.tow && alt.tow !== best.tow) return `${alt.tow} tow instead of ${best.tow}`;
+    return 'Near-equivalent on the answers you gave';
+  }
+
+  function bestCard(r: Scored): HTMLLIElement {
+    const li = document.createElement('li');
+    const g = grade(r.pct);
+    const bullets = [
+      ...r.reasons.slice(0, 2).map((t) => `<li><span>${esc(t)}</span></li>`),
+      ...r.tradeoffs.slice(0, 1).map((t) => `<li class="is-tradeoff"><span>${esc(t)}</span></li>`),
+    ].join('');
+
+    li.innerHTML = `
+      <div class="res-best">
+        <a href="/product/${r.item.slug}/" tabindex="-1" aria-hidden="true">
+          <img src="${r.item.thumb}" alt="" width="116" height="87" class="res-best-thumb" decoding="async" />
+        </a>
+        <div>
+          <div class="res-head">
+            <p class="res-rank"><b>Best match</b> · ${esc(r.item.brand)}</p>
+            <p class="res-grade${g.strong ? ' is-strong' : ''}">${g.label}</p>
+          </div>
+          <h3 class="res-title">
+            <a href="/product/${r.item.slug}/" class="underline-draw">${esc(r.item.shortName)}</a>
+          </h3>
+          <div class="meter"><span style="width:${r.pct}%"></span></div>
+          <p class="res-specs">${esc(r.item.weaveLabel)} · ${r.item.weightOz} oz/yd² (${r.item.weightGsm} gsm) · ${r.item.widthIn}″ wide${r.item.tow ? ` · ${esc(r.item.tow)} tow` : ''}</p>
+          ${bullets ? `<ul class="res-list">${bullets}</ul>` : ''}
+          <p class="res-cta">
+            <a href="/contact/?product=${encodeURIComponent(r.item.shortName)}" class="res-fit underline-draw">Request a quote &rarr;</a>
+          </p>
+        </div>
+      </div>`;
+    return li;
+  }
+
+  function altRow(r: Scored, i: number, best: Item, seenWeaves: Set<string>): HTMLLIElement {
+    const li = document.createElement('li');
+    const g = grade(r.pct);
+    const why = contrast(r.item, best, seenWeaves);
+    const caveat = r.tradeoffs[0];
+    li.innerHTML = `
+      <a href="/product/${r.item.slug}/" class="res-alt">
+        <img src="${r.item.thumb}" alt="" width="52" height="52" class="res-alt-thumb" loading="lazy" decoding="async" />
+        <div class="res-alt-body">
+          <div class="res-alt-top">
+            <p class="res-alt-name">${String(i + 2).padStart(2, '0')} · ${esc(r.item.shortName)}</p>
+            <p class="res-grade${g.strong ? ' is-strong' : ''}">${g.label}</p>
+          </div>
+          <p class="res-alt-why"><span class="res-alt-tag">Instead:</span> ${esc(why)}</p>
+          ${caveat ? `<p class="res-alt-caveat">${esc(caveat)}</p>` : ''}
+          <p class="res-alt-specs">${esc(r.item.weaveLabel)} · ${r.item.weightOz} oz/yd² · ${r.item.widthIn}″</p>
+        </div>
+      </a>`;
+    return li;
+  }
+
+  function render() {
+    const a = readAnswers();
+    const answered = KEYS.filter((k) => a[k]).length;
+
+    progress.textContent = `${answered} / ${KEYS.length}`;
+    bar.style.width = `${(answered / KEYS.length) * 100}%`;
+    syncUrl(a);
+
+    if (answered === 0) {
+      empty.classList.remove('hidden');
+      results.classList.add('hidden');
+      sourcing.classList.add('hidden');
+      results.replaceChildren();
+      status.textContent = 'Awaiting input';
+      return;
+    }
+
+    empty.classList.add('hidden');
+    results.classList.remove('hidden');
+
+    const ranked = catalog.map((item) => score(item, a)).sort((x, y) => y.pct - x.pct);
+    const [best, ...rest] = ranked;
+    const alts = rest.slice(0, 4);
+
+    status.textContent =
+      answered < KEYS.length
+        ? `${answered}/${KEYS.length} — refine for a sharper match`
+        : `Best of ${catalog.length}`;
+
+    const seenWeaves = new Set<string>();
+    results.replaceChildren(
+      best ? bestCard(best) : document.createComment('none'),
+      ...alts.map((r, i) => altRow(r, i, best.item, seenWeaves))
+    );
+
+    /* Offer the sourcing desk when the top match carries a real trade-off —
+       roughly a fifth of combinations, and always for a concrete reason. */
+    sourcing.classList.toggle('hidden', !best || best.tradeoffs.length === 0);
+  }
+
+  form.addEventListener('change', render);
+  resetBtn.addEventListener('click', () => {
+    form.reset();
+    render();
+  });
+
+  /* Restore from a shared link so sales can send a pre-filled result. */
+  const params = new URLSearchParams(location.search);
+  for (const k of KEYS) {
+    const v = params.get(k);
+    if (!v) continue;
+    const input = form.querySelector<HTMLInputElement>(
+      `input[name="${k}"][value="${CSS.escape(v)}"]`
+    );
+    if (input) input.checked = true;
+  }
+  render();
+</script>

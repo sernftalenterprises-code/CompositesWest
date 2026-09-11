@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const organizations = [
+  {
+    name: 'International Federation for Structural Concrete (fib)',
+    description:
+      'The fib — fédération internationale du béton — is the international body for structural concrete, publishing model codes and technical reports on FRP strengthening of concrete structures.',
+    website: 'https://fib-international.org/',
+    details: ['Phone: (+41 21) 693 2747', 'Email: fib@epfl.ch'],
+  },
+  {
+    name: 'Society for the Advancement of Material and Process Engineering (SAMPE)',
+    description:
+      'SAMPE is the leading professional society for advanced materials and process engineering, covering composites research, standards, and industry conferences.',
+    website: 'https://www.sampe.org/',
+    details: ['Covina, CA'],
+  },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://compositeswest.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Hex-3R Products', item: 'https://compositeswest.com/hex-3r-products/' },
+    { '@type': 'ListItem', position: 3, name: 'Research', item: 'https://compositeswest.com/research/' },
+  ],
+};
+---
+
+<Base
+  title="Composites Research Organizations | Composites West"
+  description="Research resources for structural composites and FRP strengthening: the International Federation for Structural Concrete (fib) and SAMPE."
+  jsonLd={[breadcrumbLd]}
+>
+  <!-- Interior page header -->
+  <section class="border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-14 sm:py-20">
+        <p class="eyebrow text-stone-500">CW / research — Reference</p>
+        <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+          Research
+        </h1>
+        <div class="tracer mt-6"></div>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+          Industry organizations advancing the science of structural composites and FRP
+          strengthening.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 / Organizations -->
+  <section class="border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal flex items-baseline justify-between gap-6">
+          <p class="eyebrow text-stone-500">01 / Organizations</p>
+          <p class="eyebrow text-stone-400">{String(organizations.length).padStart(2, '0')} entries</p>
+        </div>
+
+        <div class="reveal reveal-delay-1 mt-8 border-t border-line">
+          {organizations.map((org, i) => (
+            <article class="grid gap-x-8 gap-y-6 border-b border-line py-10 sm:py-12 lg:grid-cols-12">
+              <div class="lg:col-span-2">
+                <p class="eyebrow text-stone-400">Ref. {String(i + 1).padStart(2, '0')}</p>
+              </div>
+              <div class="lg:col-span-7">
+                <h2 class="font-display text-xl font-bold text-ink-950 sm:text-2xl">
+                  {org.name}
+                </h2>
+                <p class="mt-4 leading-7 text-stone-600">{org.description}</p>
+              </div>
+              <div class="lg:col-span-3 lg:border-l lg:border-line lg:pl-8">
+                <ul class="space-y-2 font-mono text-xs leading-5 tracking-[0.04em] text-stone-500">
+                  {org.details.map((d) => <li>{d}</li>)}
+                </ul>
+                <a
+                  href={org.website}
+                  target="_blank"
+                  rel="noopener"
+                  class="eyebrow underline-draw mt-6 inline-flex items-center gap-2 pb-0.5 text-ink-950"
+                >
+                  Visit website &nearr;
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

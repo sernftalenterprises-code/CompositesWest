@@ -1,0 +1,46 @@
+# Composites West, Inc.
+
+> Composites West is a carbon fiber and advanced composites "reinforcement boutique" founded in 2001, based in Reno, Nevada, USA. The company stocks 100,000 linear yards of composite reinforcement materials ready to ship, serving aerospace, marine, automotive, sporting goods, civil engineering/infrastructure, and industrial markets. Pricing is quote-based: call (775) 833-4300 or email info@compositeswest.com.
+
+Key facts:
+- Specialties: carbon fiber fabric reinforcements — woven (plain, twill, satin), non-crimp ±45° knits, unidirectional, and braid — plus fiberglass, prepregs, honeycomb core, vacuum bagging and infusion materials.
+- Stocked fibers include high modulus (HR40), intermediate modulus, and 1K/3K/6K/12K standard modulus carbon.
+- Brands stocked: Hexcel, Toray, FCIM, CFA.
+- The Hex-3R product line is a complete FRP structural strengthening system for concrete repair and seismic retrofit: carbon/glass wraps, matched structural epoxies, FireLam fire-protection coatings, and FibrAnchor shear anchors.
+
+## How to choose a carbon fiber fabric
+
+Four properties decide almost every selection, in this order:
+
+1. **Fiber type / modulus** — standard modulus (T300-class) covers most work; intermediate and high modulus (HR40) are used when a part is stiffness-limited rather than strength-limited.
+2. **Areal weight** — given in oz/yd² and gsm (multiply oz/yd² by ~33.9 for gsm). Lighter fabric gives finer thickness control and better drape; heavier fabric builds structure in fewer plies.
+3. **Construction** — plain weave (most stable, least drape), 2×2 twill (balanced, the cosmetic carbon look), 8-harness satin (best drape, lowest crimp, for compound curves), unidirectional (zero crimp, maximum stiffness along one axis), ±45° non-crimp knit (torsional and shear stiffness).
+4. **Roll width** — determines whether a part is covered without seams. Stocked widths include 12″, 25″, 50″, and 60″.
+
+## Pages
+
+- [Home](https://compositeswest.com/): Company overview and featured in-stock fabrics
+- [About](https://compositeswest.com/about/): Company history and markets served
+- [Applications](https://compositeswest.com/applications/): Carbon fiber selection by market — how the material decision is made in each
+- [Aerospace](https://compositeswest.com/applications/aerospace/): High and intermediate modulus carbon, satin and twill for structure and tooling
+- [Marine](https://compositeswest.com/applications/marine/): ±45° non-crimp knits for torsional stiffness in masts, hulls, and foils
+- [Infrastructure](https://compositeswest.com/applications/infrastructure/): FRP structural strengthening and seismic retrofit of concrete and masonry
+- [Sporting Goods](https://compositeswest.com/applications/sporting-goods/): Tuned stiffness for bicycles, skis, racquets, and prosthetics
+- [Automotive](https://compositeswest.com/applications/automotive/): 2×2 twill for cosmetic body panels and structural components
+- [Material Finder](https://compositeswest.com/material-finder/): Interactive tool — answer four questions about part geometry, load direction, design priority, and part size to get every stocked fabric ranked with reasoning and trade-offs. Results are shareable via URL, e.g. `/material-finder/?geometry=compound&load=torsion&priority=stiff&size=large`
+- [Fabric Selection Guide](https://compositeswest.com/fabric-selector/): How to choose a fabric, with every in-stock reinforcement compared side by side
+- [Our Products](https://compositeswest.com/our-products/): Product category guide (plain weave, twill, unidirectional, knits)
+- [All Products](https://compositeswest.com/all-products/): Full catalog of in-stock carbon fiber fabrics with filters
+- [Hex-3R Products](https://compositeswest.com/hex-3r-products/): Hex-3R wraps and epoxy systems for structural strengthening
+- [Hex-3R Specifications](https://compositeswest.com/specifications/): Downloadable technical data sheets
+- [Resin Selection Guide](https://compositeswest.com/selection/): Which Hex-3R epoxy to use per application and orientation
+- [Installation Instructions](https://compositeswest.com/general-installation-instructions/): Step-by-step FRP installation on concrete
+- [FibrAnchor Installation](https://compositeswest.com/fibranchor-installation-instructions/): Shear anchor installation procedures
+- [Contact](https://compositeswest.com/contact/): Quote requests and contact details
+
+## Contact
+
+- Phone: (775) 833-4300 · Fax: (775) 833-4307
+- Email: info@compositeswest.com
+- Physical: 4902 Ampere Dr., Reno, NV 89502
+- Mailing: 748 South Meadows Pkwy STE A9-200, Reno, NV 89521

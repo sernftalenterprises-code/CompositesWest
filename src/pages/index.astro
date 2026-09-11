@@ -1,0 +1,416 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { products } from '../data/products';
+import { applications } from '../data/applications';
+import rolls from '../assets/rolls.jpg';
+import carbonfiber from '../assets/carbonfiber.jpeg';
+
+const featured = products.slice(0, 3);
+
+const specialties = [
+  'Carbon Fiber Fabrics',
+  '±45 Knit Fabrics',
+  'Unidirectional (Hot Melt Fill)',
+  'High Modulus Carbon Fabrics',
+  'Aerospace Fiberglass',
+  'Process Material Consumables',
+];
+
+const tickerItems = ['Hexcel', 'Toray', 'FCIM', 'CFA', 'T300', 'T700S', 'HR40', '3K · 6K · 12K'];
+
+const faq = [
+  {
+    q: 'What materials does Composites West supply?',
+    a: 'We specialize in carbon fiber fabric reinforcements — woven, non-crimp (knit), unidirectional, and braid — plus fiberglass, prepregs, core materials, vacuum bagging and infusion supplies. In-stock fabrics often include high modulus (HR40), intermediate modulus, and 1K, 3K, 6K, and 12K standard modulus materials.',
+  },
+  {
+    q: 'How fast can you ship?',
+    a: 'Our warehouse houses 100,000 linear yards of material ready to ship, so most in-stock orders go out without the long lead times typical of the composites industry.',
+  },
+  {
+    q: 'Can you source materials that are not listed on the site?',
+    a: 'Yes. We maintain relationships across the composites industry and regularly source hard-to-find reinforcements, prepregs, honeycomb core, and process materials to spec. Contact us with your requirements.',
+  },
+  {
+    q: 'What industries do you serve?',
+    a: 'Aerospace, marine, automotive, sporting goods, civil engineering and infrastructure, and industrial manufacturing — anywhere strength-to-weight matters.',
+  },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+
+/* The hero figure only renders at lg and up, so serve a 1-pixel placeholder
+   below 1024px instead of letting mobile download the hidden image. */
+const rollsHero = await getImage({ src: rolls, widths: [700, 1100, 1600], format: 'webp' });
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Composites West, Inc.',
+  url: 'https://compositeswest.com/',
+};
+---
+
+<Base
+  title="Composites West | Carbon Fiber Fabrics & Advanced Composite Materials"
+  description="Composites West is a carbon fiber reinforcement boutique with 100,000 linear yards in stock, ready to ship. Carbon fiber fabrics, knits, unidirectional, fiberglass, and prepregs for aerospace, marine, automotive, and infrastructure."
+  jsonLd={[websiteLd, faqLd]}
+>
+  <!-- Hero -->
+  <section class="relative isolate overflow-hidden bg-ink-950">
+    <div
+      class="absolute inset-0 -z-10 opacity-50 [background-image:linear-gradient(rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.035)_1px,transparent_1px)] [background-size:64px_64px]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="frame-x frame-dark relative mx-auto max-w-7xl px-4 sm:px-6">
+      <span class="crosshair crosshair-dark left-4 top-8 sm:left-6" aria-hidden="true"></span>
+      <span class="crosshair crosshair-dark right-4 top-8 sm:right-6" aria-hidden="true"></span>
+
+      <div class="grid items-center gap-12 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
+        <div class="lg:col-span-7">
+          <p class="hero-enter eyebrow flex items-center gap-3 text-brand">
+            <span class="inline-block h-px w-8 bg-brand"></span>
+            Reinforcement boutique — est. 2001
+          </p>
+          <h1 class="hero-enter hero-enter-1 type-display mt-6 text-5xl uppercase text-white sm:text-6xl lg:text-7xl">
+            The right<br />materials.<br />
+            <span class="text-brand">No lead time.</span>
+          </h1>
+          <p class="hero-enter hero-enter-2 mt-7 max-w-xl text-lg leading-8 text-stone-400">
+            We know composite materials — and we're experts at matching carbon fiber,
+            fiberglass, and advanced reinforcements to your exact application.
+          </p>
+          <div class="hero-enter hero-enter-3 mt-9 flex flex-wrap gap-3">
+            <a href="/all-products/" class="btn btn-primary">
+              Browse fabrics <span class="btn-arrow">&rarr;</span>
+            </a>
+            <a href="/contact/" class="btn btn-outline-light">
+              Request a quote
+            </a>
+          </div>
+        </div>
+
+        <figure class="hero-clip relative hidden lg:col-span-5 lg:block">
+          <div class="relative border border-white/15">
+            <picture>
+              {/* srcset can't hold a data: URI (the comma reads as a candidate
+                  separator and the source gets discarded), hence the tiny file */}
+              <source media="(max-width: 1023px)" srcset="/blank.svg" />
+              <img
+                src={rollsHero.src}
+                srcset={rollsHero.srcSet.attribute}
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                alt="Roll of 3K twill weave carbon fiber fabric with yellow tracer thread"
+                width={rollsHero.attributes.width}
+                height={rollsHero.attributes.height}
+                class="aspect-[4/5] w-full object-cover"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </picture>
+            <span class="absolute left-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
+          </div>
+          <figcaption class="eyebrow mt-3 flex justify-between text-stone-400">
+            <span>Fig. 01 — Carbon twill, 3K</span>
+            <span>50&Prime; roll</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Manifest strip -->
+      <dl class="hero-enter hero-enter-4 grid grid-cols-2 border-t border-white/10 md:grid-cols-4">
+        {[
+          { dt: 'In stock', dd: '100,000 yd', counter: { target: 100000, suffix: ' yd', sep: true } },
+          { dt: 'Serving composites since', dd: '2001' },
+          { dt: 'Typical carbon weight savings', dd: '~30%', counter: { target: 30, prefix: '~', suffix: '%' } },
+          { dt: 'Warehouse', dd: 'Reno, NV' },
+        ].map((stat, i) => (
+          <div class:list={['py-6 pr-6', i > 0 && 'md:border-l md:border-white/10 md:pl-6']}>
+            <dt class="eyebrow text-stone-400">{stat.dt}</dt>
+            <dd
+              class="type-display mt-1.5 text-2xl text-white"
+              {...(stat.counter
+                ? {
+                    'data-counter': true,
+                    'data-target': stat.counter.target,
+                    ...(stat.counter.prefix ? { 'data-prefix': stat.counter.prefix } : {}),
+                    ...(stat.counter.suffix ? { 'data-suffix': stat.counter.suffix } : {}),
+                    ...(stat.counter.sep ? { 'data-sep': true } : {}),
+                  }
+                : {})}
+            >
+              {stat.dd}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- Brand ticker -->
+  <div class="border-b border-line bg-paper py-3" aria-label="Fibers and brands we stock">
+    <div class="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+      <div class="ticker-track flex w-max items-center gap-10 pr-10">
+        {[0, 1].map((copy) => (
+          <ul class="flex items-center gap-10" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {tickerItems.map((item) => (
+              <li class="flex items-center gap-10 whitespace-nowrap font-mono text-xs font-medium uppercase tracking-[0.2em] text-stone-600">
+                {item}
+                <span class="text-line" aria-hidden="true">//</span>
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 / What we do -->
+  <section class="cv-auto border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid items-center gap-14 py-20 sm:py-24 lg:grid-cols-2">
+        <div class="reveal">
+          <p class="eyebrow text-stone-500">01 / What we do</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            Specialists in advanced reinforcements
+          </h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 text-lg leading-8 text-stone-600">
+            We are specialists in fiberglass, carbon fiber reinforcements, prepregs, core
+            materials, vacuum bagging and infusion materials for aerospace, industrial,
+            civil engineering, marine, and many other industries and applications.
+          </p>
+          <ul class="mt-9 border-t border-line">
+            {specialties.map((item, i) => (
+              <li class="group flex items-baseline gap-5 border-b border-line py-3.5">
+                <span class="eyebrow text-stone-500" aria-hidden="true">0{i + 1}</span>
+                <span class="font-display text-[15px] font-semibold text-ink-950">{item}</span>
+                <span class="ml-auto h-px w-6 self-center bg-line transition-all duration-200 group-hover:w-12 group-hover:bg-brand"></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <figure class="reveal reveal-delay-1 relative">
+          <div class="relative border border-line">
+            <Image
+              src={carbonfiber}
+              alt="Close-up of woven carbon fiber fabric"
+              widths={[600, 1200]}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="w-full object-cover"
+            />
+            <span class="absolute right-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
+          </div>
+          <figcaption class="eyebrow mt-3 flex justify-between text-stone-500">
+            <span>Fig. 02 — 2&times;2 twill weave</span>
+            <span>Detail</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 / Featured products -->
+  <section class="cv-auto border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="eyebrow text-stone-600">02 / The catalog</p>
+            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+              In stock, ready to ship
+            </h2>
+            <p class="mt-4 max-w-2xl text-lg leading-8 text-stone-600">
+              The right materials can solve many problems. Browse a sample of our stocked
+              carbon fiber reinforcements — no dreaded lead time.
+            </p>
+          </div>
+          <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950">
+            View all products <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+        <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((product, i) => (
+            <div class={`reveal reveal-delay-${i}`}>
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 / Applications -->
+  <section class="cv-auto border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal flex flex-wrap items-end justify-between gap-6">
+          <div class="max-w-2xl">
+            <p class="eyebrow text-stone-500">03 / Applications</p>
+            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+              Start with what you're building
+            </h2>
+            <div class="tracer mt-5"></div>
+            <p class="mt-6 text-lg leading-8 text-stone-600">
+              Fiber type and areal weight decide most of it — but what those numbers should
+              be depends entirely on the application. Here's how the decision goes in each
+              market we serve.
+            </p>
+          </div>
+          <a href="/applications/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950">
+            All applications <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
+        <ul class="reveal reveal-delay-1 mt-12 border-t border-line">
+          {applications.map((application, i) => (
+            <li>
+              <a
+                href={`/applications/${application.slug}/`}
+                class="group grid items-baseline gap-x-6 gap-y-1 border-b border-line py-5 sm:grid-cols-12"
+              >
+                <span class="eyebrow text-stone-400 sm:col-span-1" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="font-display text-lg font-semibold text-ink-950 sm:col-span-3">
+                  {application.shortName}
+                </span>
+                <span class="text-sm leading-6 text-stone-600 sm:col-span-7">
+                  {application.tagline}
+                </span>
+                <span class="hidden sm:col-span-1 sm:flex sm:justify-end">
+                  <span
+                    class="h-px w-6 self-center bg-line transition-all duration-200 group-hover:w-10 group-hover:bg-brand"
+                  ></span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div class="reveal reveal-delay-2 mt-12 border border-ink-950 bg-ink-950 text-stone-400">
+          <div class="flex flex-col items-start gap-7 p-7 md:flex-row md:items-center md:justify-between md:p-9">
+            <div class="max-w-xl">
+              <p class="eyebrow text-brand">Interactive</p>
+              <h3 class="type-display mt-3 text-2xl text-white sm:text-3xl">
+                Tell us the part. We'll rank the materials.
+              </h3>
+              <p class="mt-4 leading-7">
+                Four questions — geometry, load direction, priority, size — and every fabric
+                we stock gets scored against them. You see why each one placed where it did,
+                and what each one gives up. No email required.
+              </p>
+            </div>
+            <div class="flex shrink-0 flex-col gap-3">
+              <a href="/material-finder/" class="btn btn-primary">
+                Find my material <span class="btn-arrow">&rarr;</span>
+              </a>
+              <a href="/fabric-selector/" class="btn btn-outline-light">
+                Selection guide
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 / Why Composites West -->
+  <section class="cv-auto border-b border-line">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="py-20 sm:py-24">
+        <div class="reveal max-w-2xl">
+          <p class="eyebrow text-stone-500">04 / Why Composites West</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            We buy smart and sell smarter
+          </h2>
+          <div class="tracer mt-5"></div>
+          <p class="mt-6 text-lg leading-8 text-stone-600">
+            A nimble and knowledgeable team that uses its wealth of experience to connect
+            materials to customers — focused on long-term partnerships, not short-term
+            sales.
+          </p>
+        </div>
+        <dl class="reveal reveal-delay-1 mt-14 grid border-t border-line sm:grid-cols-3">
+          <div class="flex flex-col border-b border-line py-8 sm:border-b-0 sm:pr-8">
+            <dt class="eyebrow order-2 mt-3 text-stone-500">Linear yards in stock</dt>
+            <dd
+              class="type-display order-1 text-5xl text-ink-950 lg:text-6xl"
+              data-counter
+              data-target="100000"
+              data-sep
+            >
+              100,000
+            </dd>
+            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
+              Warehoused and ready to ship without the dreaded lead time.
+            </dd>
+          </div>
+          <div class="flex flex-col border-b border-line py-8 sm:border-b-0 sm:border-l sm:px-8">
+            <dt class="eyebrow order-2 mt-3 text-stone-500">Years of expertise</dt>
+            <dd class="type-display order-1 text-5xl text-ink-950 lg:text-6xl" data-counter data-target="20" data-suffix="+">
+              20+
+            </dd>
+            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
+              Founded in 2001 when sailboat racing and carbon fiber collided.
+            </dd>
+          </div>
+          <div class="flex flex-col py-8 sm:border-l sm:pl-8">
+            <dt class="eyebrow order-2 mt-3 text-stone-500">Typical weight savings</dt>
+            <dd class="type-display order-1 text-5xl text-ink-950 lg:text-6xl" data-counter data-target="30" data-prefix="~" data-suffix="%">
+              ~30%
+            </dd>
+            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
+              When converting fiberglass or aluminum parts to carbon fiber.
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 / FAQ -->
+  <section class="cv-auto border-b border-line bg-paper">
+    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-12 py-20 sm:py-24 lg:grid-cols-12">
+        <div class="reveal lg:col-span-4">
+          <p class="eyebrow text-stone-600">05 / FAQ</p>
+          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            Frequently asked questions
+          </h2>
+          <div class="tracer mt-5"></div>
+        </div>
+        <div class="reveal reveal-delay-1 lg:col-span-8">
+          <div class="border-t border-line">
+            {faq.map((item) => (
+              <details class="group border-b border-line">
+                <summary class="flex cursor-pointer list-none items-baseline gap-5 py-5 pr-2 [&::-webkit-details-marker]:hidden">
+                  <span class="font-mono text-sm text-stone-400 transition-colors group-open:text-brand-deep" aria-hidden="true">
+                    <span class="group-open:hidden">+</span><span class="hidden group-open:inline">&minus;</span>
+                  </span>
+                  <span class="font-display text-base font-semibold text-ink-950">{item.q}</span>
+                </summary>
+                <p class="pb-6 pl-9 text-base leading-7 text-stone-600">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
