@@ -1,0 +1,257 @@
+---
+/**
+ * The spec. A pinned scene that keeps going where the hero's strip left
+ * off — into the fabric — and reads out the numbers the fabric is sold by:
+ * style code, tow, areal weight, roll width. One fragment shader, two
+ * regimes cross-faded on a log zoom:
+ *
+ *   tows      parallel filament bundles, the count falling as we push in
+ *   filament  one fibre growing to fill the frame
+ *
+ * Writes `--z` (0..1) onto the section so the copy stops and the scale bar
+ * choreograph in CSS; the magnification / scale readouts are set in JS.
+ */
+import { company } from '../data/products';
+import type { Product } from '../data/products';
+
+interface Props {
+  sku: Product;
+}
+
+const { sku } = Astro.props;
+// "Hexcel 284 2×2 Twill" → "284": the style number is what the trade calls it
+const code = sku.shortName.replace(/^\S+\s+/, '').split(' ')[0];
+const spec = [
+  sku.brand,
+  sku.weaveLabel,
+  sku.tow ? `${sku.tow} tow` : null,
+  `${sku.weightGsm} gsm · ${sku.weightOz} oz`,
+  `${sku.widthIn} in`,
+].filter(Boolean).join(' · ');
+
+const stops = [
+  { key: 'style', eyebrow: 'Style', title: `${code}.`, body: spec, mono: true },
+  { key: 'tow', eyebrow: 'Tow', title: `${sku.tow ?? '3K'}.`, body: 'Three thousand filaments to the tow. 3K, 6K and 12K on the shelf.', mono: false },
+];
+---
+
+<section id="dive" class="dive relative isolate" aria-labelledby="dive-title" style="--z:0">
+  <div class="dive-stage sticky top-0 flex h-[100svh] flex-col overflow-hidden bg-carbon-950">
+    <canvas id="dive-canvas" class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+
+    <div class="relative mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-5 pt-[66px] sm:px-8">
+      <!-- HUD top -->
+      <div class="flex items-start justify-between gap-6 pt-8 sm:pt-10">
+        <p class="eyebrow flex items-center gap-3 text-tow-300">
+          <span class="tag">004</span> <span data-decode>The spec</span>
+        </p>
+        <p class="eyebrow flex items-center gap-4 whitespace-nowrap text-tow-300">
+          <span class="hidden sm:inline">Mag <b id="dive-mag" class="font-medium text-filament [font-variant-numeric:tabular-nums]">×1</b></span>
+          <span class="text-brand">Scale <b id="dive-scale" class="normal-case font-medium [font-variant-numeric:tabular-nums]">50 in</b></span>
+        </p>
+      </div>
+
+      <h2 id="dive-title" class="sr-only">{sku.shortName}: style, tow, weight and width</h2>
+
+      <!-- Copy stops -->
+      <div class="relative flex flex-1 items-center">
+        {stops.map((s, i) => (
+          <div class="dive-stop absolute inset-x-0 max-w-2xl" data-stop={i}>
+            <p class="eyebrow flex items-center gap-3 text-tow-500">
+              <span class="inline-block h-px w-8 bg-current"></span> {s.eyebrow}
+            </p>
+            <p class="type-display mt-5 text-7xl text-filament [font-variant-numeric:tabular-nums] sm:text-8xl lg:text-[9rem]">{s.title}</p>
+            <p class:list={['mt-6 max-w-lg', s.mono ? 'font-mono text-sm uppercase leading-7 tracking-[0.14em] text-tow-300' : 'text-lg leading-8 text-tow-300']}>{s.body}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Scale bar -->
+      <div class="flex items-end justify-between gap-6 border-t border-white/10 py-5">
+        <p class="eyebrow hidden text-tow-500 sm:block">{company.name} · the spec, by the yard</p>
+        <div class="flex items-center gap-4">
+          <span class="eyebrow normal-case text-tow-500" id="dive-bar-label">50 in</span>
+          <span class="dive-bar relative block h-2 w-40 border-x border-b border-white/40"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { boot } from '../scripts/boot';
+
+  const VERT = `attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+  const FRAG = `
+    precision highp float;
+    uniform vec2  uRes;
+    uniform float uTime;
+    uniform float uZ;       // 0..1 log zoom through the scene
+    uniform vec2  uMouse;   // 0..1
+    uniform float uQuality;
+
+    float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float noise(vec2 p){
+      vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+      return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+    }
+    mat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+
+    void main(){
+      vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+      float Z = uZ;
+
+      float towA = 1.0 - smoothstep(0.50, 0.70, Z);
+      float filA = smoothstep(0.50, 0.70, Z);
+
+      vec2 lightDir = normalize(vec2(uMouse.x - 0.5, uMouse.y - 0.5) + vec2(0.35, 0.25));
+      vec3 col = vec3(0.0);
+
+      // ---------------- tows: parallel bundles, count falls as we push in
+      if (towA > 0.001) {
+        vec2 q = rot(-0.32) * uv;
+        float n = 46.0 * pow(0.08, Z / 0.70);
+        float across = q.y * n + 0.5;
+        float id = floor(across);
+        float f = fract(across);
+        float c = 2.0 * f - 1.0;
+        float h = sqrt(max(0.0, 1.0 - c * c));
+        float key = pow(max(0.0, 1.0 - abs(c - lightDir.y * 0.8)), 2.2);
+        float sheen = 0.18 + 0.82 * key;
+        float grain = 0.86 + 0.14 * noise(vec2(q.x * 40.0 * (n / 46.0) + id * 7.0, id));
+        float jitter = 0.75 + 0.25 * hash(vec2(id, 3.0));
+        float bundle = sqrt(max(0.0, 1.0 - pow(q.y * 1.35, 2.0)));
+        float gap = smoothstep(0.0, 0.18, h);
+        vec3 c3 = vec3(0.62, 0.62, 0.66) * h * sheen * grain * jitter * bundle * gap;
+        c3 += vec3(0.02, 0.02, 0.024) * bundle;
+        col += c3 * towA;
+      }
+
+      // ---------------- filament: one fibre grows to fill the frame
+      if (filA > 0.001) {
+        vec2 q = rot(-0.32) * uv;
+        float t = smoothstep(0.50, 1.0, Z);
+        float r = mix(0.06, 3.0, pow(t, 2.2));
+        float c = q.y / r;
+        float inside = 1.0 - smoothstep(0.98, 1.0, abs(c));
+        float h = sqrt(max(0.0, 1.0 - c * c));
+        float key = pow(max(0.0, 1.0 - abs(c - lightDir.y * 0.6)), 1.6);
+        float fib = 0.5 + 0.5 * sin(q.y * mix(900.0, 90.0, t) + noise(q * 30.0) * 4.0);
+        float fibAmt = uQuality * 0.22;
+        vec3 c3 = vec3(0.60, 0.60, 0.64) * (0.15 + 0.85 * key) * h * (1.0 - fibAmt + fibAmt * fib);
+        c3 += vec3(0.03) * h;
+        col = mix(col, c3, inside * filA);
+      }
+
+      float vig = smoothstep(1.3, 0.35, length(uv * vec2(0.8, 1.0)));
+      col *= mix(0.55, 1.0, vig);
+      col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.012;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  // roll width → a single tow, in the units the shelf is measured in
+  const SCALES: [number, string][] = [
+    [0.0, '50 in'], [0.15, '12 in'], [0.3, '3 in'], [0.45, '1 in'], [0.6, '10 mm'], [0.75, '3 mm'], [0.9, '1 mm'],
+  ];
+
+  function start() {
+    const canvas = document.getElementById('dive-canvas') as HTMLCanvasElement | null;
+    const stage = canvas?.parentElement;
+    const section = canvas?.closest('section');
+    if (!canvas || !stage || !section) return;
+    const mag = document.getElementById('dive-mag');
+    const scaleEl = document.getElementById('dive-scale');
+    const barLabel = document.getElementById('dive-bar-label');
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canHover = window.matchMedia('(hover: hover)').matches;
+    const phone = window.innerWidth < 700 || !canHover;
+    if (reduceMotion) section.classList.add('no-pin');
+
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' }) as WebGLRenderingContext | null;
+    if (!gl) { section.classList.add('no-pin', 'dive-fallback'); return; }
+
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; }
+      return s;
+    };
+    const vs = compile(gl.VERTEX_SHADER, VERT), fs = compile(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) { section.classList.add('no-pin', 'dive-fallback'); return; }
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, 'aPos');
+    gl.enableVertexAttribArray(aPos); gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    const u = {
+      res: gl.getUniformLocation(prog, 'uRes'), time: gl.getUniformLocation(prog, 'uTime'),
+      z: gl.getUniformLocation(prog, 'uZ'), mouse: gl.getUniformLocation(prog, 'uMouse'),
+      quality: gl.getUniformLocation(prog, 'uQuality'),
+    };
+    gl.uniform1f(u.quality, phone ? 0 : 1);
+
+    let w = 0, h = 0;
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, phone ? 1 : 1.5);
+      const r = stage.getBoundingClientRect();
+      w = Math.max(1, Math.round(r.width * dpr)); h = Math.max(1, Math.round(r.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const target = { x: 0.6, y: 0.55 }, mouse = { x: 0.6, y: 0.55 };
+    if (canHover && !reduceMotion) window.addEventListener('pointermove', (e) => {
+      target.x = e.clientX / window.innerWidth; target.y = 1 - e.clientY / window.innerHeight;
+    }, { passive: true });
+
+    const fmtMag = (z: number) => {
+      const m = Math.pow(10, z * 3);
+      return m < 1000 ? `×${Math.round(m)}` : `×${(m / 1000).toFixed(1)}k`;
+    };
+    const scaleFor = (z: number) => { let s = SCALES[0][1]; for (const [at, l] of SCALES) if (z >= at) s = l; return s; };
+
+    let z = 0;
+    const onScroll = () => {
+      const range = Math.max(1, section.offsetHeight - stage.offsetHeight);
+      const p = Math.min(Math.max(-section.getBoundingClientRect().top / range, 0), 1);
+      if (p === z) return;
+      z = p;
+      section.style.setProperty('--z', p.toFixed(4));
+      if (mag) mag.textContent = fmtMag(p);
+      const s = scaleFor(p);
+      if (scaleEl) scaleEl.textContent = s;
+      if (barLabel) barLabel.textContent = s;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    let visible = false, raf = 0;
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      raf = 0;
+      if (!visible && !reduceMotion) return;
+      const t = (now - t0) / 1000;
+      if (!canHover) { target.x = 0.5 + 0.3 * Math.cos(t * 0.2); target.y = 0.5 + 0.2 * Math.sin(t * 0.17); }
+      mouse.x += (target.x - mouse.x) * 0.06; mouse.y += (target.y - mouse.y) * 0.06;
+      gl.uniform2f(u.res, w, h); gl.uniform1f(u.time, t);
+      gl.uniform1f(u.z, reduceMotion ? 0.3 : z); gl.uniform2f(u.mouse, mouse.x, mouse.y);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!reduceMotion) raf = requestAnimationFrame(frame);
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible && !raf) raf = requestAnimationFrame(frame);
+      }, { threshold: 0 }).observe(stage);
+    } else { visible = true; raf = requestAnimationFrame(frame); }
+    if (reduceMotion) requestAnimationFrame(frame);
+  }
+
+  boot('dive', '#dive-canvas', start);
+</script>

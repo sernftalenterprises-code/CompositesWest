@@ -1,0 +1,123 @@
+---
+/**
+ * Cut what you need. An instrument, not a section: pick a fabric, drag the
+ * cut line along a yard ruler, and the length, area and weight are computed
+ * from the real roll width and areal weight. The request link carries the
+ * numbers into the quote form.
+ */
+import { products } from '../data/products';
+
+const catalog = products.map((p) => ({
+  slug: p.slug,
+  name: p.shortName,
+  brand: p.brand,
+  gsm: p.weightGsm,
+  widthIn: p.widthIn,
+}));
+const first = catalog.find((p) => p.slug === 'hexcel-twill-weave') ?? catalog[0];
+---
+
+<section class="cv-auto border-b border-line bg-carbon-900" id="cut" aria-labelledby="cut-title">
+  <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+    <div class="py-20 sm:py-28">
+      <div class="reveal grid gap-8 lg:grid-cols-12 lg:items-end">
+        <div class="lg:col-span-7">
+          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Cut</span> <span data-decode>By the yard, to the half yard</span></p>
+          <h2 id="cut-title" class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">Cut what<br />you need</h2>
+        </div>
+        <p class="text-base leading-7 text-tow-500 lg:col-span-5">
+          Drag the cut line. Length, area and weight come from the roll width and areal weight of the fabric you pick — the same numbers that go on the quote.
+        </p>
+      </div>
+
+      <div class="reveal reveal-delay-1 mt-14 grid gap-px border border-line bg-line lg:grid-cols-12">
+        <!-- Instrument -->
+        <div class="bg-carbon-900 p-6 sm:p-8 lg:col-span-8">
+          <div class="flex flex-wrap items-end justify-between gap-6">
+            <label class="block w-full sm:w-auto">
+              <span class="eyebrow text-tow-500">Fabric</span>
+              <span class="cut-select-wrap mt-2 block">
+                <select id="cut-fabric" class="cut-select">
+                  {catalog.map((p) => (
+                    <option value={p.slug} selected={p.slug === first.slug}>{p.name} · {p.gsm} gsm · {p.widthIn}″</option>
+                  ))}
+                </select>
+              </span>
+            </label>
+            <p class="type-display text-6xl text-filament [font-variant-numeric:tabular-nums] sm:text-7xl">
+              <span id="cut-yd">12.5</span><span class="ml-2 font-mono text-lg font-normal tracking-[0.12em] text-tow-500">YD</span>
+            </p>
+          </div>
+
+          <div class="cut-ruler mt-8" style="--f:0.125">
+            <span class="cut-fill" aria-hidden="true"></span>
+            <input id="cut-range" class="cut-range" type="range" min="0.5" max="100" step="0.5" value="12.5" aria-label="Cut length in yards" />
+          </div>
+          <div class="mt-2 flex justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-tow-700" aria-hidden="true">
+            <span>0</span><span>25</span><span>50</span><span>75</span><span>100 yd</span>
+          </div>
+        </div>
+
+        <!-- Readouts -->
+        <dl class="grid grid-cols-2 gap-px bg-line lg:col-span-4 lg:grid-cols-1">
+          <div class="bg-carbon-900 p-6">
+            <dt class="eyebrow text-tow-700">Length</dt>
+            <dd class="mt-2 font-display text-2xl font-bold text-filament [font-variant-numeric:tabular-nums]"><span id="cut-m">11.43</span> <span class="text-base font-normal text-tow-500">m</span></dd>
+          </div>
+          <div class="bg-carbon-900 p-6">
+            <dt class="eyebrow text-tow-700">Area</dt>
+            <dd class="mt-2 font-display text-2xl font-bold text-filament [font-variant-numeric:tabular-nums]"><span id="cut-area">14.5</span> <span class="text-base font-normal text-tow-500">m²</span></dd>
+          </div>
+          <div class="bg-carbon-900 p-6">
+            <dt class="eyebrow text-tow-700">Weight</dt>
+            <dd class="mt-2 font-display text-2xl font-bold text-filament [font-variant-numeric:tabular-nums]"><span id="cut-kg">2.86</span> <span class="text-base font-normal text-tow-500">kg</span> <span class="ml-2 font-mono text-xs text-tow-500">(<span id="cut-lb">6.3</span> lb)</span></dd>
+          </div>
+          <div class="flex items-end bg-carbon-900 p-6">
+            <a id="cut-cta" href="/contact/" class="btn btn-primary w-full">Request this cut <span class="btn-arrow">&rarr;</span></a>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ catalog }} is:inline data-astro-rerun>
+  window.__CW_CUT = catalog;
+</script>
+
+<script>
+  import { boot } from '../scripts/boot';
+
+  type Item = { slug: string; name: string; brand: string; gsm: number; widthIn: number };
+
+  boot('cut', '#cut', () => {
+    const items: Item[] = (window as any).__CW_CUT ?? [];
+    const sel = document.getElementById('cut-fabric') as HTMLSelectElement;
+    const range = document.getElementById('cut-range') as HTMLInputElement;
+    const ruler = range.parentElement as HTMLElement;
+    const out = {
+      yd: document.getElementById('cut-yd')!, m: document.getElementById('cut-m')!,
+      area: document.getElementById('cut-area')!, kg: document.getElementById('cut-kg')!,
+      lb: document.getElementById('cut-lb')!, cta: document.getElementById('cut-cta') as HTMLAnchorElement,
+    };
+    const fmt = (n: number, d: number) => n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+    const update = () => {
+      const item = items.find((i) => i.slug === sel.value) ?? items[0];
+      const yd = parseFloat(range.value);
+      const m = yd * 0.9144;
+      const area = m * (item.widthIn * 0.0254);
+      const kg = (area * item.gsm) / 1000;
+      out.yd.textContent = fmt(yd, yd % 1 ? 1 : 0);
+      out.m.textContent = fmt(m, 2);
+      out.area.textContent = fmt(area, 1);
+      out.kg.textContent = fmt(kg, 2);
+      out.lb.textContent = fmt(kg * 2.20462, 1);
+      ruler.style.setProperty('--f', ((yd - 0.5) / 99.5).toFixed(4));
+      out.cta.href = `/contact/?product=${encodeURIComponent(`${item.name} — ${fmt(yd, yd % 1 ? 1 : 0)} yd (${item.widthIn}″ roll)`)}`;
+    };
+    range.addEventListener('input', update);
+    sel.addEventListener('change', update);
+    update();
+  });
+</script>

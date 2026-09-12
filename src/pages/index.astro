@@ -5,6 +5,9 @@ import ProductCard from '../components/ProductCard.astro';
 import CtaBand from '../components/CtaBand.astro';
 import WeaveHero from '../components/WeaveHero.astro';
 import WeaveTile from '../components/WeaveTile.astro';
+import ScaleDive from '../components/ScaleDive.astro';
+import YardTape from '../components/YardTape.astro';
+import CutTool from '../components/CutTool.astro';
 import { products, company } from '../data/products';
 import { applications } from '../data/applications';
 
@@ -103,6 +106,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
   jsonLd={[websiteLd, faqLd]}
 >
   <Preloader />
+  <YardTape />
 
   <!-- ============================================================ HERO
        Tall section; the stage inside sticks for the whole scroll. The
@@ -183,6 +187,9 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
     </div>
   </section>
 
+  <!-- Keep going: into the material -->
+  <ScaleDive sku={rollSku} />
+
   <!-- ========================================================== TICKER -->
   <div class="relative z-10 border-y border-line bg-carbon-950 py-3.5" aria-label="Fibers and constructions we stock">
     <div class="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
@@ -240,6 +247,8 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
       </div>
     </div>
   </section>
+
+  <CutTool />
 
   <!-- ==================================================== ARCHITECTURE -->
   <section class="cv-auto border-b border-line bg-carbon-900">

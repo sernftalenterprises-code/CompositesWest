@@ -1,0 +1,34 @@
+---
+/**
+ * The page is the roll. A fixed tape on the right edge unspools as you
+ * scroll — 0 → 100,000 linear yards over the length of the homepage, with
+ * a live readout. Purely decorative for assistive tech.
+ */
+---
+
+<aside id="tape" class="tape hidden lg:flex" aria-hidden="true">
+  <div class="tape-rule"><span class="tape-mark"></span></div>
+  <p class="tape-read">Yd<b id="tape-yd">0</b></p>
+</aside>
+
+<script>
+  import { boot } from '../scripts/boot';
+
+  boot('tape', '#tape', () => {
+    const tape = document.getElementById('tape')!;
+    const yd = document.getElementById('tape-yd')!;
+    let last = -1;
+    const on = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const t = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+      const yards = Math.round(t * 100000);
+      if (yards === last) return;
+      last = yards;
+      tape.style.setProperty('--t', t.toFixed(4));
+      yd.textContent = yards.toLocaleString('en-US');
+    };
+    on();
+    window.addEventListener('scroll', on, { passive: true });
+    window.addEventListener('resize', on, { passive: true });
+  });
+</script>
