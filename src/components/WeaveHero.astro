@@ -1,0 +1,418 @@
+---
+/**
+ * The roll. Procedural 2×2 twill carbon, rendered live in WebGL.
+ *
+ * One analytic scene, no meshes: a cylinder (the roll) with the twill mapped
+ * in cylindrical UV space so tow density is constant on the surface, two end
+ * caps (wound layers around a cardboard core), and a tangent strip that
+ * feeds off the front of the roll. At scroll 0 the cylinder radius is huge
+ * and the camera sits at its surface, so it reads as flat fabric; as the
+ * pinned hero scrolls the radius shrinks, the camera pulls back and yaws,
+ * and the flat weave literally rolls up. Past the midpoint the strip peels
+ * downward into the next section.
+ *
+ * Each tow has a semicircular cross-section, filament striations, and a
+ * Kajiya-Kay anisotropic highlight along its length — the sheen carbon has
+ * when you tilt it. The key light follows the cursor. Tows fade their
+ * sub-pixel detail out using screen-space derivatives so nothing shimmers
+ * when the roll is small.
+ *
+ * Writes `--p` (0..1 scroll progress) onto the hero section so the copy can
+ * choreograph itself in CSS. Pauses offscreen. Static frame under
+ * reduced-motion (and the section un-pins). CSS `.twill` fallback without
+ * WebGL.
+ */
+---
+
+<canvas id="weave" class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+
+<script>
+  const VERT = `
+    attribute vec2 aPos;
+    void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+  `;
+
+  const FRAG = `
+    #ifdef GL_OES_standard_derivatives
+    #extension GL_OES_standard_derivatives : enable
+    #endif
+    precision highp float;
+
+    uniform vec2  uRes;
+    uniform float uTime;
+    uniform vec2  uMouse;    // 0..1, y up
+    uniform float uScroll;   // 0..1 through the pinned hero
+    uniform float uIntro;    // 0..1 weave-in
+    uniform float uQuality;  // 0 = phone, 1 = desktop
+
+    const float PI = 3.14159265;
+
+    float hash(vec2 p) {
+      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    }
+
+    float pixelSize(vec2 p) {
+      #ifdef GL_OES_standard_derivatives
+        return length(fwidth(p));
+      #else
+        return 0.03;
+      #endif
+    }
+
+    /* Shade one point of twill. p = pattern coords (tows per unit),
+       N = surface normal, Ta = tangent along pattern x (weft direction),
+       Tc = tangent along pattern y (warp direction). */
+    vec3 twill(vec2 p, vec3 N, vec3 Ta, vec3 Tc, vec3 V, vec3 L1, vec3 L2,
+               float intro, float tracerRow, out float onTracer) {
+      float aa = pixelSize(p);
+      vec2 cell = floor(p);
+      vec2 f = fract(p);
+
+      // 2/2 twill: warp on top for two cells, weft for two, stepping one per row
+      float m = mod(cell.x + cell.y, 4.0);
+      bool warpTop = m < 2.0;
+
+      float tx = f.x * 2.0 - 1.0;
+      float ty = f.y * 2.0 - 1.0;
+      float hWarp = sqrt(max(0.0, 1.0 - tx * tx));
+      float hWeft = sqrt(max(0.0, 1.0 - ty * ty));
+
+      // A float dips at both ends where the tow dives under
+      float sWarp = (m + f.y) * 0.5;
+      float sWeft = ((m - 2.0) + f.x) * 0.5;
+      float dipWarp = mix(0.55, 1.0, sin(PI * clamp(sWarp, 0.0, 1.0)));
+      float dipWeft = mix(0.55, 1.0, sin(PI * clamp(sWeft, 0.0, 1.0)));
+
+      // Filaments fade out once they would alias
+      float filAmt = uQuality * (1.0 - smoothstep(0.02, 0.09, aa));
+      float filWarp = 0.5 + 0.5 * sin(p.x * 150.0 + hash(vec2(cell.x, 1.0)) * 6.2831);
+      float filWeft = 0.5 + 0.5 * sin(p.y * 150.0 + hash(vec2(1.0, cell.y)) * 6.2831);
+
+      vec3 Nn, T; float h, fil, alpha;
+      if (warpTop) {
+        h = hWarp * dipWarp;
+        Nn = normalize(N * (hWarp + 0.3) + Ta * (-tx * 0.85));
+        T = Tc;
+        fil = mix(0.5, filWarp, filAmt);
+        alpha = smoothstep(0.0, 0.55, intro - hash(vec2(cell.x, 7.0)) * 0.25);
+      } else {
+        h = hWeft * dipWeft;
+        Nn = normalize(N * (hWeft + 0.3) + Tc * (-ty * 0.85));
+        T = Ta;
+        fil = mix(0.5, filWeft, filAmt);
+        alpha = smoothstep(0.35, 1.0, intro - hash(vec2(3.0, cell.y)) * 0.3);
+      }
+
+      // Gap shadow between tows, widened as tows shrink so it never sparkles
+      float gap = smoothstep(0.0, max(0.22, aa * 2.5), h);
+
+      float diff = max(dot(Nn, L1), 0.0) * 0.42 + max(dot(Nn, L2), 0.0) * 0.16;
+
+      vec3 H1 = normalize(L1 + V); float th1 = dot(T, H1);
+      vec3 H2 = normalize(L2 + V); float th2 = dot(T, H2);
+      float spec = pow(sqrt(max(0.0, 1.0 - th1 * th1)), 110.0) * 1.35
+                 + pow(sqrt(max(0.0, 1.0 - th2 * th2)), 60.0) * 0.28;
+      spec *= 0.5 + 0.5 * fil;
+
+      vec3 base = vec3(0.028, 0.028, 0.031);
+      vec3 col = base
+               + vec3(0.075, 0.075, 0.082) * diff * (0.6 + 0.4 * fil)
+               + vec3(0.58, 0.58, 0.62) * spec * h;
+
+      // The tracer thread: one weft tow in every tracerRow is hazard yellow
+      onTracer = 0.0;
+      if (!warpTop && mod(cell.y, tracerRow) == 0.0 && abs(ty) < 0.42) {
+        onTracer = 1.0;
+        vec3 yel = vec3(1.0, 0.83, 0.0);
+        col = yel * (0.16 + 0.5 * diff + 0.9 * spec * h);
+      }
+
+      col *= mix(0.18, 1.0, gap);
+      col *= alpha;
+      return col;
+    }
+
+    mat3 rotY(float a) {
+      float c = cos(a), s = sin(a);
+      return mat3(c, 0.0, -s,  0.0, 1.0, 0.0,  s, 0.0, c);
+    }
+
+    void main() {
+      vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+      vec3 d = normalize(vec3(uv, -1.0));
+
+      // ---- choreography -------------------------------------------------
+      float roll = smoothstep(0.16, 0.62, uScroll);   // flat → formed
+      float peel = smoothstep(0.64, 0.98, uScroll);   // strip feeds off
+
+      float R    = exp(mix(log(34.0), log(0.58), roll));
+      float near = mix(1.15, 2.15, roll);              // camera → nearest surface
+      float L    = mix(90.0, 1.45, roll);              // half length
+      float yaw  = mix(0.0, -0.46, roll);             // right end swings toward the camera
+      vec3  c    = vec3(mix(0.0, -0.42, roll), mix(0.0, 0.12, roll) + peel * 0.10, -(near + R));
+
+      // Surface travel: scroll scrubs it, time keeps it turning once formed
+      float travel = uScroll * 0.9 + uTime * 0.10 * roll;
+
+      // Into the cylinder's frame (axis = x, centre = origin)
+      mat3 Rw = rotY(yaw);     // local → world
+      mat3 Rl = rotY(-yaw);    // world → local
+      vec3 o = Rl * (-c);
+      vec3 dl = Rl * d;
+
+      // ---- intersections ------------------------------------------------
+      float tHit = 1e9; int kind = 0;   // 1 side, 2 cap, 3 strip
+      vec3 pl = vec3(0.0);
+
+      // side
+      float a = dot(dl.yz, dl.yz);
+      float b = 2.0 * dot(o.yz, dl.yz);
+      float cc = dot(o.yz, o.yz) - R * R;
+      float disc = b * b - 4.0 * a * cc;
+      if (disc > 0.0) {
+        float t = (-b - sqrt(disc)) / (2.0 * a);
+        if (t > 0.0) {
+          vec3 p = o + t * dl;
+          if (abs(p.x) <= L) { tHit = t; kind = 1; pl = p; }
+        }
+      }
+      // caps
+      for (int i = 0; i < 2; i++) {
+        float sx = i == 0 ? L : -L;
+        float t = (sx - o.x) / dl.x;
+        if (t > 0.0 && t < tHit) {
+          vec3 p = o + t * dl;
+          if (dot(p.yz, p.yz) <= R * R) { tHit = t; kind = 2; pl = p; }
+        }
+      }
+      // strip feeding off the front tangent line: a cut-to-length width of the
+      // roll, tilted toward the camera as it falls (plane z = R - k*y)
+      float stripLen = peel * 3.6;
+      const float k = 0.28;
+      if (stripLen > 0.001) {
+        float denom = dl.z + k * dl.y;
+        if (abs(denom) > 1e-5) {
+          float t = (R - o.z - k * o.y) / denom;
+          if (t > 0.0 && t < tHit) {
+            vec3 p = o + t * dl;
+            float along = -p.y * sqrt(1.0 + k * k);
+            if (p.x >= -0.72 * L && p.x <= 0.06 * L && p.y <= 0.0 && along <= stripLen) { tHit = t; kind = 3; pl = p; }
+          }
+        }
+      }
+
+      // ---- lights (world/view space) -------------------------------------
+      vec3 V  = -d;
+      vec3 L1 = normalize(vec3((uMouse.x - 0.5) * 2.6, (uMouse.y - 0.5) * 1.8, 1.0));
+      vec3 L2 = normalize(vec3(-0.7, 0.9, 0.8));
+
+      float density = 15.2;   // tows per world unit
+      float tracerRow = 28.0;
+
+      vec3 col;
+      if (kind == 0) {
+        // Background: near-black with a soft pool of light under the roll
+        vec2 g = (uv - vec2(0.06, -0.36)) * vec2(1.1, 3.2);
+        col = vec3(0.012, 0.012, 0.014) + vec3(0.09, 0.09, 0.10) * exp(-dot(g, g) * 2.2) * roll;
+      } else if (kind == 1) {
+        float th = atan(pl.y, pl.z);            // 0 at the front, + upward
+        vec3 Nl = normalize(vec3(0.0, pl.yz));
+        vec3 N  = Rw * Nl;
+        vec3 Ta = Rw * vec3(1.0, 0.0, 0.0);
+        vec3 Tc = Rw * normalize(vec3(0.0, cos(th), -sin(th)));
+        vec2 p2 = vec2(pl.x, th * R + travel) * density;
+        float onT;
+        col = twill(p2, N, Ta, Tc, V, L1, L2, uIntro, tracerRow, onT);
+        // silhouette rim once it is a roll
+        float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+        col += vec3(0.10, 0.10, 0.11) * rim * roll;
+      } else if (kind == 3) {
+        const float ks = 0.28;
+        vec3 N  = Rw * normalize(vec3(0.0, ks, 1.0));
+        vec3 Ta = Rw * vec3(1.0, 0.0, 0.0);
+        vec3 Tc = Rw * normalize(vec3(0.0, 1.0, -ks));
+        float along = -pl.y * sqrt(1.0 + ks * ks);
+        vec2 p2 = vec2(pl.x, -along + travel) * density;   // continues the arc past the tangent
+        float onT;
+        col = twill(p2, N, Ta, Tc, V, L1, L2, 1.0, tracerRow, onT);
+        // falls out of the pool of light as it comes toward you
+        col *= mix(1.0, 0.5, smoothstep(0.4, 3.6, along));
+      } else {
+        // End cap: wound layers around a cardboard core
+        float r = length(pl.yz) / R;
+        vec3 N = Rw * vec3(sign(pl.x), 0.0, 0.0);
+        float ndl = max(dot(N, L1), 0.0) * 0.6 + max(dot(N, L2), 0.0) * 0.3 + 0.15;
+        float aa = pixelSize(vec2(r * 60.0));
+        float rings = 0.5 + 0.5 * sin(r * R * 190.0 + hash(vec2(floor(r * 80.0), 2.0)) * 1.2);
+        rings = mix(0.5, rings, uQuality * (1.0 - smoothstep(0.6, 1.4, aa)));
+        vec3 layers = vec3(0.05, 0.05, 0.055) + vec3(0.06) * rings;
+        vec3 core   = vec3(0.30, 0.22, 0.13);                 // cardboard
+        vec3 hollow = vec3(0.010, 0.010, 0.012);
+        float tube = smoothstep(0.30, 0.315, r) * (1.0 - smoothstep(0.42, 0.435, r));
+        float inner = 1.0 - smoothstep(0.30, 0.315, r);
+        col = mix(layers, core, tube);
+        col = mix(col, hollow, inner);
+        col *= ndl;
+        // wound edge catches the light
+        col += vec3(0.10) * smoothstep(0.96, 1.0, r) * ndl;
+      }
+
+      // Vignette so the type always sits on near-black at the edges (eases off as the roll forms)
+      float vig = smoothstep(1.25, 0.25, length((uv + vec2(0.05, -0.05)) * vec2(0.85, 1.0)));
+      col *= mix(vig, 1.0, roll * 0.55);
+
+      // Grain against banding
+      col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.014;
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  function start() {
+    const canvas = document.getElementById('weave') as HTMLCanvasElement | null;
+    const stage = canvas?.parentElement;                 // sticky viewport
+    const section = canvas?.closest('section');          // tall pinned wrapper
+    if (!canvas || !stage || !section) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canHover = window.matchMedia('(hover: hover)').matches;
+    const phone = window.innerWidth < 700 || !canHover;
+
+    const fail = () => {
+      section.classList.add('no-pin');
+      section.classList.add('weave-fallback');
+    };
+    if (reduceMotion) section.classList.add('no-pin');
+
+    const gl =
+      (canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' }) as WebGLRenderingContext | null) ||
+      (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null);
+    if (!gl) return fail();
+    // Enabling the extension predefines GL_OES_standard_derivatives for the shader
+    gl.getExtension('OES_standard_derivatives');
+
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.warn(gl.getShaderInfoLog(s));
+        return null;
+      }
+      return s;
+    };
+    const vs = compile(gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return fail();
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.warn(gl.getProgramInfoLog(prog));
+      return fail();
+    }
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, 'aPos');
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    const u = {
+      res: gl.getUniformLocation(prog, 'uRes'),
+      time: gl.getUniformLocation(prog, 'uTime'),
+      mouse: gl.getUniformLocation(prog, 'uMouse'),
+      scroll: gl.getUniformLocation(prog, 'uScroll'),
+      intro: gl.getUniformLocation(prog, 'uIntro'),
+      quality: gl.getUniformLocation(prog, 'uQuality'),
+    };
+    gl.uniform1f(u.quality, phone ? 0 : 1);
+
+    let w = 0, h = 0;
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, phone ? 1 : 1.5);
+      const rect = stage.getBoundingClientRect();
+      w = Math.max(1, Math.round(rect.width * dpr));
+      h = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const target = { x: 0.62, y: 0.6 };
+    const mouse = { x: 0.62, y: 0.6 };
+    if (canHover && !reduceMotion) {
+      window.addEventListener('pointermove', (e) => {
+        target.x = e.clientX / window.innerWidth;
+        target.y = 1 - e.clientY / window.innerHeight;
+      }, { passive: true });
+    }
+
+    // Progress through the pinned range, mirrored to CSS as --p
+    let scroll = 0;
+    const onScroll = () => {
+      const range = Math.max(1, section.offsetHeight - stage.offsetHeight);
+      const p = Math.min(Math.max(-section.getBoundingClientRect().top / range, 0), 1);
+      if (p !== scroll) {
+        scroll = p;
+        section.style.setProperty('--p', p.toFixed(4));
+      }
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    let visible = true;
+    let raf = 0;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible && !raf && !reduceMotion) raf = requestAnimationFrame(frame);
+      }, { threshold: 0 }).observe(stage);
+    }
+
+    // The preloader (if any) tells us when to start the weave-in
+    let introStart = performance.now();
+    document.addEventListener('cw:reveal', () => { introStart = performance.now(); }, { once: true });
+
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      raf = 0;
+      if (!visible && !reduceMotion) return;
+      const t = (now - t0) / 1000;
+
+      if (!canHover) {
+        target.x = 0.5 + 0.35 * Math.cos(t * 0.25);
+        target.y = 0.55 + 0.25 * Math.sin(t * 0.19);
+      }
+      mouse.x += (target.x - mouse.x) * 0.06;
+      mouse.y += (target.y - mouse.y) * 0.06;
+
+      const intro = reduceMotion ? 1 : Math.min((now - introStart) / 1600, 1);
+
+      gl.uniform2f(u.res, w, h);
+      gl.uniform1f(u.time, t);
+      gl.uniform2f(u.mouse, mouse.x, mouse.y);
+      gl.uniform1f(u.scroll, reduceMotion ? 0 : scroll);
+      gl.uniform1f(u.intro, intro);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      if (!reduceMotion) raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && raf) { cancelAnimationFrame(raf); raf = 0; }
+      else if (!document.hidden && !raf && !reduceMotion) raf = requestAnimationFrame(frame);
+    });
+  }
+
+  import { boot } from '../scripts/boot';
+  boot('weave', '#weave', start);
+</script>

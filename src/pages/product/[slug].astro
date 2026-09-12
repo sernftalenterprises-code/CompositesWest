@@ -74,26 +74,26 @@ const breadcrumbLd = {
 >
   <!-- Interior page header -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
-      <span class="crosshair left-4 top-8 sm:left-6" aria-hidden="true"></span>
-      <span class="crosshair right-4 top-8 sm:right-6" aria-hidden="true"></span>
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <span class="crosshair left-5 top-8 sm:left-8" aria-hidden="true"></span>
+      <span class="crosshair right-5 top-8 sm:right-8" aria-hidden="true"></span>
 
       <div class="py-14 sm:py-20">
         <nav aria-label="Breadcrumb">
-          <ol class="eyebrow flex flex-wrap items-center gap-2.5 text-stone-500">
-            <li><a href="/" class="underline-draw transition-colors hover:text-ink-950">Home</a></li>
-            <li aria-hidden="true" class="text-stone-400">/</li>
-            <li><a href="/all-products/" class="underline-draw transition-colors hover:text-ink-950">All Products</a></li>
-            <li aria-hidden="true" class="text-stone-400">/</li>
-            <li aria-current="page" class="text-ink-950">{product.shortName}</li>
+          <ol class="eyebrow flex flex-wrap items-center gap-2.5 text-tow-500">
+            <li><a href="/" class="underline-draw transition-colors hover:text-filament">Home</a></li>
+            <li aria-hidden="true" class="text-tow-500">/</li>
+            <li><a href="/all-products/" class="underline-draw transition-colors hover:text-filament">All Products</a></li>
+            <li aria-hidden="true" class="text-tow-500">/</li>
+            <li aria-current="page" class="text-filament">{product.shortName}</li>
           </ol>
         </nav>
 
-        <p class="eyebrow mt-10 text-stone-500">{product.brand} · {product.weaveLabel}</p>
-        <h1 class="type-display mt-4 max-w-4xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+        <p class="eyebrow mt-10 text-tow-500">{product.brand} · {product.weaveLabel}</p>
+        <h1 class="type-display mt-4 max-w-4xl text-4xl text-filament sm:text-5xl lg:text-6xl">
           {product.shortName}
         </h1>
-        <p class="mt-5 max-w-3xl font-mono text-sm leading-6 text-stone-500">{product.name}</p>
+        <p class="mt-5 max-w-3xl font-mono text-sm leading-6 text-tow-500">{product.name}</p>
         <div class="tracer mt-6"></div>
 
         <div class="mt-6 flex flex-wrap gap-2">
@@ -103,7 +103,7 @@ const breadcrumbLd = {
           <span class="chip">{product.widthIn}&Prime; wide</span>
         </div>
 
-        <p class="mt-7 max-w-2xl text-lg leading-8 text-stone-600">{product.description}</p>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-tow-300">{product.description}</p>
 
         <div class="mt-9 flex flex-wrap gap-3">
           <a href={`/contact/?product=${encodeURIComponent(product.name)}`} class="btn btn-primary">
@@ -113,7 +113,7 @@ const breadcrumbLd = {
             Call {company.phone}
           </a>
         </div>
-        <p class="mt-4 font-mono text-xs tracking-wide text-stone-500">
+        <p class="mt-4 font-mono text-xs tracking-wide text-tow-500">
           In stock and ready to ship. Quote-based pricing — we respond fast.
         </p>
       </div>
@@ -122,7 +122,7 @@ const breadcrumbLd = {
 
   <!-- 01 / Specifications -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="grid gap-14 py-20 sm:py-24 lg:grid-cols-2 lg:gap-16">
         <figure class="reveal">
           <div class="relative border border-line bg-paper">
@@ -137,15 +137,15 @@ const breadcrumbLd = {
             />
             <span class="absolute left-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
           </div>
-          <figcaption class="eyebrow mt-3 flex justify-between text-stone-500">
+          <figcaption class="eyebrow mt-3 flex justify-between text-tow-500">
             <span>Fig. 01 — {product.weaveLabel}</span>
             <span>{product.widthIn}&Prime; width</span>
           </figcaption>
         </figure>
 
         <div class="reveal reveal-delay-1">
-          <p class="eyebrow text-stone-500">01 / Datasheet</p>
-          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Specifications</h2>
+          <p class="eyebrow text-tow-500">01 / Datasheet</p>
+          <h2 class="type-display mt-3 text-3xl text-filament sm:text-4xl">Specifications</h2>
           <div class="tracer mt-5"></div>
           <div class="table-wrap mt-8">
             <table class="table-spec">
@@ -158,12 +158,12 @@ const breadcrumbLd = {
               <tbody>
                 {specs.map(([label, value]) => (
                   <tr>
-                    <td class="w-40 text-stone-500 sm:w-48">{label}</td>
-                    <td class="font-mono text-ink-950">{value}</td>
+                    <td class="w-40 text-tow-500 sm:w-48">{label}</td>
+                    <td class="font-mono text-filament">{value}</td>
                   </tr>
                 ))}
                 <tr>
-                  <td class="w-40 text-stone-500 sm:w-48">Typical use</td>
+                  <td class="w-40 text-tow-500 sm:w-48">Typical use</td>
                   <td>
                     <div class="flex flex-wrap gap-1.5">
                       {product.typicalUse.map((use) => (
@@ -182,11 +182,11 @@ const breadcrumbLd = {
 
   <!-- 02 / Related products -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-24">
         <div class="reveal">
-          <p class="eyebrow text-stone-500">02 / Related</p>
-          <h2 class="type-display mt-3 text-3xl text-ink-950 sm:text-4xl">Related products</h2>
+          <p class="eyebrow text-tow-500">02 / Related</p>
+          <h2 class="type-display mt-3 text-3xl text-filament sm:text-4xl">Related products</h2>
         </div>
         <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
           {relatedFill.map((p, i) => (

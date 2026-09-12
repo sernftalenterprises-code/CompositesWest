@@ -7,11 +7,14 @@
  * the FCP/LCP critical path (~+775 ms simulated). Script-injected rules are
  * discovered at the same time during head parsing — identical real-world
  * behavior, accurate simulation. <noscript> keeps fonts for no-JS visitors.
+ *
+ * Archivo ships as the "standard" build (wght + wdth axes) — the display
+ * type is set at wdth 125, which the weight-only file cannot render.
  */
-import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
-import interLatinExt from '@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2?url';
-import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url';
-import archivoLatinExt from '@fontsource-variable/archivo/files/archivo-latin-ext-wght-normal.woff2?url';
+import groteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import groteskLatinExt from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-ext-wght-normal.woff2?url';
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2?url';
+import archivoLatinExt from '@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2?url';
 import plexMono400Latin from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
 import plexMono400LatinExt from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-400-normal.woff2?url';
 import plexMono500Latin from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url';
@@ -27,15 +30,16 @@ const face = (
   weight: string,
   format: string,
   url: string,
-  range: string
+  range: string,
+  extra = ''
 ) =>
-  `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${weight};src:url(${url}) format('${format}');unicode-range:${range}}`;
+  `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${weight};${extra}src:url(${url}) format('${format}');unicode-range:${range}}`;
 
 const css = [
-  face('Inter Variable', '100 900', 'woff2-variations', interLatin, LATIN),
-  face('Inter Variable', '100 900', 'woff2-variations', interLatinExt, LATIN_EXT),
-  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatin, LATIN),
-  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatinExt, LATIN_EXT),
+  face('Space Grotesk Variable', '300 700', 'woff2-variations', groteskLatin, LATIN),
+  face('Space Grotesk Variable', '300 700', 'woff2-variations', groteskLatinExt, LATIN_EXT),
+  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatin, LATIN, 'font-stretch:62% 125%;'),
+  face('Archivo Variable', '100 900', 'woff2-variations', archivoLatinExt, LATIN_EXT, 'font-stretch:62% 125%;'),
   face('IBM Plex Mono', '400', 'woff2', plexMono400Latin, LATIN),
   face('IBM Plex Mono', '400', 'woff2', plexMono400LatinExt, LATIN_EXT),
   face('IBM Plex Mono', '500', 'woff2', plexMono500Latin, LATIN),
@@ -43,12 +47,18 @@ const css = [
 ].join('');
 ---
 
-<script is:inline define:vars={{ css }}>
+<script is:inline define:vars={{ css }} data-astro-rerun>
   // Inject once the first contentful paint has actually happened, so that
   // paint never waits on (or gets attributed to) the font fetches. rAF and
   // timeout-based gates race with early empty frames; the paint entry doesn't.
+  //
+  // `data-astro-rerun`: the ClientRouter swaps <head> on navigation and drops
+  // the injected <style>, so this has to run again for every new document
+  // (the buffered paint entry makes that immediate).
   const inject = () => {
+    if (document.getElementById('cw-fonts')) return;
     const style = document.createElement('style');
+    style.id = 'cw-fonts';
     style.textContent = css;
     document.head.appendChild(style);
   };

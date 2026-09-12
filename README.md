@@ -14,6 +14,19 @@ npm run preview    # serve the production build locally
 
 ## What's inside
 
+- **Design system** in [src/styles/global.css](src/styles/global.css) — carbon-black surfaces, one hazard-yellow
+  accent, Archivo set expanded/black for display. The homepage hero is a live WebGL 2×2 twill
+  ([src/components/WeaveHero.astro](src/components/WeaveHero.astro)) with an anisotropic sheen that follows the
+  cursor; it falls back to the CSS `.twill` texture without WebGL and renders one static frame under
+  `prefers-reduced-motion`. Weave-architecture diagrams are generated at build time by
+  [src/components/WeaveTile.astro](src/components/WeaveTile.astro).
+- **Motion pass**: the hero is a pinned 260svh scene — the flat weave rolls up into a 3D roll (analytic
+  ray/cylinder in the same shader, end caps with a cardboard core, a strip feeding off the front into the
+  next section) and writes `--p` for CSS-driven copy choreography. A once-per-session spooling preloader,
+  weave diagrams that build tow-by-tow on scroll, an orbital applications selector (desktop), a drafting-HUD
+  cursor (fine pointers only), View Transitions with a tracer-line wipe, and a grain/scanline overlay.
+  Page scripts go through `src/scripts/boot.ts` so they re-bind after client-side navigation. Everything
+  degrades: reduced-motion un-pins the hero, skips the preloader and renders one static frame.
 - **Same URL structure as the old site** (`/about/`, `/our-products/`, `/all-products/`,
   `/product/<slug>/`, `/hex-3r-products/`, `/specifications/`, `/selection/`,
   `/general-installation-instructions/`, `/fibranchor-installation-instructions/`,
@@ -25,7 +38,7 @@ npm run preview    # serve the production build locally
   ItemList), `sitemap-index.xml` (auto-generated at build), `robots.txt`.
 - **AI search (ChatGPT/Claude/Perplexity) optimization**: `public/llms.txt` company
   summary, AI crawlers explicitly allowed in `robots.txt`, semantic HTML + FAQ content.
-- **Performance**: static HTML, self-hosted variable fonts (Inter + Space Grotesk),
+- **Performance**: static HTML, self-hosted variable fonts (Archivo wght+wdth, Space Grotesk, IBM Plex Mono),
   responsive AVIF/WebP images generated at build time, minimal JS (mobile menu,
   product filters, scroll reveals only).
 - **Quote flow**: every product page has "Request a quote" which deep-links to

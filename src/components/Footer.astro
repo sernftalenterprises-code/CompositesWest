@@ -4,14 +4,14 @@ import { applications } from '../data/applications';
 const year = new Date().getFullYear();
 ---
 
-<footer class="twill cv-auto relative overflow-hidden border-t-2 border-brand text-stone-400">
-  <div class="frame-x frame-dark relative mx-auto max-w-7xl px-4 sm:px-6">
-    <span class="crosshair crosshair-dark left-4 top-6 sm:left-6" aria-hidden="true"></span>
-    <span class="crosshair crosshair-dark right-4 top-6 sm:right-6" aria-hidden="true"></span>
+<footer class="twill cv-auto relative overflow-hidden border-t-2 border-brand text-tow-500">
+  <div class="frame-x frame-dark relative mx-auto max-w-[1600px] px-5 sm:px-8">
+    <span class="crosshair crosshair-dark left-5 top-6 sm:left-8" aria-hidden="true"></span>
+    <span class="crosshair crosshair-dark right-5 top-6 sm:right-8" aria-hidden="true"></span>
 
     <div class="grid gap-x-8 gap-y-12 py-16 sm:grid-cols-2 lg:grid-cols-12">
       <div class="sm:col-span-2 lg:col-span-3">
-        <p class="font-display text-lg font-bold uppercase tracking-[0.06em] text-white [font-variation-settings:'wdth'_115]">
+        <p class="font-display text-lg font-bold uppercase tracking-[0.06em] text-white [font-variation-settings:'wdth'_125]">
           Composites West, Inc.
         </p>
         <div class="tracer mt-4"></div>
@@ -23,7 +23,7 @@ const year = new Date().getFullYear();
       </div>
 
       <nav aria-label="Footer" class="lg:col-span-2">
-        <p class="eyebrow text-stone-400">Explore</p>
+        <p class="eyebrow text-tow-500">Explore</p>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li><a href="/about/" class="underline-draw transition-colors hover:text-white">About</a></li>
           <li><a href="/applications/" class="underline-draw transition-colors hover:text-white">Applications</a></li>
@@ -37,7 +37,7 @@ const year = new Date().getFullYear();
       </nav>
 
       <nav aria-label="Applications" class="lg:col-span-2">
-        <p class="eyebrow text-stone-400">By Application</p>
+        <p class="eyebrow text-tow-500">By Application</p>
         <ul class="mt-4 space-y-2.5 text-sm">
           {applications.map((a) => (
             <li>
@@ -50,7 +50,7 @@ const year = new Date().getFullYear();
       </nav>
 
       <nav aria-label="Hex-3R resources" class="lg:col-span-2">
-        <p class="eyebrow text-stone-400">Hex-3R Resources</p>
+        <p class="eyebrow text-tow-500">Hex-3R Resources</p>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li><a href="/specifications/" class="underline-draw transition-colors hover:text-white">Specifications</a></li>
           <li><a href="/selection/" class="underline-draw transition-colors hover:text-white">Resin Selection Guide</a></li>
@@ -61,15 +61,15 @@ const year = new Date().getFullYear();
       </nav>
 
       <div class="sm:col-span-2 lg:col-span-3">
-        <p class="eyebrow text-stone-400">Contact</p>
+        <p class="eyebrow text-tow-500">Contact</p>
         <address class="mt-4 space-y-4 font-mono text-[13px] not-italic leading-6">
           <p>
-            <span class="text-stone-200">PHYSICAL</span><br />
+            <span class="text-filament">PHYSICAL</span><br />
             {company.physicalAddress.street}<br />
             {company.physicalAddress.city}, {company.physicalAddress.state} {company.physicalAddress.zip}
           </p>
           <p>
-            <span class="text-stone-200">MAILING</span><br />
+            <span class="text-filament">MAILING</span><br />
             {company.mailingAddress.street}<br />
             {company.mailingAddress.city}, {company.mailingAddress.state} {company.mailingAddress.zip}
           </p>
@@ -83,15 +83,15 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 py-5">
-      <p class="eyebrow text-stone-400">&copy; {year} Composites West, Inc. All rights reserved.</p>
-      <p class="eyebrow text-stone-400">EST. {company.founded} — RENO, NV</p>
+      <p class="eyebrow text-tow-500">&copy; {year} Composites West, Inc. All rights reserved.</p>
+      <p class="eyebrow text-tow-500">EST. {company.founded} — RENO, NV</p>
     </div>
   </div>
 
   <!-- Oversized ghost wordmark -->
   <p
-    class="pointer-events-none select-none whitespace-nowrap text-center font-display font-bold uppercase leading-[0.78] tracking-[-0.02em] text-transparent [font-variation-settings:'wdth'_120] [-webkit-text-stroke:1px_rgb(255_255_255/0.07)]"
-    style="font-size: clamp(4rem, 12.5vw, 11rem); margin-bottom: -0.12em;"
+    class="pointer-events-none select-none whitespace-nowrap text-center font-display font-bold uppercase leading-[0.78] tracking-[-0.02em] text-transparent [font-variation-settings:'wdth'_125] [-webkit-text-stroke:1px_rgb(255_255_255/0.09)]"
+    style="font-size: clamp(3rem, 8.1vw, 9.5rem); margin-bottom: -0.12em;"
     aria-hidden="true"
   >
     Composites West

@@ -1,0 +1,76 @@
+---
+/**
+ * Spooling preloader. Counts 0 → 100,000 linear yards in mono while a
+ * tracer-yellow line draws across, then the curtain lifts and the hero
+ * weaves in behind it. ~1.35s total, once per session, never under
+ * reduced-motion. The decision runs inline so it lands before first paint.
+ */
+---
+
+<div id="preloader" class="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <p class="eyebrow flex items-center gap-3 text-tow-500">
+      <span class="tag">000</span> Spooling inventory
+    </p>
+    <p class="preloader-count type-mega text-filament">
+      <span id="preloader-num">0</span><span class="preloader-unit">yd</span>
+    </p>
+    <div class="preloader-bar"><span id="preloader-fill"></span></div>
+    <p class="eyebrow flex justify-between text-tow-500">
+      <span>Reno, NV</span><span id="preloader-pct">0%</span>
+    </p>
+  </div>
+</div>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    var el = document.getElementById('preloader');
+    if (!el) return;
+    var skip = false;
+    try {
+      skip =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        sessionStorage.getItem('cw-spooled') === '1';
+    } catch (e) {}
+    if (skip) { el.remove(); return; }
+    document.documentElement.classList.add('is-loading');
+  })();
+</script>
+
+<script>
+  import { boot } from '../scripts/boot';
+
+  boot('preloader', '#preloader', () => {
+    const el = document.getElementById('preloader');
+    const html = document.documentElement;
+    if (!el || !html.classList.contains('is-loading')) return;
+
+    const num = document.getElementById('preloader-num')!;
+    const pct = document.getElementById('preloader-pct')!;
+    const fill = document.getElementById('preloader-fill')!;
+    const TARGET = 100000;
+    const DUR = 950;
+    const t0 = performance.now();
+
+    const finish = () => {
+      try { sessionStorage.setItem('cw-spooled', '1'); } catch {}
+      el.classList.add('is-done');
+      html.classList.remove('is-loading');
+      document.dispatchEvent(new CustomEvent('cw:reveal'));
+      el.addEventListener('transitionend', () => el.remove(), { once: true });
+      setTimeout(() => el.remove(), 900);
+    };
+
+    const tick = (now: number) => {
+      const p = Math.min((now - t0) / DUR, 1);
+      // fast start, held finish — like a counter catching up to a real number
+      const e = 1 - Math.pow(1 - p, 2.6);
+      num.textContent = Math.round(TARGET * e).toLocaleString('en-US');
+      pct.textContent = `${Math.round(e * 100)}%`;
+      fill.style.transform = `scaleX(${e})`;
+      if (p < 1) requestAnimationFrame(tick);
+      else setTimeout(finish, 140);
+    };
+    requestAnimationFrame(tick);
+  });
+</script>

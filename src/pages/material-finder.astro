@@ -107,19 +107,19 @@ const webAppLd = {
 >
   <!-- Compact page header -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
       <span class="crosshair left-4 top-6 sm:left-6" aria-hidden="true"></span>
       <span class="crosshair right-4 top-6 sm:right-6" aria-hidden="true"></span>
       <div class="py-10 sm:py-12">
-        <p class="eyebrow text-stone-500">CW / material-finder — Interactive</p>
+        <p class="eyebrow text-tow-500">CW / material-finder — Interactive</p>
         <div class="mt-3 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
           <div>
-            <h1 class="type-display text-3xl text-ink-950 sm:text-4xl lg:text-5xl">
+            <h1 class="type-display text-3xl text-filament sm:text-4xl lg:text-5xl">
               Find your material
             </h1>
             <div class="tracer mt-4"></div>
           </div>
-          <p class="max-w-md text-base leading-7 text-stone-600">
+          <p class="max-w-md text-base leading-7 text-tow-300">
             Four quick questions. Every fabric we stock gets ranked against them, with the
             reasoning shown. No email required.
           </p>
@@ -130,18 +130,18 @@ const webAppLd = {
 
   <!-- The tool -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-8 sm:py-10">
         <!-- Control bar -->
-        <div class="border border-ink-950 bg-white">
+        <div class="border border-line-strong bg-carbon-900">
           <div class="flex items-center justify-between gap-4 bg-ink-950 px-4 py-2.5 sm:px-5">
             <p class="eyebrow text-brand">Specify the part</p>
             <div class="flex items-center gap-5">
-              <p id="progress" class="eyebrow text-stone-400" aria-live="polite">0 / 4</p>
+              <p id="progress" class="eyebrow text-tow-500" aria-live="polite">0 / 4</p>
               <button
                 type="button"
                 id="reset"
-                class="eyebrow cursor-pointer text-stone-400 transition-colors hover:text-white"
+                class="eyebrow cursor-pointer text-tow-500 transition-colors hover:text-white"
               >
                 Reset
               </button>
@@ -159,8 +159,8 @@ const webAppLd = {
                   qi > 0 && 'lg:border-l lg:border-t-0',
                 ]}
               >
-                <legend class="eyebrow text-ink-950">{q.label}</legend>
-                <p class="mt-1 text-xs leading-5 text-stone-500">{q.hint}</p>
+                <legend class="eyebrow text-filament">{q.label}</legend>
+                <p class="mt-1 text-xs leading-5 text-tow-500">{q.hint}</p>
                 <div class="mt-3 flex flex-col gap-1.5">
                   {q.options.map((opt) => (
                     <label class="opt">
@@ -183,20 +183,20 @@ const webAppLd = {
 
         <!-- Results -->
         <div class="mt-10">
-          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-ink-950 pb-3">
-            <p class="eyebrow text-stone-500">Ranked results</p>
-            <p id="result-status" class="eyebrow text-ink-950" aria-live="polite">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line-strong pb-3">
+            <p class="eyebrow text-tow-500">Ranked results</p>
+            <p id="result-status" class="eyebrow text-filament" aria-live="polite">
               Awaiting input
             </p>
           </div>
 
           <div id="empty" class="border border-dashed border-line bg-paper px-6 py-12 text-center">
-            <p class="type-display text-xl text-ink-950">Answer any question to start</p>
-            <p class="mx-auto mt-2.5 max-w-md text-sm leading-6 text-stone-600">
+            <p class="type-display text-xl text-filament">Answer any question to start</p>
+            <p class="mx-auto mt-2.5 max-w-md text-sm leading-6 text-tow-300">
               The ranking updates as you go — one answer is enough to see something useful.
               All four gives the sharpest result.
             </p>
-            <p class="eyebrow mt-6 text-stone-400">{catalog.length} fabrics in stock</p>
+            <p class="eyebrow mt-6 text-tow-500">{catalog.length} fabrics in stock</p>
           </div>
 
           <ol id="results" class="hidden"></ol>
@@ -208,10 +208,10 @@ const webAppLd = {
             class="mt-6 hidden border-l-2 border-brand bg-paper px-6 py-5"
             role="status"
           >
-            <p class="font-display text-base font-semibold text-ink-950">
+            <p class="font-display text-base font-semibold text-filament">
               There's one trade-off in that result worth talking through.
             </p>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-tow-300">
               The match above does most of what you need, but it gives something up — and
               we may be able to source something that doesn't. Stocked material is what
               ships immediately; finding the harder reinforcement is a large part of what
@@ -222,9 +222,9 @@ const webAppLd = {
             </a>
           </div>
 
-          <p class="mt-6 text-sm leading-6 text-stone-600">
+          <p class="mt-6 text-sm leading-6 text-tow-300">
             This ranks what we stock — and we source well beyond it.{' '}
-            <a href="/contact/" class="underline-draw font-semibold text-ink-950">Tell us the requirement.</a>
+            <a href="/contact/" class="underline-draw font-semibold text-filament">Tell us the requirement.</a>
           </p>
         </div>
       </div>
@@ -233,11 +233,11 @@ const webAppLd = {
 
   <!-- Method strip -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-10 sm:py-12">
         <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
-          <h2 class="type-display text-2xl text-ink-950">No black box</h2>
-          <p class="max-w-2xl text-sm leading-6 text-stone-600">
+          <h2 class="type-display text-2xl text-filament">No black box</h2>
+          <p class="max-w-2xl text-sm leading-6 text-tow-300">
             Every match shows its reasoning and what it gives up. This is a starting point
             built on how these materials behave — not a substitute for talking to someone
             who has specified them since 2001.
@@ -253,8 +253,8 @@ const webAppLd = {
             <div class="flex gap-3">
               <span class="mt-2 h-px w-4 shrink-0 bg-brand" aria-hidden="true"></span>
               <div>
-                <dt class="font-display text-sm font-semibold text-ink-950">{item.t}</dt>
-                <dd class="mt-1 text-sm leading-6 text-stone-600">{item.d}</dd>
+                <dt class="font-display text-sm font-semibold text-filament">{item.t}</dt>
+                <dd class="mt-1 text-sm leading-6 text-tow-300">{item.d}</dd>
               </div>
             </div>
           ))}
@@ -286,7 +286,7 @@ const webAppLd = {
     gap: 0.5rem;
     padding: 0.4rem 0.6rem;
     border: 1px solid var(--color-line);
-    background: #fff;
+    background: var(--color-carbon-800);
     transition:
       border-color 0.15s ease-out,
       background-color 0.15s ease-out;
@@ -296,25 +296,28 @@ const webAppLd = {
     font-size: 0.8125rem;
     font-weight: 650;
     line-height: 1.3;
-    color: var(--color-ink-950);
+    color: var(--color-filament);
   }
   .opt-detail {
     flex: none;
     font-family: var(--font-mono);
     font-size: 0.625rem;
     letter-spacing: 0.02em;
-    color: #a8a29e;
+    color: var(--color-tow-500);
   }
   .opt:hover .opt-face {
-    border-color: var(--color-ink-950);
+    border-color: var(--color-filament);
   }
   .opt input:focus-visible + .opt-face {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
   .opt input:checked + .opt-face {
-    border-color: var(--color-ink-950);
+    border-color: var(--color-brand);
     background: var(--color-brand);
+  }
+  .opt input:checked + .opt-face .opt-label {
+    color: var(--color-carbon-950);
   }
   .opt input:checked + .opt-face .opt-detail {
     color: #6b5900;
@@ -342,8 +345,8 @@ const webAppLd = {
     gap: 1.25rem;
     margin-top: 1.25rem;
     padding: 1.25rem;
-    border: 2px solid var(--color-ink-950);
-    background: #fff;
+    border: 2px solid var(--color-brand);
+    background: var(--color-carbon-800);
   }
   @media (min-width: 640px) {
     #results .res-best {
@@ -371,7 +374,7 @@ const webAppLd = {
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #78716c;
+    color: var(--color-tow-500);
   }
   #results .res-rank b {
     font-weight: 600;
@@ -384,7 +387,7 @@ const webAppLd = {
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ink-950);
+    color: var(--color-filament);
   }
   #results .res-title {
     margin: 0.3rem 0 0;
@@ -392,14 +395,14 @@ const webAppLd = {
     font-size: 1.0625rem;
     font-weight: 600;
     line-height: 1.3;
-    color: var(--color-ink-950);
+    color: var(--color-filament);
   }
   #results .res-specs {
     margin: 0.55rem 0 0;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     line-height: 1.5;
-    color: #78716c;
+    color: var(--color-tow-500);
   }
   #results .res-list {
     margin: 0.7rem 0 0;
@@ -410,7 +413,7 @@ const webAppLd = {
     gap: 0.3rem;
     font-size: 0.8125rem;
     line-height: 1.5;
-    color: #57534e;
+    color: var(--color-tow-300);
   }
   #results .res-list li {
     display: flex;
@@ -425,10 +428,10 @@ const webAppLd = {
     background: var(--color-brand-deep);
   }
   #results .res-list li.is-tradeoff::before {
-    background: #d6d3d1;
+    background: var(--color-tow-300);
   }
   #results .res-list li.is-tradeoff {
-    color: #78716c;
+    color: var(--color-tow-500);
   }
   #results .res-cta {
     margin: 0.9rem 0 0;
@@ -469,7 +472,7 @@ const webAppLd = {
     font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.3;
-    color: var(--color-ink-950);
+    color: var(--color-filament);
   }
   /* Qualitative band replaces a raw percentage — see grade() for why. */
   #results .res-grade {
@@ -480,7 +483,7 @@ const webAppLd = {
     letter-spacing: 0.14em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: #a8a29e;
+    color: var(--color-tow-500);
   }
   #results .res-grade.is-strong {
     color: var(--color-brand-deep);
@@ -490,26 +493,26 @@ const webAppLd = {
     margin: 0.2rem 0 0;
     font-size: 0.8125rem;
     line-height: 1.45;
-    color: #57534e;
+    color: var(--color-tow-300);
   }
   #results .res-alt-tag {
     font-family: var(--font-mono);
     font-size: 0.625rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #a8a29e;
+    color: var(--color-tow-500);
   }
   #results .res-alt-caveat {
     margin: 0.2rem 0 0;
     font-size: 0.8125rem;
     line-height: 1.45;
-    color: #a8a29e;
+    color: var(--color-tow-500);
   }
   #results .res-alt-specs {
     margin: 0.25rem 0 0;
     font-family: var(--font-mono);
     font-size: 0.65rem;
-    color: #a8a29e;
+    color: var(--color-tow-500);
   }
 
   #results .meter {
@@ -550,6 +553,8 @@ const webAppLd = {
 </style>
 
 <script>
+  import { boot } from '../scripts/boot';
+  boot('materialFinder', '#progress', () => {
   interface Item {
     slug: string;
     shortName: string;
@@ -911,4 +916,5 @@ const webAppLd = {
     if (input) input.checked = true;
   }
   render();
+  });
 </script>

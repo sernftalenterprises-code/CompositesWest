@@ -147,16 +147,16 @@ const breadcrumbLd = {
 >
   <!-- Interior page header -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
-      <span class="crosshair left-4 top-8 sm:left-6" aria-hidden="true"></span>
-      <span class="crosshair right-4 top-8 sm:right-6" aria-hidden="true"></span>
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <span class="crosshair left-5 top-8 sm:left-8" aria-hidden="true"></span>
+      <span class="crosshair right-5 top-8 sm:right-8" aria-hidden="true"></span>
       <div class="py-14 sm:py-20">
-        <p class="eyebrow text-stone-500">CW / fabric-selector — Guide</p>
-        <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+        <p class="eyebrow text-tow-500">CW / fabric-selector — Guide</p>
+        <h1 class="type-display mt-4 max-w-3xl text-4xl text-filament sm:text-5xl lg:text-6xl">
           Which fabric do you need?
         </h1>
         <div class="tracer mt-6"></div>
-        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">
           Four decisions narrow the field almost completely. Here they are in the order that
           matters, with every in-stock fabric side by side at the bottom.
         </p>
@@ -164,7 +164,7 @@ const breadcrumbLd = {
           <a href="/material-finder/" class="btn btn-dark">
             Run it interactively <span class="btn-arrow">&rarr;</span>
           </a>
-          <p class="max-w-xs text-sm leading-6 text-stone-500">
+          <p class="max-w-xs text-sm leading-6 text-tow-500">
             Prefer to answer four questions and get a ranked answer? Use the Material Finder.
           </p>
         </div>
@@ -174,11 +174,11 @@ const breadcrumbLd = {
 
   <!-- 01 / The four decisions -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-24">
         <div class="reveal max-w-2xl">
-          <p class="eyebrow text-stone-500">01 / Method</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+          <p class="eyebrow text-tow-500">01 / Method</p>
+          <h2 class="type-display mt-4 text-3xl text-filament sm:text-4xl">
             Four decisions, in order
           </h2>
           <div class="tracer mt-5"></div>
@@ -217,11 +217,11 @@ const breadcrumbLd = {
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div>
-                  <h3 class="font-display text-lg font-semibold text-ink-950">{step.n}</h3>
-                  <p class="mt-1 text-sm leading-6 text-stone-500">{step.lead}</p>
+                  <h3 class="font-display text-lg font-semibold text-filament">{step.n}</h3>
+                  <p class="mt-1 text-sm leading-6 text-tow-500">{step.lead}</p>
                 </div>
               </div>
-              <p class="leading-7 text-stone-600 lg:col-span-8">{step.body}</p>
+              <p class="leading-7 text-tow-300 lg:col-span-8">{step.body}</p>
             </li>
           ))}
         </ol>
@@ -231,15 +231,15 @@ const breadcrumbLd = {
 
   <!-- 02 / Construction comparison -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-24">
         <div class="reveal max-w-2xl">
-          <p class="eyebrow text-stone-500">02 / Construction</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+          <p class="eyebrow text-tow-500">02 / Construction</p>
+          <h2 class="type-display mt-4 text-3xl text-filament sm:text-4xl">
             How the constructions compare
           </h2>
           <div class="tracer mt-5"></div>
-          <p class="mt-6 text-lg leading-8 text-stone-600">
+          <p class="mt-6 text-lg leading-8 text-tow-300">
             Drape and stability trade against each other. Pick the point on that trade your
             geometry actually needs.
           </p>
@@ -261,14 +261,14 @@ const breadcrumbLd = {
               {constructions.map((c) => (
                 <tr>
                   <th scope="row" class="row-head">{c.name}</th>
-                  <td class="font-mono text-ink-950">{c.drape}</td>
-                  <td class="font-mono text-ink-950">{c.stability}</td>
-                  <td class="font-mono text-ink-950">{c.crimp}</td>
+                  <td class="font-mono text-filament">{c.drape}</td>
+                  <td class="font-mono text-filament">{c.stability}</td>
+                  <td class="font-mono text-filament">{c.crimp}</td>
                   <td>{c.best}</td>
                   <td>
                     <a
                       href={`/all-products/?weave=${encodeURIComponent(c.weave)}`}
-                      class="eyebrow underline-draw whitespace-nowrap text-ink-950"
+                      class="eyebrow underline-draw whitespace-nowrap text-filament"
                     >
                       View &rarr;
                     </a>
@@ -282,12 +282,12 @@ const breadcrumbLd = {
         <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
           {constructions.map((c) => (
             <article class="card group p-7">
-              <h3 class="font-display text-lg font-semibold text-ink-950">{c.name}</h3>
+              <h3 class="font-display text-lg font-semibold text-filament">{c.name}</h3>
               <div
                 class="mt-3 h-0.5 w-8 bg-line transition-all duration-200 group-hover:w-14 group-hover:bg-brand"
               >
               </div>
-              <p class="mt-4 text-sm leading-6 text-stone-600">{c.body}</p>
+              <p class="mt-4 text-sm leading-6 text-tow-300">{c.body}</p>
             </article>
           ))}
         </div>
@@ -297,11 +297,11 @@ const breadcrumbLd = {
 
   <!-- 03 / Weight bands -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-24">
         <div class="reveal max-w-2xl">
-          <p class="eyebrow text-stone-500">03 / Areal weight</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+          <p class="eyebrow text-tow-500">03 / Areal weight</p>
+          <h2 class="type-display mt-4 text-3xl text-filament sm:text-4xl">
             Reading the weight bands
           </h2>
           <div class="tracer mt-5"></div>
@@ -315,9 +315,9 @@ const breadcrumbLd = {
                 i === 2 && 'sm:pr-0',
               ]}
             >
-              <dt class="eyebrow order-2 mt-3 text-stone-500">{b.range}</dt>
-              <dd class="type-display order-1 text-4xl text-ink-950 lg:text-5xl">{b.band}</dd>
-              <dd class="order-3 mt-3 text-sm leading-6 text-stone-600">{b.body}</dd>
+              <dt class="eyebrow order-2 mt-3 text-tow-500">{b.range}</dt>
+              <dd class="type-display order-1 text-4xl text-filament lg:text-5xl">{b.band}</dd>
+              <dd class="order-3 mt-3 text-sm leading-6 text-tow-300">{b.body}</dd>
             </div>
           ))}
         </dl>
@@ -327,21 +327,21 @@ const breadcrumbLd = {
 
   <!-- 04 / Compare every fabric -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-24">
         <div class="reveal flex flex-wrap items-end justify-between gap-6">
           <div class="max-w-2xl">
-            <p class="eyebrow text-stone-500">04 / Comparison</p>
-            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+            <p class="eyebrow text-tow-500">04 / Comparison</p>
+            <h2 class="type-display mt-4 text-3xl text-filament sm:text-4xl">
               Every in-stock fabric, side by side
             </h2>
             <div class="tracer mt-5"></div>
-            <p class="mt-6 text-lg leading-8 text-stone-600">
+            <p class="mt-6 text-lg leading-8 text-tow-300">
               Sorted lightest to heaviest. Sort by any column to compare on what matters to
               you.
             </p>
           </div>
-          <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950">
+          <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-filament">
             Browse with filters <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
@@ -375,19 +375,19 @@ const breadcrumbLd = {
                   </th>
                   <td>{p.brand}</td>
                   <td>{p.weaveLabel}</td>
-                  <td class="font-mono text-ink-950">{p.tow ?? '—'}</td>
-                  <td class="font-mono text-ink-950">{p.weightOz}</td>
-                  <td class="font-mono text-ink-950">{p.weightGsm}</td>
-                  <td class="font-mono text-ink-950">{p.widthIn}&Prime;</td>
+                  <td class="font-mono text-filament">{p.tow ?? '—'}</td>
+                  <td class="font-mono text-filament">{p.weightOz}</td>
+                  <td class="font-mono text-filament">{p.weightGsm}</td>
+                  <td class="font-mono text-filament">{p.widthIn}&Prime;</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p class="mt-6 max-w-3xl text-sm leading-6 text-stone-600">
+        <p class="mt-6 max-w-3xl text-sm leading-6 text-tow-300">
           Roll lengths and other widths vary — several of these are available in formats not
           listed here, and we source well beyond what we stock.{' '}
-          <a href="/contact/" class="underline-draw font-semibold text-ink-950">Tell us what you need.</a>
+          <a href="/contact/" class="underline-draw font-semibold text-filament">Tell us what you need.</a>
         </p>
       </div>
     </div>
@@ -395,11 +395,11 @@ const breadcrumbLd = {
 
   <!-- 05 / FAQ -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="grid gap-12 py-20 sm:py-24 lg:grid-cols-12">
         <div class="reveal lg:col-span-4">
-          <p class="eyebrow text-stone-500">05 / FAQ</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
+          <p class="eyebrow text-tow-500">05 / FAQ</p>
+          <h2 class="type-display mt-4 text-3xl text-filament sm:text-4xl">
             Reading a spec sheet
           </h2>
           <div class="tracer mt-5"></div>
@@ -412,14 +412,14 @@ const breadcrumbLd = {
                   class="flex cursor-pointer list-none items-baseline gap-5 py-5 pr-2 [&::-webkit-details-marker]:hidden"
                 >
                   <span
-                    class="font-mono text-sm text-stone-400 transition-colors group-open:text-brand-deep"
+                    class="font-mono text-sm text-tow-500 transition-colors group-open:text-brand-deep"
                     aria-hidden="true"
                   >
                     <span class="group-open:hidden">+</span><span class="hidden group-open:inline">&minus;</span>
                   </span>
-                  <span class="font-display text-base font-semibold text-ink-950">{item.q}</span>
+                  <span class="font-display text-base font-semibold text-filament">{item.q}</span>
                 </summary>
-                <p class="pb-6 pl-9 text-base leading-7 text-stone-600">{item.a}</p>
+                <p class="pb-6 pl-9 text-base leading-7 text-tow-300">{item.a}</p>
               </details>
             ))}
           </div>
@@ -441,7 +441,7 @@ const breadcrumbLd = {
     font-weight: 600;
     letter-spacing: normal;
     text-transform: none;
-    color: var(--color-ink-950);
+    color: var(--color-filament);
     white-space: normal;
     border-bottom: 1px solid var(--color-line);
     vertical-align: top;
@@ -466,7 +466,7 @@ const breadcrumbLd = {
     transition: color 0.15s ease-out;
   }
   .sort-btn:hover {
-    color: var(--color-ink-950);
+    color: var(--color-filament);
   }
   .sort-btn::after {
     content: "↕";
@@ -486,6 +486,8 @@ const breadcrumbLd = {
 </style>
 
 <script>
+  import { boot } from '../scripts/boot';
+  boot('fabricSelector', '#compare', () => {
   const table = document.getElementById('compare') as HTMLTableElement | null;
   if (table) {
     const tbody = table.tBodies[0];
@@ -513,4 +515,5 @@ const breadcrumbLd = {
       });
     }
   }
+  });
 </script>

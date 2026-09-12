@@ -7,26 +7,28 @@ interface Props {
 }
 
 const {
-  heading = "Let's start something new — or just say hello.",
-  text = 'Our expert sales team can match the right materials to any project, often saving you money and time in the process.',
+  heading = 'Send us the part. We’ll send back the material.',
+  text = 'Spec, application, or a photo of what you’re building — our sales engineers match it to what’s on the shelf and quote it the same day.',
 } = Astro.props;
 ---
 
-<section class="twill cv-auto relative">
-  <div class="frame-x frame-dark relative mx-auto max-w-7xl px-4 sm:px-6">
-    <span class="crosshair crosshair-dark left-4 top-8 sm:left-6" aria-hidden="true"></span>
-    <span class="crosshair crosshair-dark bottom-8 right-4 sm:right-6" aria-hidden="true"></span>
-    <div class="flex flex-col items-start gap-8 py-20 md:flex-row md:items-end md:justify-between">
-      <div class="max-w-2xl">
-        <p class="eyebrow text-brand">Get in touch</p>
-        <h2 class="type-display mt-4 text-3xl text-white sm:text-4xl">{heading}</h2>
-        <p class="mt-4 text-lg leading-8 text-stone-400">{text}</p>
+<section class="twill cv-auto relative overflow-hidden border-t border-line">
+  <div class="frame-x frame-dark relative mx-auto max-w-[1600px] px-5 sm:px-8">
+    <span class="crosshair left-5 top-8 sm:left-8" aria-hidden="true"></span>
+    <span class="crosshair bottom-8 right-5 sm:right-8" aria-hidden="true"></span>
+    <div class="grid gap-10 py-24 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-8">
+        <p class="eyebrow flex items-center gap-3 text-brand">
+          <span class="tag">Quote</span> Same-day response on in-stock material
+        </p>
+        <h2 class="type-display mt-6 text-4xl text-filament sm:text-5xl lg:text-6xl">{heading}</h2>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">{text}</p>
       </div>
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
         <a href="/contact/" class="btn btn-primary">
-          Contact us today <span class="btn-arrow">&rarr;</span>
+          Request a quote <span class="btn-arrow">&rarr;</span>
         </a>
-        <a href={`tel:${company.phoneHref}`} class="btn btn-outline-light">
+        <a href={`tel:${company.phoneHref}`} class="btn btn-outline">
           {company.phone}
         </a>
       </div>

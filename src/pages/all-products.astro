@@ -37,16 +37,16 @@ const breadcrumbLd = {
 >
   <!-- Interior page header -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x relative mx-auto max-w-7xl px-4 sm:px-6">
-      <span class="crosshair left-4 top-8 sm:left-6" aria-hidden="true"></span>
-      <span class="crosshair right-4 top-8 sm:right-6" aria-hidden="true"></span>
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <span class="crosshair left-5 top-8 sm:left-8" aria-hidden="true"></span>
+      <span class="crosshair right-5 top-8 sm:right-8" aria-hidden="true"></span>
       <div class="py-14 sm:py-20">
-        <p class="eyebrow text-stone-500">CW / all-products — Catalog</p>
-        <h1 class="type-display mt-4 max-w-3xl text-4xl text-ink-950 sm:text-5xl lg:text-6xl">
+        <p class="eyebrow text-tow-500">CW / all-products — Catalog</p>
+        <h1 class="type-display mt-4 max-w-3xl text-4xl text-filament sm:text-5xl lg:text-6xl">
           In-stock carbon fiber fabrics
         </h1>
         <div class="tracer mt-6"></div>
-        <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">
           Our warehouse houses 100,000 linear yards of material, ready to ship without the
           dreaded lead time. Filter by brand, weave, or tow size to find your reinforcement.
         </p>
@@ -56,11 +56,11 @@ const breadcrumbLd = {
 
   <!-- 01 / Catalog -->
   <section class="border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-12 sm:py-16">
-        <div class="reveal flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-ink-950 pb-4">
-          <p class="eyebrow text-stone-500">01 / Catalog</p>
-          <p id="result-count" class="font-mono text-xs font-medium uppercase tracking-[0.16em] text-ink-950" aria-live="polite">
+        <div class="reveal flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line-strong pb-4">
+          <p class="eyebrow text-tow-500">01 / Catalog</p>
+          <p id="result-count" class="font-mono text-xs font-medium uppercase tracking-[0.16em] text-filament" aria-live="polite">
             Showing {products.length} products
           </p>
         </div>
@@ -68,17 +68,17 @@ const breadcrumbLd = {
         <div class="mt-10 flex flex-col gap-10 lg:flex-row lg:gap-12">
           <!-- Filters -->
           <aside class="reveal reveal-delay-1 lg:w-64 lg:shrink-0" aria-label="Product filters">
-            <form id="filters" class="border border-line bg-white lg:sticky lg:top-32">
+            <form id="filters" class="border border-line bg-carbon-900 lg:sticky lg:top-32">
               <div class="flex items-baseline justify-between gap-4 border-b border-line bg-paper px-5 py-3.5">
-                <h2 class="eyebrow text-ink-950">Filters</h2>
-                <button type="reset" class="eyebrow underline-draw cursor-pointer text-stone-500 transition-colors hover:text-ink-950">Clear all</button>
+                <h2 class="eyebrow text-filament">Filters</h2>
+                <button type="reset" class="eyebrow underline-draw cursor-pointer text-tow-500 transition-colors hover:text-filament">Clear all</button>
               </div>
               <div class="space-y-7 px-5 py-6">
                 <fieldset>
-                  <legend class="eyebrow text-stone-500">Brand</legend>
+                  <legend class="eyebrow text-tow-500">Brand</legend>
                   <div class="mt-3.5 space-y-2.5">
                     {brands.map((b) => (
-                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-stone-600 transition-colors hover:text-ink-950 has-[:checked]:font-medium has-[:checked]:text-ink-950">
+                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-tow-300 transition-colors hover:text-filament has-[:checked]:font-medium has-[:checked]:text-filament">
                         <input type="checkbox" name="brand" value={b} />
                         {b}
                       </label>
@@ -86,10 +86,10 @@ const breadcrumbLd = {
                   </div>
                 </fieldset>
                 <fieldset>
-                  <legend class="eyebrow text-stone-500">Weave</legend>
+                  <legend class="eyebrow text-tow-500">Weave</legend>
                   <div class="mt-3.5 space-y-2.5">
                     {weaves.map((w) => (
-                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-stone-600 transition-colors hover:text-ink-950 has-[:checked]:font-medium has-[:checked]:text-ink-950">
+                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-tow-300 transition-colors hover:text-filament has-[:checked]:font-medium has-[:checked]:text-filament">
                         <input type="checkbox" name="weave" value={w} />
                         {w}
                       </label>
@@ -97,10 +97,10 @@ const breadcrumbLd = {
                   </div>
                 </fieldset>
                 <fieldset>
-                  <legend class="eyebrow text-stone-500">Tow size</legend>
+                  <legend class="eyebrow text-tow-500">Tow size</legend>
                   <div class="mt-3.5 space-y-2.5">
                     {tows.map((t) => (
-                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-stone-600 transition-colors hover:text-ink-950 has-[:checked]:font-medium has-[:checked]:text-ink-950">
+                      <label class="flex cursor-pointer items-center gap-2.5 text-sm text-tow-300 transition-colors hover:text-filament has-[:checked]:font-medium has-[:checked]:text-filament">
                         <input type="checkbox" name="tow" value={t} />
                         {t}
                       </label>
@@ -116,9 +116,9 @@ const breadcrumbLd = {
             <div id="product-grid" class="grid gap-px sm:grid-cols-2 xl:grid-cols-3">
               {products.map((product, i) => <ProductCard product={product} eager={i < 3} />)}
             </div>
-            <p id="no-results" class="mt-10 hidden border border-line bg-paper px-6 py-12 text-center text-base leading-7 text-stone-600">
+            <p id="no-results" class="mt-10 hidden border border-line bg-paper px-6 py-12 text-center text-base leading-7 text-tow-300">
               No products match those filters — but we can likely source it.{' '}
-              <a href="/contact/" class="underline-draw font-semibold text-ink-950">Contact us</a> with your specs.
+              <a href="/contact/" class="underline-draw font-semibold text-filament">Contact us</a> with your specs.
             </p>
           </div>
         </div>
@@ -128,15 +128,15 @@ const breadcrumbLd = {
 
   <!-- 02 / Custom sourcing -->
   <section class="border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="frame-x mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="reveal py-16 sm:py-20">
-        <p class="eyebrow text-stone-500">02 / Custom sourcing</p>
-        <h2 class="type-display mt-4 max-w-2xl text-3xl text-ink-950 sm:text-4xl">
+        <p class="eyebrow text-tow-500">02 / Custom sourcing</p>
+        <h2 class="type-display mt-4 max-w-2xl text-3xl text-filament sm:text-4xl">
           Specs for your <em>spec</em>ific needs
         </h2>
         <div class="tracer mt-5"></div>
         <div class="mt-6 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-          <p class="max-w-2xl text-lg leading-8 text-stone-600">
+          <p class="max-w-2xl text-lg leading-8 text-tow-300">
             Don't see the exact material you need? Our industry relationships let us source
             hard-to-find reinforcements, prepregs, core, and process materials to spec.
           </p>
@@ -158,16 +158,16 @@ const breadcrumbLd = {
     width: 15px;
     height: 15px;
     flex: none;
-    border: 1px solid #a8a29e;
-    background-color: #fff;
+    border: 1px solid var(--color-tow-500);
+    background-color: var(--color-carbon-800);
     cursor: pointer;
     transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
   }
   #filters input[type='checkbox']:hover {
-    border-color: var(--color-ink-950);
+    border-color: var(--color-filament);
   }
   #filters input[type='checkbox']:checked {
-    border-color: var(--color-ink-950);
+    border-color: var(--color-filament);
     background-color: var(--color-brand);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%230a0a0b' stroke-width='2.5' d='M3.5 8.5l3 3 6-6.5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -176,6 +176,8 @@ const breadcrumbLd = {
 </style>
 
 <script>
+  import { boot } from '../scripts/boot';
+  boot('allProducts', '#filters', () => {
   const form = document.getElementById('filters') as HTMLFormElement;
   const grid = document.getElementById('product-grid')!;
   const cards = [...grid.querySelectorAll<HTMLElement>('[data-brand]')];
@@ -215,4 +217,5 @@ const breadcrumbLd = {
     }
   }
   apply();
+  });
 </script>

@@ -1,0 +1,95 @@
+---
+/**
+ * Build-time SVG diagram of a weave architecture. Every cell is one tow
+ * crossing: `warp` when the vertical tow is on top, `weft` when the
+ * horizontal one is. The rule for which is on top IS the weave — so the
+ * diagram is the definition, not an illustration of it.
+ *
+ * Each cell carries a `--d` delay so the tile can build itself tow-by-tow
+ * when it scrolls into view (warp first, then weft — the same order the
+ * hero weaves in). Toggle `.is-built` to run it; see Base.astro.
+ */
+export type Weave = 'plain' | 'twill' | 'satin' | 'uni' | 'knit';
+
+interface Props {
+  weave: Weave;
+  /** Cells per side. */
+  n?: number;
+  class?: string;
+}
+
+const { weave, n = 12, class: className } = Astro.props;
+const size = 120;
+const s = size / n;
+
+const warpOnTop = (i: number, j: number): boolean => {
+  switch (weave) {
+    case 'plain':
+      return (i + j) % 2 === 0;
+    case 'twill':
+      return (i + j) % 4 < 2;
+    case 'satin':
+      // 8-harness, 3-step: one warp rise per 8, never adjacent
+      return ((i - 3 * j) % 8 + 8) % 8 === 0;
+    case 'uni':
+      return true;
+    default:
+      return true;
+  }
+};
+
+const cells: { x: number; y: number; cls: string; d: number }[] = [];
+if (weave !== 'knit') {
+  for (let j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      const warp = warpOnTop(i, j);
+      // warp lays in column by column, weft follows row by row
+      const d = warp ? i * 34 + j * 3 : 420 + j * 34 + i * 3;
+      cells.push({ x: i * s, y: j * s, cls: warp ? 'warp' : 'weft', d });
+    }
+  }
+}
+
+/* ±45° non-crimp: two straight tow systems laid at 45° to each other. */
+const diag: { d: string; cls: string; delay: number }[] = [];
+if (weave === 'knit') {
+  const step = s * 1.4;
+  let k = 0;
+  for (let x = -size; x < size * 2; x += step, k++) {
+    diag.push({ d: `M${x},0 L${x + size},${size}`, cls: 'weft', delay: 420 + k * 26 });
+  }
+  k = 0;
+  for (let x = -size; x < size * 2; x += step, k++) {
+    diag.push({ d: `M${x + size},0 L${x},${size}`, cls: 'warp', delay: k * 26 });
+  }
+}
+---
+
+<svg
+  class:list={['weave-tile', className]}
+  viewBox={`0 0 ${size} ${size}`}
+  role="img"
+  aria-label={`${weave} weave pattern`}
+  shape-rendering="crispEdges"
+  data-build
+>
+  <rect class="bg" width={size} height={size} fill="#0b0b0d" />
+  {cells.map((c) => (
+    <rect x={c.x} y={c.y} width={s - 0.6} height={s - 0.6} class={c.cls} style={`--d:${c.d}ms`} />
+  ))}
+  {weave === 'uni' &&
+    [0.2, 0.5, 0.8].map((t, i) => (
+      <rect class="stitch" x="0" y={size * t} width={size} height="0.8" fill="#3a3a41" style={`--d:${700 + i * 120}ms`} />
+    ))}
+  {diag.map((l) => (
+    <path d={l.d} class={l.cls} stroke="currentColor" stroke-width={s * 0.9} style={`fill:none;--d:${l.delay}ms`} />
+  ))}
+</svg>
+
+<style>
+  /* Knit tows are stroked, not filled */
+  .weave-tile path.warp { stroke: #2b2b31; }
+  .weave-tile path.weft { stroke: #17171b; }
+  :global(a:hover) .weave-tile path.warp,
+  :global(a:focus-visible) .weave-tile path.warp { stroke: var(--color-brand); }
+</style>

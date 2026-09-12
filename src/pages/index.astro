@@ -1,65 +1,100 @@
 ---
-import { Image, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import Preloader from '../components/Preloader.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { products } from '../data/products';
+import WeaveHero from '../components/WeaveHero.astro';
+import WeaveTile from '../components/WeaveTile.astro';
+import { products, company } from '../data/products';
 import { applications } from '../data/applications';
-import rolls from '../assets/rolls.jpg';
-import carbonfiber from '../assets/carbonfiber.jpeg';
 
-const featured = products.slice(0, 3);
+const featured = products.slice(0, 6);
+const years = new Date().getFullYear() - Number(company.founded);
 
-const specialties = [
-  'Carbon Fiber Fabrics',
-  '±45 Knit Fabrics',
-  'Unidirectional (Hot Melt Fill)',
-  'High Modulus Carbon Fabrics',
-  'Aerospace Fiberglass',
-  'Process Material Consumables',
+/* The roll in the hero is a real SKU — its readout comes from the catalog. */
+const rollSku = products.find((p) => p.slug === 'hexcel-twill-weave') ?? products[0];
+
+const tickerItems = ['Hexcel', 'Toray', 'FCIM', 'CFA', 'T300', 'T700S', 'HR40', '1K · 3K · 6K · 12K', 'Plain', '2×2 Twill', '8H Satin', 'Uni', '±45° Knit'];
+
+const manifest = [
+  {
+    value: '100,000',
+    suffix: '+',
+    unit: 'linear yards',
+    note: 'Carbon, glass, knit, and uni — warehoused and ready to cut.',
+    counter: { target: 100000, sep: true, suffix: '+' },
+  },
+  {
+    value: String(years),
+    suffix: '',
+    unit: 'years',
+    note: `Est. ${company.founded}. Sailboat racing was the first customer.`,
+    counter: { target: years },
+  },
+  {
+    value: '1K–12K',
+    suffix: '',
+    unit: 'tow',
+    note: 'Standard, intermediate, and high-modulus (HR40) fiber on the shelf.',
+  },
+  {
+    value: '~30',
+    suffix: '%',
+    unit: 'lighter',
+    note: 'Typical weight saved converting an aluminum or glass part to carbon.',
+    counter: { target: 30, prefix: '~', suffix: '%' },
+  },
 ];
 
-const tickerItems = ['Hexcel', 'Toray', 'FCIM', 'CFA', 'T300', 'T700S', 'HR40', '3K · 6K · 12K'];
+const architectures = [
+  { weave: 'plain', name: 'Plain', line: 'Over one, under one. Maximum stability, minimum drape.', use: 'Flat sheets · tubes · gentle 2D curves', filter: 'Plain' },
+  { weave: 'twill', name: '2×2 Twill', line: 'Over two, under two. Drapes into compound curves — the cosmetic weave.', use: 'Automotive · cosmetic · complex contours', filter: 'Twill' },
+  { weave: 'satin', name: '8H Satin', line: 'One rise in eight. Lowest crimp of any weave; drapes like cloth.', use: 'Tooling · aerospace laminates', filter: 'Satin' },
+  { weave: 'uni', name: 'Unidirectional', line: 'Nothing crossing. All the strength, all in one direction.', use: 'Spar caps · bike frames · reinforcement strips', filter: 'Unidirectional' },
+  { weave: 'knit', name: '±45° Knit', line: 'Two straight tow systems stitched at 45°. Zero crimp, shear stiffness.', use: 'Torsion · shear · shafts and shells', filter: 'Knit' },
+] as const;
+
+/* Orbit: each market sits on a wound layer of the roll seen end-on.
+   Positions are polar (% radius, degrees, 0 = right, counter-clockwise). */
+const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
+const orbitPos = [
+  { r: 46, a: 36 },   // aerospace
+  { r: 34, a: 196 },  // marine
+  { r: 46, a: 234 },  // infrastructure
+  { r: 22, a: 104 },  // sporting goods
+  { r: 34, a: -22 },  // automotive
+];
+const orbit = applications.map((app, i) => {
+  const pos = orbitPos[i] ?? { r: 34, a: i * 72 };
+  const rad = (pos.a * Math.PI) / 180;
+  return {
+    ...app,
+    x: 50 + pos.r * Math.cos(rad),
+    y: 50 - pos.r * Math.sin(rad),
+    recs: app.recommended.map((s) => bySlug[s]).filter(Boolean).slice(0, 3),
+  };
+});
+const layerRadii = Array.from({ length: 15 }, (_, i) => 12 + i * 2.55);
+
+const reasons = [
+  { label: 'Stocked, not sourced', body: 'If it is on this site, it is on the shelf in Reno. No back-ordering, no waiting on a mill run.' },
+  { label: 'Traceable to the mill', body: 'Hexcel, Toray, FCIM, CFA. Every roll ships with its manufacturer documentation, so your first article is the last argument.' },
+  { label: 'By the yard or by the roll', body: 'Prototype quantities and production quantities from the same inventory. Either way it ships this week.' },
+];
 
 const faq = [
-  {
-    q: 'What materials does Composites West supply?',
-    a: 'We specialize in carbon fiber fabric reinforcements — woven, non-crimp (knit), unidirectional, and braid — plus fiberglass, prepregs, core materials, vacuum bagging and infusion supplies. In-stock fabrics often include high modulus (HR40), intermediate modulus, and 1K, 3K, 6K, and 12K standard modulus materials.',
-  },
-  {
-    q: 'How fast can you ship?',
-    a: 'Our warehouse houses 100,000 linear yards of material ready to ship, so most in-stock orders go out without the long lead times typical of the composites industry.',
-  },
-  {
-    q: 'Can you source materials that are not listed on the site?',
-    a: 'Yes. We maintain relationships across the composites industry and regularly source hard-to-find reinforcements, prepregs, honeycomb core, and process materials to spec. Contact us with your requirements.',
-  },
-  {
-    q: 'What industries do you serve?',
-    a: 'Aerospace, marine, automotive, sporting goods, civil engineering and infrastructure, and industrial manufacturing — anywhere strength-to-weight matters.',
-  },
+  { q: 'What materials does Composites West supply?', a: 'We specialize in carbon fiber fabric reinforcements — woven, non-crimp (knit), unidirectional, and braid — plus fiberglass, prepregs, core materials, vacuum bagging and infusion supplies. In-stock fabrics often include high modulus (HR40), intermediate modulus, and 1K, 3K, 6K, and 12K standard modulus materials.' },
+  { q: 'How fast can you ship?', a: 'Our warehouse houses 100,000 linear yards of material ready to ship, so most in-stock orders go out without the long lead times typical of the composites industry.' },
+  { q: 'Can you source materials that are not listed on the site?', a: 'Yes. We maintain relationships across the composites industry and regularly source hard-to-find reinforcements, prepregs, honeycomb core, and process materials to spec. Contact us with your requirements.' },
+  { q: 'What industries do you serve?', a: 'Aerospace, marine, automotive, sporting goods, civil engineering and infrastructure, and industrial manufacturing — anywhere strength-to-weight matters.' },
 ];
 
 const faqLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: faq.map((item) => ({
-    '@type': 'Question',
-    name: item.q,
-    acceptedAnswer: { '@type': 'Answer', text: item.a },
-  })),
+  mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
 };
-
-/* The hero figure only renders at lg and up, so serve a 1-pixel placeholder
-   below 1024px instead of letting mobile download the hidden image. */
-const rollsHero = await getImage({ src: rolls, widths: [700, 1100, 1600], format: 'webp' });
-
-const websiteLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Composites West, Inc.',
-  url: 'https://compositeswest.com/',
-};
+const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Composites West, Inc.', url: 'https://compositeswest.com/' };
 ---
 
 <Base
@@ -67,109 +102,96 @@ const websiteLd = {
   description="Composites West is a carbon fiber reinforcement boutique with 100,000 linear yards in stock, ready to ship. Carbon fiber fabrics, knits, unidirectional, fiberglass, and prepregs for aerospace, marine, automotive, and infrastructure."
   jsonLd={[websiteLd, faqLd]}
 >
-  <!-- Hero -->
-  <section class="relative isolate overflow-hidden bg-ink-950">
-    <div
-      class="absolute inset-0 -z-10 opacity-50 [background-image:linear-gradient(rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.035)_1px,transparent_1px)] [background-size:64px_64px]"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="frame-x frame-dark relative mx-auto max-w-7xl px-4 sm:px-6">
-      <span class="crosshair crosshair-dark left-4 top-8 sm:left-6" aria-hidden="true"></span>
-      <span class="crosshair crosshair-dark right-4 top-8 sm:right-6" aria-hidden="true"></span>
+  <Preloader />
 
-      <div class="grid items-center gap-12 py-16 lg:grid-cols-12 lg:gap-8 lg:py-24">
-        <div class="lg:col-span-7">
-          <p class="hero-enter eyebrow flex items-center gap-3 text-brand">
-            <span class="inline-block h-px w-8 bg-brand"></span>
-            Reinforcement boutique — est. 2001
+  <!-- ============================================================ HERO
+       Tall section; the stage inside sticks for the whole scroll. The
+       shader morphs flat weave → roll → peel across it and writes --p. -->
+  <section id="hero" class="hero twill relative isolate -mt-[66px]" aria-labelledby="hero-title" style="--p:0">
+    <div class="hero-stage sticky top-0 flex h-[100svh] flex-col overflow-hidden">
+      <WeaveHero />
+
+      <div
+        class="hero-fade pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/30 to-carbon-950/55"
+        aria-hidden="true"
+      ></div>
+
+      <div class="relative mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-5 pt-[66px] sm:px-8">
+        <!-- HUD: top row (stays through the pin) -->
+        <div class="hero-enter hero-enter-1 flex items-start justify-between gap-6 pt-8 sm:pt-10">
+          <p class="eyebrow flex items-center gap-3 text-tow-300">
+            <span class="tag">001</span>
+            <span><span class="live mr-2 align-middle" aria-hidden="true"></span><span data-decode>100,000 linear yd in stock</span></span>
           </p>
-          <h1 class="hero-enter hero-enter-1 type-display mt-6 text-5xl uppercase text-white sm:text-6xl lg:text-7xl">
-            The right<br />materials.<br />
-            <span class="text-brand">No lead time.</span>
+          <p class="eyebrow hidden items-center gap-3 text-tow-300 sm:flex">
+            <span data-decode>Reno, NV · 39.53°N 119.81°W</span>
+            <span class="tag">002</span>
+          </p>
+        </div>
+
+        <!-- Wordmark + copy: lifts away as the fabric rolls up -->
+        <div class="hero-copy flex flex-1 flex-col justify-center py-10 sm:py-14">
+          <h1 id="hero-title" class="type-mega text-filament">
+            <span class="rise rise-1 block overflow-hidden"><span class="block whitespace-nowrap text-[10.5vw] leading-[0.84]"><span class="inline-block" data-fit="wordmark" data-fit-measure>Composites</span></span></span>
+            <span class="rise rise-2 block overflow-hidden"><span class="block whitespace-nowrap text-[10.5vw] leading-[0.84]"><span class="inline-block" data-fit="wordmark">West</span></span></span>
+            <span class="sr-only">— carbon fiber fabrics, knits, and unidirectional, in stock</span>
           </h1>
-          <p class="hero-enter hero-enter-2 mt-7 max-w-xl text-lg leading-8 text-stone-400">
-            We know composite materials — and we're experts at matching carbon fiber,
-            fiberglass, and advanced reinforcements to your exact application.
-          </p>
-          <div class="hero-enter hero-enter-3 mt-9 flex flex-wrap gap-3">
-            <a href="/all-products/" class="btn btn-primary">
-              Browse fabrics <span class="btn-arrow">&rarr;</span>
-            </a>
-            <a href="/contact/" class="btn btn-outline-light">
-              Request a quote
-            </a>
+
+          <div class="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-12 lg:items-end">
+            <div class="hero-enter hero-enter-2 lg:col-span-7">
+              <p class="max-w-2xl text-lg leading-8 text-tow-300 sm:text-xl sm:leading-9">
+                Carbon fiber fabric, ±45° knits, and unidirectional tape —
+                <span class="text-filament">on the shelf, cut to length, on your dock next day.</span>
+              </p>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="/all-products/" class="btn btn-primary">Browse the shelf <span class="btn-arrow">&rarr;</span></a>
+                <a href="/material-finder/" class="btn btn-outline">Find my material</a>
+              </div>
+            </div>
+            <p class="hero-enter hero-enter-3 eyebrow flex items-center gap-3 text-tow-300 lg:col-span-5 lg:justify-end">
+              <span class="tag">003</span>
+              <span data-decode>Orange County, CA · 33.68°N 117.83°W</span>
+            </p>
           </div>
         </div>
 
-        <figure class="hero-clip relative hidden lg:col-span-5 lg:block">
-          <div class="relative border border-white/15">
-            <picture>
-              {/* srcset can't hold a data: URI (the comma reads as a candidate
-                  separator and the source gets discarded), hence the tiny file */}
-              <source media="(max-width: 1023px)" srcset="/blank.svg" />
-              <img
-                src={rollsHero.src}
-                srcset={rollsHero.srcSet.attribute}
-                sizes="(min-width: 1024px) 42vw, 100vw"
-                alt="Roll of 3K twill weave carbon fiber fabric with yellow tracer thread"
-                width={rollsHero.attributes.width}
-                height={rollsHero.attributes.height}
-                class="aspect-[4/5] w-full object-cover"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              />
-            </picture>
-            <span class="absolute left-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
-          </div>
-          <figcaption class="eyebrow mt-3 flex justify-between text-stone-400">
-            <span>Fig. 01 — Carbon twill, 3K</span>
-            <span>50&Prime; roll</span>
-          </figcaption>
-        </figure>
+        <!-- HUD: bottom row (fades as soon as you move) -->
+        <div class="hero-bottom hero-enter hero-enter-4 flex items-end justify-between gap-6 border-t border-white/10 py-5">
+          <p class="eyebrow flex items-center gap-4 text-tow-500">
+            <span class="relative block h-8 w-px overflow-hidden bg-white/15" aria-hidden="true">
+              <span class="scroll-cue absolute inset-0 bg-brand"></span>
+            </span>
+            Scroll
+          </p>
+          <p class="eyebrow hidden text-tow-500 md:block" data-decode>T300 / T700S / HR40 / 1K – 12K</p>
+          <p class="eyebrow text-tow-500">Est. {company.founded}</p>
+        </div>
       </div>
 
-      <!-- Manifest strip -->
-      <dl class="hero-enter hero-enter-4 grid grid-cols-2 border-t border-white/10 md:grid-cols-4">
-        {[
-          { dt: 'In stock', dd: '100,000 yd', counter: { target: 100000, suffix: ' yd', sep: true } },
-          { dt: 'Serving composites since', dd: '2001' },
-          { dt: 'Typical carbon weight savings', dd: '~30%', counter: { target: 30, prefix: '~', suffix: '%' } },
-          { dt: 'Warehouse', dd: 'Reno, NV' },
-        ].map((stat, i) => (
-          <div class:list={['py-6 pr-6', i > 0 && 'md:border-l md:border-white/10 md:pl-6']}>
-            <dt class="eyebrow text-stone-400">{stat.dt}</dt>
-            <dd
-              class="type-display mt-1.5 text-2xl text-white"
-              {...(stat.counter
-                ? {
-                    'data-counter': true,
-                    'data-target': stat.counter.target,
-                    ...(stat.counter.prefix ? { 'data-prefix': stat.counter.prefix } : {}),
-                    ...(stat.counter.suffix ? { 'data-suffix': stat.counter.suffix } : {}),
-                    ...(stat.counter.sep ? { 'data-sep': true } : {}),
-                  }
-                : {})}
-            >
-              {stat.dd}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <!-- Roll readout: the SKU on the roll, once it has formed -->
+      <aside class="hero-readout pointer-events-none absolute bottom-[13%] right-5 w-64 sm:right-8 lg:right-[7%]" aria-hidden="true">
+        <div class="hero-readout-line mb-3"></div>
+        <p class="eyebrow flex items-center gap-3 text-brand"><span class="tag">Roll 01</span> {rollSku.brand}</p>
+        <p class="mt-2 font-display text-lg font-bold uppercase leading-tight text-filament [font-variation-settings:'wdth'_115]">{rollSku.shortName}</p>
+        <dl class="mt-3 grid grid-cols-3 gap-2 font-mono text-[10px] uppercase tracking-[0.1em]">
+          <div><dt class="text-tow-700">Tow</dt><dd class="text-tow-300">{rollSku.tow ?? '—'}</dd></div>
+          <div><dt class="text-tow-700">Weight</dt><dd class="text-tow-300">{rollSku.weightGsm} gsm</dd></div>
+          <div><dt class="text-tow-700">Width</dt><dd class="text-tow-300">{rollSku.widthIn}&Prime;</dd></div>
+        </dl>
+        <p class="eyebrow mt-3 flex items-center gap-2 text-tow-500"><span class="live" aria-hidden="true"></span> In stock · Reno, NV</p>
+      </aside>
     </div>
   </section>
 
-  <!-- Brand ticker -->
-  <div class="border-b border-line bg-paper py-3" aria-label="Fibers and brands we stock">
-    <div class="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+  <!-- ========================================================== TICKER -->
+  <div class="relative z-10 border-y border-line bg-carbon-950 py-3.5" aria-label="Fibers and constructions we stock">
+    <div class="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
       <div class="ticker-track flex w-max items-center gap-10 pr-10">
         {[0, 1].map((copy) => (
           <ul class="flex items-center gap-10" aria-hidden={copy === 1 ? 'true' : undefined}>
             {tickerItems.map((item) => (
-              <li class="flex items-center gap-10 whitespace-nowrap font-mono text-xs font-medium uppercase tracking-[0.2em] text-stone-600">
-                {item}
-                <span class="text-line" aria-hidden="true">//</span>
+              <li class="flex items-center gap-10 whitespace-nowrap font-mono text-xs font-medium uppercase tracking-[0.2em] text-tow-300">
+                {item}<span class="text-brand" aria-hidden="true">//</span>
               </li>
             ))}
           </ul>
@@ -178,232 +200,259 @@ const websiteLd = {
     </div>
   </div>
 
-  <!-- 01 / What we do -->
-  <section class="cv-auto border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
-      <div class="grid items-center gap-14 py-20 sm:py-24 lg:grid-cols-2">
-        <div class="reveal">
-          <p class="eyebrow text-stone-500">01 / What we do</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
-            Specialists in advanced reinforcements
-          </h2>
-          <div class="tracer mt-5"></div>
-          <p class="mt-6 text-lg leading-8 text-stone-600">
-            We are specialists in fiberglass, carbon fiber reinforcements, prepregs, core
-            materials, vacuum bagging and infusion materials for aerospace, industrial,
-            civil engineering, marine, and many other industries and applications.
-          </p>
-          <ul class="mt-9 border-t border-line">
-            {specialties.map((item, i) => (
-              <li class="group flex items-baseline gap-5 border-b border-line py-3.5">
-                <span class="eyebrow text-stone-500" aria-hidden="true">0{i + 1}</span>
-                <span class="font-display text-[15px] font-semibold text-ink-950">{item}</span>
-                <span class="ml-auto h-px w-6 self-center bg-line transition-all duration-200 group-hover:w-12 group-hover:bg-brand"></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <figure class="reveal reveal-delay-1 relative">
-          <div class="relative border border-line">
-            <Image
-              src={carbonfiber}
-              alt="Close-up of woven carbon fiber fabric"
-              widths={[600, 1200]}
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              class="w-full object-cover"
-            />
-            <span class="absolute right-0 top-6 h-0.5 w-10 bg-brand" aria-hidden="true"></span>
-          </div>
-          <figcaption class="eyebrow mt-3 flex justify-between text-stone-500">
-            <span>Fig. 02 — 2&times;2 twill weave</span>
-            <span>Detail</span>
-          </figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02 / Featured products -->
-  <section class="cv-auto border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
-      <div class="py-20 sm:py-24">
+  <!-- ======================================================== MANIFEST -->
+  <section class="cv-auto relative z-10 border-b border-line bg-carbon-950">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="py-20 sm:py-28">
         <div class="reveal flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p class="eyebrow text-stone-600">02 / The catalog</p>
-            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
-              In stock, ready to ship
-            </h2>
-            <p class="mt-4 max-w-2xl text-lg leading-8 text-stone-600">
-              The right materials can solve many problems. Browse a sample of our stocked
-              carbon fiber reinforcements — no dreaded lead time.
-            </p>
+            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Manifest</span> <span data-decode>What is on the shelf</span></p>
+            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">Stocked.<br />Not sourced.</h2>
           </div>
-          <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950">
-            View all products <span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-        <div class="mt-12 grid gap-px sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((product, i) => (
-            <div class={`reveal reveal-delay-${i}`}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 03 / Applications -->
-  <section class="cv-auto border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
-      <div class="py-20 sm:py-24">
-        <div class="reveal flex flex-wrap items-end justify-between gap-6">
-          <div class="max-w-2xl">
-            <p class="eyebrow text-stone-500">03 / Applications</p>
-            <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
-              Start with what you're building
-            </h2>
-            <div class="tracer mt-5"></div>
-            <p class="mt-6 text-lg leading-8 text-stone-600">
-              Fiber type and areal weight decide most of it — but what those numbers should
-              be depends entirely on the application. Here's how the decision goes in each
-              market we serve.
-            </p>
-          </div>
-          <a href="/applications/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-ink-950">
-            All applications <span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-
-        <ul class="reveal reveal-delay-1 mt-12 border-t border-line">
-          {applications.map((application, i) => (
-            <li>
-              <a
-                href={`/applications/${application.slug}/`}
-                class="group grid items-baseline gap-x-6 gap-y-1 border-b border-line py-5 sm:grid-cols-12"
-              >
-                <span class="eyebrow text-stone-400 sm:col-span-1" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span class="font-display text-lg font-semibold text-ink-950 sm:col-span-3">
-                  {application.shortName}
-                </span>
-                <span class="text-sm leading-6 text-stone-600 sm:col-span-7">
-                  {application.tagline}
-                </span>
-                <span class="hidden sm:col-span-1 sm:flex sm:justify-end">
-                  <span
-                    class="h-px w-6 self-center bg-line transition-all duration-200 group-hover:w-10 group-hover:bg-brand"
-                  ></span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        <div class="reveal reveal-delay-2 mt-12 border border-ink-950 bg-ink-950 text-stone-400">
-          <div class="flex flex-col items-start gap-7 p-7 md:flex-row md:items-center md:justify-between md:p-9">
-            <div class="max-w-xl">
-              <p class="eyebrow text-brand">Interactive</p>
-              <h3 class="type-display mt-3 text-2xl text-white sm:text-3xl">
-                Tell us the part. We'll rank the materials.
-              </h3>
-              <p class="mt-4 leading-7">
-                Four questions — geometry, load direction, priority, size — and every fabric
-                we stock gets scored against them. You see why each one placed where it did,
-                and what each one gives up. No email required.
-              </p>
-            </div>
-            <div class="flex shrink-0 flex-col gap-3">
-              <a href="/material-finder/" class="btn btn-primary">
-                Find my material <span class="btn-arrow">&rarr;</span>
-              </a>
-              <a href="/fabric-selector/" class="btn btn-outline-light">
-                Selection guide
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 04 / Why Composites West -->
-  <section class="cv-auto border-b border-line">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
-      <div class="py-20 sm:py-24">
-        <div class="reveal max-w-2xl">
-          <p class="eyebrow text-stone-500">04 / Why Composites West</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
-            We buy smart and sell smarter
-          </h2>
-          <div class="tracer mt-5"></div>
-          <p class="mt-6 text-lg leading-8 text-stone-600">
-            A nimble and knowledgeable team that uses its wealth of experience to connect
-            materials to customers — focused on long-term partnerships, not short-term
-            sales.
+          <p class="max-w-md text-base leading-7 text-tow-500">
+            The composites industry runs on lead time. We run a warehouse. Everything below is physically in Reno and can ship this week.
           </p>
         </div>
-        <dl class="reveal reveal-delay-1 mt-14 grid border-t border-line sm:grid-cols-3">
-          <div class="flex flex-col border-b border-line py-8 sm:border-b-0 sm:pr-8">
-            <dt class="eyebrow order-2 mt-3 text-stone-500">Linear yards in stock</dt>
-            <dd
-              class="type-display order-1 text-5xl text-ink-950 lg:text-6xl"
-              data-counter
-              data-target="100000"
-              data-sep
-            >
-              100,000
-            </dd>
-            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
-              Warehoused and ready to ship without the dreaded lead time.
-            </dd>
-          </div>
-          <div class="flex flex-col border-b border-line py-8 sm:border-b-0 sm:border-l sm:px-8">
-            <dt class="eyebrow order-2 mt-3 text-stone-500">Years of expertise</dt>
-            <dd class="type-display order-1 text-5xl text-ink-950 lg:text-6xl" data-counter data-target="20" data-suffix="+">
-              20+
-            </dd>
-            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
-              Founded in 2001 when sailboat racing and carbon fiber collided.
-            </dd>
-          </div>
-          <div class="flex flex-col py-8 sm:border-l sm:pl-8">
-            <dt class="eyebrow order-2 mt-3 text-stone-500">Typical weight savings</dt>
-            <dd class="type-display order-1 text-5xl text-ink-950 lg:text-6xl" data-counter data-target="30" data-prefix="~" data-suffix="%">
-              ~30%
-            </dd>
-            <dd class="order-3 mt-2 text-sm leading-6 text-stone-600">
-              When converting fiberglass or aluminum parts to carbon fiber.
-            </dd>
-          </div>
+
+        <dl class="reveal reveal-delay-1 mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {manifest.map((m) => (
+            <div class="group relative flex flex-col bg-carbon-950 p-7 transition-colors hover:bg-carbon-900 lg:p-8">
+              <dd
+                class="type-display order-1 whitespace-nowrap text-[clamp(2.75rem,3.7vw,4.5rem)] text-filament [font-variant-numeric:tabular-nums]"
+                {...(m.counter
+                  ? {
+                      'data-counter': true,
+                      'data-target': m.counter.target,
+                      ...('prefix' in m.counter && m.counter.prefix ? { 'data-prefix': m.counter.prefix } : {}),
+                      ...('suffix' in m.counter && m.counter.suffix ? { 'data-suffix': m.counter.suffix } : {}),
+                      ...('sep' in m.counter && m.counter.sep ? { 'data-sep': true } : {}),
+                    }
+                  : {})}
+              >
+                {m.value}{m.suffix}
+              </dd>
+              <dt class="eyebrow order-2 mt-4 text-brand">{m.unit}</dt>
+              <dd class="order-3 mt-3 text-sm leading-6 text-tow-500">{m.note}</dd>
+              <span class="absolute right-0 top-0 h-px w-0 bg-brand transition-all duration-300 group-hover:w-full" aria-hidden="true"></span>
+            </div>
+          ))}
         </dl>
       </div>
     </div>
   </section>
 
-  <!-- 05 / FAQ -->
-  <section class="cv-auto border-b border-line bg-paper">
-    <div class="frame-x mx-auto max-w-7xl px-4 sm:px-6">
-      <div class="grid gap-12 py-20 sm:py-24 lg:grid-cols-12">
+  <!-- ==================================================== ARCHITECTURE -->
+  <section class="cv-auto border-b border-line bg-carbon-900">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="py-20 sm:py-28">
+        <div class="reveal grid gap-8 lg:grid-cols-12 lg:items-end">
+          <div class="lg:col-span-7">
+            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Architecture</span> <span data-decode>How the fiber is arranged</span></p>
+            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">Five ways to put<br />fiber in a part</h2>
+          </div>
+          <p class="text-base leading-7 text-tow-500 lg:col-span-5">
+            Fiber and areal weight decide most of the numbers. The construction decides how it drapes, how it looks, and which direction the strength goes. Each diagram below is the actual over/under rule for that weave.
+          </p>
+        </div>
+
+        <ul class="reveal reveal-delay-1 mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+          {architectures.map((a) => (
+            <li class="bg-carbon-900">
+              <a href={`/all-products/?weave=${a.filter}`} class="group flex h-full gap-5 p-5 transition-colors hover:bg-carbon-800 sm:flex-col sm:p-6">
+                <WeaveTile weave={a.weave} class="w-24 shrink-0 self-start border border-line sm:w-full" />
+                <div class="flex flex-1 flex-col">
+                  <h3 class="type-display text-xl text-filament sm:mt-6 2xl:text-2xl">{a.name}</h3>
+                  <p class="mt-3 text-sm leading-6 text-tow-300">{a.line}</p>
+                  <p class="eyebrow mt-4 text-tow-700">{a.use}</p>
+                  <p class="eyebrow mt-auto flex items-center gap-2 pt-6 text-filament">
+                    See fabrics
+                    <span class="inline-block h-px w-6 bg-line-strong transition-all duration-200 group-hover:w-10 group-hover:bg-brand"></span>
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= CATALOG -->
+  <section class="cv-auto border-b border-line">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="py-20 sm:py-28">
+        <div class="reveal flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Catalog</span> <span data-decode>Ready to cut</span></p>
+            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">On the shelf today</h2>
+          </div>
+          <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-filament">All fabrics <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((product, i) => (
+            <div class={`reveal reveal-delay-${i % 3}`}><ProductCard product={product} /></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================== APPLICATIONS
+       Desktop: the roll seen end-on — five markets on its wound layers,
+       hover pulls that market's fabrics out on a leader line.
+       Mobile: a plain list. -->
+  <section class="cv-auto border-b border-line bg-carbon-900" id="applications">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="py-20 sm:py-28">
+        <div class="reveal">
+          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Applications</span> <span data-decode>Start from the part</span></p>
+          <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">What are you building?</h2>
+        </div>
+
+        <!-- Mobile / tablet list -->
+        <ul class="reveal reveal-delay-1 mt-12 border-t border-line lg:hidden">
+          {applications.map((application) => (
+            <li>
+              <a href={`/applications/${application.slug}/`} class="group flex items-baseline gap-6 border-b border-line py-6">
+                <span class="type-display text-3xl text-filament transition-colors group-hover:text-brand sm:text-4xl">{application.shortName}</span>
+                <span class="ml-auto hidden max-w-xs text-right text-sm leading-6 text-tow-500 md:block">{application.tagline}</span>
+                <span class="h-px w-6 shrink-0 self-center bg-line-strong transition-all duration-200 group-hover:w-12 group-hover:bg-brand" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Desktop orbit -->
+        <div class="reveal reveal-delay-1 mt-14 hidden gap-12 lg:grid lg:grid-cols-12 lg:items-center" id="orbit-root">
+          <div class="lg:col-span-7">
+            <div class="orbit mx-auto max-w-[640px]" id="orbit">
+              <svg class="orbit-rings" viewBox="0 0 100 100" aria-hidden="true">
+                <!-- wound layers -->
+                <g class="orbit-spin">
+                  {layerRadii.map((r, i) => (
+                    <circle cx="50" cy="50" r={r} fill="none" stroke="rgb(255 255 255 / 0.05)" stroke-width="0.35" stroke-dasharray={i % 3 === 0 ? '1.2 1.6' : undefined} />
+                  ))}
+                </g>
+                <!-- the three layers the markets sit on -->
+                <g class="orbit-spin orbit-spin-r">
+                  <circle cx="50" cy="50" r="22" fill="none" stroke="#3a3a41" stroke-width="0.4" stroke-dasharray="2 1.4" />
+                  <circle cx="50" cy="50" r="34" fill="none" stroke="#3a3a41" stroke-width="0.4" stroke-dasharray="2 1.4" />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="#3a3a41" stroke-width="0.4" stroke-dasharray="2 1.4" />
+                </g>
+                <!-- cardboard core -->
+                <circle cx="50" cy="50" r="10" fill="none" stroke="#7a5a33" stroke-width="2.2" />
+                <circle cx="50" cy="50" r="8.6" fill="#050506" />
+                <!-- registration -->
+                <path d="M50 2 V 8 M50 92 V 98 M2 50 H 8 M92 50 H 98" stroke="rgb(255 255 255 / 0.25)" stroke-width="0.3" />
+                <!-- leader lines, one per market, to the right edge -->
+                {orbit.map((o, i) => (
+                  <line class="orbit-lead" data-orbit-lead={i} x1={o.x} y1={o.y} x2="104" y2={o.y} stroke="#ffd400" stroke-width="0.35" vector-effect="non-scaling-stroke" />
+                ))}
+              </svg>
+              {orbit.map((o, i) => (
+                <a
+                  href={`/applications/${o.slug}/`}
+                  class="orbit-node"
+                  data-orbit={i}
+                  style={`left:${o.x.toFixed(2)}%;top:${o.y.toFixed(2)}%`}
+                  aria-describedby={`orbit-panel-${i}`}
+                >
+                  {o.shortName}
+                </a>
+              ))}
+              <p class="eyebrow absolute bottom-0 left-0 text-tow-700" aria-hidden="true">Roll, end-on · layers = markets</p>
+            </div>
+          </div>
+
+          <div class="orbit-panel relative min-h-[22rem] border-l border-line pl-10 lg:col-span-5" id="orbit-panel" aria-live="polite">
+            {orbit.map((o, i) => (
+              <article id={`orbit-panel-${i}`} data-orbit-panel={i} hidden={i !== 0}>
+                <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">{String(i + 1).padStart(2, '0')} / 05</span> Application</p>
+                <h3 class="type-display mt-4 text-3xl text-filament xl:text-4xl">{o.shortName}</h3>
+                <p class="mt-4 text-base leading-7 text-tow-300">{o.tagline}</p>
+                <p class="eyebrow mt-8 text-tow-700">Recommended from the shelf</p>
+                <ul class="mt-3 border-t border-line">
+                  {o.recs.map((p) => (
+                    <li>
+                      <a href={`/product/${p.slug}/`} class="group flex items-baseline justify-between gap-4 border-b border-line py-3">
+                        <span class="font-display text-[15px] font-bold text-filament [font-variation-settings:'wdth'_110] group-hover:text-brand">{p.shortName}</span>
+                        <span class="font-mono text-[11px] uppercase tracking-[0.08em] text-tow-500">{p.tow ? `${p.tow} · ` : ''}{p.weightGsm} gsm · {p.widthIn}&Prime;</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a href={`/applications/${o.slug}/`} class="eyebrow underline-draw mt-6 inline-flex items-center gap-2 pb-1 text-filament">Application guide <span aria-hidden="true">&rarr;</span></a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= FINDER -->
+  <section class="cv-auto relative overflow-hidden bg-brand text-carbon-950">
+    <div class="pointer-events-none absolute inset-0 grid-bg-dark" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="grid gap-10 py-20 sm:py-24 lg:grid-cols-12 lg:items-end">
+        <div class="reveal lg:col-span-8">
+          <p class="eyebrow flex items-center gap-3"><span class="inline-block h-px w-8 bg-carbon-950"></span> Material finder</p>
+          <h2 class="type-display mt-6 text-4xl sm:text-5xl lg:text-7xl">Tell us the part.<br />We rank the fabric.</h2>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-carbon-950/80">
+            Four questions — geometry, load direction, priority, size — and every fabric on the shelf gets scored against them. You see why each one placed where it did and what it gives up. No email required.
+          </p>
+        </div>
+        <div class="reveal reveal-delay-1 flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
+          <a href="/material-finder/" class="btn btn-on-brand">Find my material <span class="btn-arrow">&rarr;</span></a>
+          <a href="/fabric-selector/" class="btn border-carbon-950/40 text-carbon-950 hover:border-carbon-950 hover:bg-carbon-950 hover:text-brand">Selection guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== WHY US -->
+  <section class="cv-auto border-b border-line">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="py-20 sm:py-28">
+        <div class="reveal max-w-4xl">
+          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Why us</span> <span data-decode>A supplier, not a lead time</span></p>
+          <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl">The second source you should already have</h2>
+          <p class="mt-6 text-lg leading-8 text-tow-300">
+            Nobody switches a qualified laminate on a whim. You don't have to. Qualify us on the three fabrics you can't afford to wait on, and keep them on the shelf ninety minutes from your floor.
+          </p>
+        </div>
+        <dl class="reveal reveal-delay-1 mt-14 grid gap-px border border-line bg-line md:grid-cols-3">
+          {reasons.map((r) => (
+            <div class="bg-carbon-950 p-7 lg:p-8">
+              <dt class="type-display text-2xl text-filament">{r.label}</dt>
+              <div class="tracer mt-5"></div>
+              <dd class="mt-5 text-base leading-7 text-tow-500">{r.body}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= FAQ -->
+  <section class="cv-auto border-b border-line bg-carbon-900">
+    <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div class="grid gap-12 py-20 sm:py-28 lg:grid-cols-12">
         <div class="reveal lg:col-span-4">
-          <p class="eyebrow text-stone-600">05 / FAQ</p>
-          <h2 class="type-display mt-4 text-3xl text-ink-950 sm:text-4xl">
-            Frequently asked questions
-          </h2>
-          <div class="tracer mt-5"></div>
+          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">FAQ</span> <span data-decode>Before you call</span></p>
+          <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl">Straight answers</h2>
         </div>
         <div class="reveal reveal-delay-1 lg:col-span-8">
           <div class="border-t border-line">
             {faq.map((item) => (
               <details class="group border-b border-line">
-                <summary class="flex cursor-pointer list-none items-baseline gap-5 py-5 pr-2 [&::-webkit-details-marker]:hidden">
-                  <span class="font-mono text-sm text-stone-400 transition-colors group-open:text-brand-deep" aria-hidden="true">
+                <summary class="flex cursor-pointer list-none items-baseline gap-5 py-6 pr-2 [&::-webkit-details-marker]:hidden">
+                  <span class="font-mono text-sm text-tow-700 transition-colors group-open:text-brand" aria-hidden="true">
                     <span class="group-open:hidden">+</span><span class="hidden group-open:inline">&minus;</span>
                   </span>
-                  <span class="font-display text-base font-semibold text-ink-950">{item.q}</span>
+                  <span class="font-display text-lg font-bold text-filament [font-variation-settings:'wdth'_110]">{item.q}</span>
                 </summary>
-                <p class="pb-6 pl-9 text-base leading-7 text-stone-600">{item.a}</p>
+                <p class="pb-7 pl-9 text-base leading-7 text-tow-300">{item.a}</p>
               </details>
             ))}
           </div>
@@ -414,3 +463,81 @@ const websiteLd = {
 
   <CtaBand />
 </Base>
+
+<script>
+  import { boot, reduceMotion } from '../scripts/boot';
+
+  boot('home', '#hero', () => {
+    /* Wordmark: size the type so the longest line spans the full measure.
+       Measured, not guessed — the expanded face's advance widths differ from
+       any vw estimate, and the fallback font differs again. */
+    const fit = () => {
+      const h1 = document.getElementById('hero-title');
+      const probe = h1?.querySelector<HTMLElement>('[data-fit-measure]');
+      if (!h1 || !probe) return;
+      const lines = h1.querySelectorAll<HTMLElement>('[data-fit]');
+      lines.forEach((el) => (el.parentElement!.style.fontSize = '100px'));
+      const size = (100 * h1.clientWidth) / probe.offsetWidth;
+      lines.forEach((el) => (el.parentElement!.style.fontSize = `${size}px`));
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+    // @font-face rules are injected after first paint (see Fonts.astro), so
+    // `ready` can resolve before Archivo exists — refit whenever a face lands.
+    document.fonts?.addEventListener('loadingdone', fit);
+    window.addEventListener('resize', fit, { passive: true });
+
+    /* Orbit: hover / focus selects a market; it also cycles on its own until
+       someone touches it. */
+    const root = document.getElementById('orbit-root');
+    if (root) {
+      const nodes = [...root.querySelectorAll<HTMLElement>('[data-orbit]')];
+      const leads = [...root.querySelectorAll<SVGElement>('[data-orbit-lead]')];
+      const panels = [...root.querySelectorAll<HTMLElement>('[data-orbit-panel]')];
+      let active = -1;
+      let timer = 0;
+      let held = false;
+
+      /* Leader lines run from the node to the panel's left rule; the SVG is
+         in 0–100 units, so measure where the panel actually sits. */
+      const orbitEl = document.getElementById('orbit');
+      const panelEl = document.getElementById('orbit-panel');
+      const aimLeads = () => {
+        if (!orbitEl || !panelEl) return;
+        const o = orbitEl.getBoundingClientRect();
+        const p = panelEl.getBoundingClientRect();
+        const x2 = (((p.left - o.left) / o.width) * 100).toFixed(2);
+        leads.forEach((l) => l.setAttribute('x2', x2));
+      };
+      aimLeads();
+      window.addEventListener('resize', aimLeads, { passive: true });
+
+      const show = (i: number) => {
+        if (i === active) return;
+        active = i;
+        nodes.forEach((n) => (n.dataset.orbit === String(i) ? n.setAttribute('data-active', '') : n.removeAttribute('data-active')));
+        leads.forEach((l) => l.classList.toggle('is-on', l.getAttribute('data-orbit-lead') === String(i)));
+        panels.forEach((p) => {
+          const on = p.dataset.orbitPanel === String(i);
+          if (on && p.hidden) { p.hidden = false; p.style.animation = 'none'; void p.offsetWidth; p.style.animation = ''; }
+          else if (!on) p.hidden = true;
+        });
+      };
+      const cycle = () => {
+        if (held || reduceMotion()) return;
+        show((active + 1) % nodes.length);
+      };
+      show(0);
+      if (!reduceMotion()) timer = window.setInterval(cycle, 3600);
+
+      nodes.forEach((n) => {
+        const i = Number(n.dataset.orbit);
+        n.addEventListener('pointerenter', () => { held = true; show(i); });
+        n.addEventListener('focus', () => { held = true; show(i); });
+      });
+      root.addEventListener('pointerleave', () => { held = false; });
+      root.addEventListener('focusout', (e) => { if (!root.contains(e.relatedTarget as Node | null)) held = false; });
+      document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true });
+    }
+  });
+</script>

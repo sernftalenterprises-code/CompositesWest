@@ -25,33 +25,44 @@ const image = images[`../assets/products/${product.image}.png`].default;
   data-width={product.widthIn}
 >
   <a href={`/product/${product.slug}/`} class="flex h-full flex-col">
-    <div class="relative aspect-[4/3] overflow-hidden border-b border-line bg-paper">
+    <div class="relative aspect-[4/3] overflow-hidden border-b border-line bg-carbon-950">
       <Image
         src={image}
         alt={product.name}
         widths={[400, 800]}
         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+        class="h-full w-full object-cover opacity-90 transition-all duration-500 ease-out group-hover:scale-[1.04] group-hover:opacity-100"
         loading={eager ? 'eager' : 'lazy'}
       />
-      <span class="eyebrow absolute left-3 top-3 bg-ink-950/85 px-2 py-1 text-white">
+      <span class="eyebrow absolute left-3 top-3 bg-carbon-950/85 px-2 py-1 text-filament">
         {product.brand}
+      </span>
+      <span class="eyebrow absolute right-3 top-3 flex items-center gap-2 bg-carbon-950/85 px-2 py-1 text-brand">
+        <span class="live" aria-hidden="true"></span> In stock
       </span>
     </div>
     <div class="flex flex-1 flex-col p-5">
-      <p class="eyebrow text-stone-500">{product.weaveLabel}</p>
-      <h3 class="mt-2 font-display text-base font-semibold leading-snug text-ink-950">
+      <p class="eyebrow text-tow-500">{product.weaveLabel}</p>
+      <h3 class="mt-2 font-display text-[17px] font-bold leading-snug text-filament [font-variation-settings:'wdth'_110]">
         {product.shortName}
       </h3>
-      <p class="mt-3 font-mono text-xs leading-5 text-stone-500">
-        {product.weightOz} oz/yd&sup2; ({product.weightGsm} gsm)
-        &nbsp;&middot;&nbsp; {product.widthIn}&Prime; wide{product.tow && (
-          <Fragment>&nbsp;&middot;&nbsp; {product.tow} tow</Fragment>
-        )}
-      </p>
-      <p class="eyebrow mt-auto flex items-center gap-2 pt-5 text-ink-950">
+      <dl class="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-4 font-mono text-[11px] uppercase tracking-[0.08em]">
+        <div>
+          <dt class="text-tow-700">Weight</dt>
+          <dd class="mt-0.5 text-tow-300">{product.weightGsm} gsm</dd>
+        </div>
+        <div>
+          <dt class="text-tow-700">Width</dt>
+          <dd class="mt-0.5 text-tow-300">{product.widthIn}&Prime;</dd>
+        </div>
+        <div>
+          <dt class="text-tow-700">Tow</dt>
+          <dd class="mt-0.5 text-tow-300">{product.tow ?? '—'}</dd>
+        </div>
+      </dl>
+      <p class="eyebrow mt-auto flex items-center gap-2 pt-5 text-filament">
         View spec
-        <span class="inline-block h-px w-6 bg-ink-950 transition-all duration-200 group-hover:w-10 group-hover:bg-brand"></span>
+        <span class="inline-block h-px w-6 bg-line-strong transition-all duration-200 group-hover:w-10 group-hover:bg-brand"></span>
       </p>
     </div>
   </a>
