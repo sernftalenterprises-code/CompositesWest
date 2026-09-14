@@ -8,7 +8,7 @@ interface Props {
 
 const {
   heading = 'Send us the part. We’ll send back the material.',
-  text = 'Spec, application, or a photo of what you’re building — our sales engineers match it to what’s on the shelf and quote it the same day.',
+  text = 'Spec, application, or a photo of what you’re building — our sales engineers match it to the right fabric, explain the trade-offs, and quote it properly.',
 } = Astro.props;
 ---
 
@@ -19,7 +19,7 @@ const {
     <div class="grid gap-10 py-24 lg:grid-cols-12 lg:items-end">
       <div class="lg:col-span-8">
         <p class="eyebrow flex items-center gap-3 text-brand">
-          <span class="tag">Quote</span> Same-day response on in-stock material
+          <span class="tag">Quote</span> A sales engineer reads every request
         </p>
         <h2 class="type-display mt-6 text-4xl text-filament sm:text-5xl lg:text-6xl">{heading}</h2>
         <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">{text}</p>

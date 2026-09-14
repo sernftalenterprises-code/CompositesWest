@@ -11,7 +11,7 @@ const tows = [...new Set(products.map((p) => p.tow).filter(Boolean))].sort() as 
 const itemListLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'In-stock carbon fiber fabrics',
+  name: 'Carbon fiber fabrics',
   itemListElement: products.map((p, i) => ({
     '@type': 'ListItem',
     position: i + 1,
@@ -31,8 +31,8 @@ const breadcrumbLd = {
 ---
 
 <Base
-  title="All Products | In-Stock Carbon Fiber Fabrics | Composites West"
-  description="Browse in-stock carbon fiber fabrics from Hexcel, Toray, FCIM, and CFA — plain weave, twill, satin, unidirectional, and ±45° knits. 100,000 linear yards ready to ship from Composites West."
+  title="All Products | Carbon Fiber Fabrics | Composites West"
+  description="Browse carbon fiber fabrics from Hexcel, Toray, FCIM, and CFA — plain weave, twill, satin, unidirectional, and ±45° knits. The highest-quality reinforcements, from Composites West."
   jsonLd={[itemListLd, breadcrumbLd]}
 >
   <!-- Interior page header -->
@@ -43,12 +43,11 @@ const breadcrumbLd = {
       <div class="py-14 sm:py-20">
         <p class="eyebrow text-tow-500">CW / all-products — Catalog</p>
         <h1 class="type-display mt-4 max-w-3xl text-4xl text-filament sm:text-5xl lg:text-6xl">
-          In-stock carbon fiber fabrics
-        </h1>
+              Carbon fiber fabrics
+            </h1>
         <div class="tracer mt-6"></div>
         <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">
-          Our warehouse houses 100,000 linear yards of material, ready to ship without the
-          dreaded lead time. Filter by brand, weave, or tow size to find your reinforcement.
+          The highest-quality carbon fiber reinforcements we can source, from Hexcel, Toray, FCIM and CFA. Filter by brand, weave, or tow size to find your reinforcement.
         </p>
       </div>
     </div>

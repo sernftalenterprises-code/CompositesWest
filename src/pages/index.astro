@@ -21,11 +21,11 @@ const tickerItems = ['Hexcel', 'Toray', 'FCIM', 'CFA', 'T300', 'T700S', 'HR40', 
 
 const manifest = [
   {
-    value: '100,000',
-    suffix: '+',
-    unit: 'linear yards',
-    note: 'Carbon, glass, knit, and uni — warehoused and ready to cut.',
-    counter: { target: 100000, sep: true, suffix: '+' },
+    value: '4',
+    suffix: '',
+    unit: 'mills',
+    note: 'Hexcel, Toray, FCIM, CFA — the mills we put our own name next to.',
+    counter: { target: 4 },
   },
   {
     value: String(years),
@@ -38,7 +38,7 @@ const manifest = [
     value: '1K–12K',
     suffix: '',
     unit: 'tow',
-    note: 'Standard, intermediate, and high-modulus (HR40) fiber on the shelf.',
+    note: 'Standard, intermediate, and high-modulus (HR40) fiber, from four mills.',
   },
   {
     value: '~30',
@@ -80,14 +80,14 @@ const orbit = applications.map((app, i) => {
 const layerRadii = Array.from({ length: 15 }, (_, i) => 12 + i * 2.55);
 
 const reasons = [
-  { label: 'Stocked, not sourced', body: 'If it is on this site, it is on the shelf in Reno. No back-ordering, no waiting on a mill run.' },
-  { label: 'Traceable to the mill', body: 'Hexcel, Toray, FCIM, CFA. Every roll ships with its manufacturer documentation, so your first article is the last argument.' },
-  { label: 'By the yard or by the roll', body: 'Prototype quantities and production quantities from the same inventory. Either way it ships this week.' },
+  { label: 'Only the best material', body: 'Hexcel, Toray, FCIM, CFA. If a fabric is not the best of its kind, we do not sell it.' },
+  { label: 'No expense spared on you', body: 'Sales engineers who answer the phone, samples cut properly, documentation in order. The experience is part of the product.' },
+  { label: 'Specified with you', body: 'Tell us the part. We match the fabric, explain the trade-offs, and stand behind the call.' },
 ];
 
 const faq = [
-  { q: 'What materials does Composites West supply?', a: 'We specialize in carbon fiber fabric reinforcements — woven, non-crimp (knit), unidirectional, and braid — plus fiberglass, prepregs, core materials, vacuum bagging and infusion supplies. In-stock fabrics often include high modulus (HR40), intermediate modulus, and 1K, 3K, 6K, and 12K standard modulus materials.' },
-  { q: 'How fast can you ship?', a: 'Our warehouse houses 100,000 linear yards of material ready to ship, so most in-stock orders go out without the long lead times typical of the composites industry.' },
+  { q: 'What materials does Composites West supply?', a: 'We specialize in carbon fiber fabric reinforcements — woven, non-crimp (knit), unidirectional, and braid — plus fiberglass, prepregs, core materials, vacuum bagging and infusion supplies. Our range includes high modulus (HR40), intermediate modulus, and 1K, 3K, 6K, and 12K standard modulus materials.' },
+  { q: 'What makes Composites West different?', a: 'Two things we refuse to compromise on: the quality of the material and the way you are treated. We carry the highest-grade reinforcements we can source, and we spare no expense on the customer experience — impressing the people we work with is the whole point.' },
   { q: 'Can you source materials that are not listed on the site?', a: 'Yes. We maintain relationships across the composites industry and regularly source hard-to-find reinforcements, prepregs, honeycomb core, and process materials to spec. Contact us with your requirements.' },
   { q: 'What industries do you serve?', a: 'Aerospace, marine, automotive, sporting goods, civil engineering and infrastructure, and industrial manufacturing — anywhere strength-to-weight matters.' },
 ];
@@ -102,7 +102,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
 
 <Base
   title="Composites West | Carbon Fiber Fabrics & Advanced Composite Materials"
-  description="Composites West is a carbon fiber reinforcement boutique with 100,000 linear yards in stock, ready to ship. Carbon fiber fabrics, knits, unidirectional, fiberglass, and prepregs for aerospace, marine, automotive, and infrastructure."
+  description="Composites West is a carbon fiber reinforcement boutique: the highest-quality carbon fiber fabrics, knits, unidirectional, fiberglass, and prepregs for aerospace, marine, automotive, and infrastructure — from a team that lives to impress its customers."
   jsonLd={[websiteLd, faqLd]}
 >
   <Preloader />
@@ -125,7 +125,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
         <div class="hero-enter hero-enter-1 flex items-start justify-between gap-6 pt-8 sm:pt-10">
           <p class="eyebrow flex items-center gap-3 text-tow-300">
             <span class="tag">001</span>
-            <span><span class="live mr-2 align-middle" aria-hidden="true"></span><span data-decode>100,000 linear yd in stock</span></span>
+            <span data-decode>Hexcel · Toray · FCIM · CFA</span>
           </p>
           <p class="eyebrow hidden items-center gap-3 text-tow-300 sm:flex">
             <span data-decode>Reno, NV · 39.53°N 119.81°W</span>
@@ -138,17 +138,17 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
           <h1 id="hero-title" class="type-mega text-filament">
             <span class="rise rise-1 block overflow-hidden"><span class="block whitespace-nowrap text-[10.5vw] leading-[0.84]"><span class="inline-block" data-fit="wordmark" data-fit-measure>Composites</span></span></span>
             <span class="rise rise-2 block overflow-hidden"><span class="block whitespace-nowrap text-[10.5vw] leading-[0.84]"><span class="inline-block" data-fit="wordmark">West</span></span></span>
-            <span class="sr-only">— carbon fiber fabrics, knits, and unidirectional, in stock</span>
+            <span class="sr-only">— the highest-quality carbon fiber fabrics, knits, and unidirectional</span>
           </h1>
 
           <div class="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-12 lg:items-end">
             <div class="hero-enter hero-enter-2 lg:col-span-7">
               <p class="max-w-2xl text-lg leading-8 text-tow-300 sm:text-xl sm:leading-9">
                 Carbon fiber fabric, ±45° knits, and unidirectional tape —
-                <span class="text-filament">on the shelf, cut to length, on your dock next day.</span>
+                <span class="text-filament">the highest-quality material we can put in your hands, from a team that lives to impress you.</span>
               </p>
               <div class="mt-7 flex flex-wrap gap-3">
-                <a href="/all-products/" class="btn btn-primary">Browse the shelf <span class="btn-arrow">&rarr;</span></a>
+                <a href="/all-products/" class="btn btn-primary">Browse the fabrics <span class="btn-arrow">&rarr;</span></a>
                 <a href="/material-finder/" class="btn btn-outline">Find my material</a>
               </div>
             </div>
@@ -182,7 +182,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
           <div><dt class="text-tow-700">Weight</dt><dd class="text-tow-300">{rollSku.weightGsm} gsm</dd></div>
           <div><dt class="text-tow-700">Width</dt><dd class="text-tow-300">{rollSku.widthIn}&Prime;</dd></div>
         </dl>
-        <p class="eyebrow mt-3 flex items-center gap-2 text-tow-500"><span class="live" aria-hidden="true"></span> In stock · Reno, NV</p>
+        <p class="eyebrow mt-3 flex items-center gap-2 text-tow-500">Reno, NV · Est. {company.founded}</p>
       </aside>
     </div>
   </section>
@@ -191,7 +191,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
   <ScaleDive sku={rollSku} />
 
   <!-- ========================================================== TICKER -->
-  <div class="relative z-10 border-y border-line bg-carbon-950 py-3.5" aria-label="Fibers and constructions we stock">
+  <div class="relative z-10 border-y border-line bg-carbon-950 py-3.5" aria-label="Fibers and constructions we supply">
     <div class="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]">
       <div class="ticker-track flex w-max items-center gap-10 pr-10">
         {[0, 1].map((copy) => (
@@ -213,11 +213,11 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
       <div class="py-20 sm:py-28">
         <div class="reveal flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Manifest</span> <span data-decode>What is on the shelf</span></p>
-            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">Stocked.<br />Not sourced.</h2>
+            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Standard</span> <span data-decode>Nothing less than the best</span></p>
+            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">The best.<br />Nothing less.</h2>
           </div>
           <p class="max-w-md text-base leading-7 text-tow-500">
-            The composites industry runs on lead time. We run a warehouse. Everything below is physically in Reno and can ship this week.
+            We only carry reinforcements we would run ourselves — the highest grade we can source, from mills we would put our name next to. Everything below was chosen on quality first.
           </p>
         </div>
 
@@ -292,8 +292,8 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
       <div class="py-20 sm:py-28">
         <div class="reveal flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Catalog</span> <span data-decode>Ready to cut</span></p>
-            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">On the shelf today</h2>
+            <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Catalog</span> <span data-decode>What we put our name on</span></p>
+            <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl lg:text-6xl">The fabrics</h2>
           </div>
           <a href="/all-products/" class="eyebrow underline-draw flex items-center gap-2 pb-1 text-filament">All fabrics <span aria-hidden="true">&rarr;</span></a>
         </div>
@@ -379,7 +379,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
                 <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">{String(i + 1).padStart(2, '0')} / 05</span> Application</p>
                 <h3 class="type-display mt-4 text-3xl text-filament xl:text-4xl">{o.shortName}</h3>
                 <p class="mt-4 text-base leading-7 text-tow-300">{o.tagline}</p>
-                <p class="eyebrow mt-8 text-tow-700">Recommended from the shelf</p>
+                <p class="eyebrow mt-8 text-tow-700">Recommended</p>
                 <ul class="mt-3 border-t border-line">
                   {o.recs.map((p) => (
                     <li>
@@ -408,7 +408,7 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
           <p class="eyebrow flex items-center gap-3"><span class="inline-block h-px w-8 bg-carbon-950"></span> Material finder</p>
           <h2 class="type-display mt-6 text-4xl sm:text-5xl lg:text-7xl">Tell us the part.<br />We rank the fabric.</h2>
           <p class="mt-6 max-w-2xl text-lg leading-8 text-carbon-950/80">
-            Four questions — geometry, load direction, priority, size — and every fabric on the shelf gets scored against them. You see why each one placed where it did and what it gives up. No email required.
+            Four questions — geometry, load direction, priority, size — and every fabric we carry gets scored against them. You see why each one placed where it did and what it gives up. No email required.
           </p>
         </div>
         <div class="reveal reveal-delay-1 flex flex-wrap gap-3 lg:col-span-4 lg:justify-end">
@@ -424,10 +424,10 @@ const websiteLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: 
     <div class="frame-x relative mx-auto max-w-[1600px] px-5 sm:px-8">
       <div class="py-20 sm:py-28">
         <div class="reveal max-w-4xl">
-          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Why us</span> <span data-decode>A supplier, not a lead time</span></p>
-          <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl">The second source you should already have</h2>
+          <p class="eyebrow flex items-center gap-3 text-tow-500"><span class="tag">Why us</span> <span data-decode>Built to impress</span></p>
+          <h2 class="type-display mt-5 text-4xl text-filament sm:text-5xl">We live to impress the customer</h2>
           <p class="mt-6 text-lg leading-8 text-tow-300">
-            Nobody switches a qualified laminate on a whim. You don't have to. Qualify us on the three fabrics you can't afford to wait on, and keep them on the shelf ninety minutes from your floor.
+            Nobody switches a qualified laminate on a whim. So we make it worth it: the highest-quality reinforcements available, and a team that spares no expense on the experience of buying them.
           </p>
         </div>
         <dl class="reveal reveal-delay-1 mt-14 grid gap-px border border-line bg-line md:grid-cols-3">

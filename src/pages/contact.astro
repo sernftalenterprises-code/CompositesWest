@@ -25,7 +25,7 @@ const contactLd = {
         </h1>
         <div class="tracer mt-6"></div>
         <p class="mt-6 max-w-2xl text-lg leading-8 text-tow-300">
-          Start something new — or just say hello. We are here for you and respond fast.
+          Start something new — or just say hello. We are here for you, and we mean it.
         </p>
       </div>
     </div>
@@ -123,7 +123,7 @@ const contactLd = {
   const productName = params.get('product');
   const message = document.getElementById('message') as HTMLTextAreaElement | null;
   if (productName && message && !message.value) {
-    message.value = `Hi, I'd like a quote for: ${productName}\n\nQuantity / length needed: \nShip to (city, state): `;
+    message.value = `Hi, I'd like a quote for: ${productName}\n\nQuantity / length needed: \nDeliver to (city, state): `;
   }
 
   // TODO for launch: point this form at your form handler (Formspree, Netlify

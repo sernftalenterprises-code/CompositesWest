@@ -37,9 +37,9 @@ const image = images[`../assets/products/${product.image}.png`].default;
       <span class="eyebrow absolute left-3 top-3 bg-carbon-950/85 px-2 py-1 text-filament">
         {product.brand}
       </span>
-      <span class="eyebrow absolute right-3 top-3 flex items-center gap-2 bg-carbon-950/85 px-2 py-1 text-brand">
-        <span class="live" aria-hidden="true"></span> In stock
-      </span>
+      {product.tow && (
+        <span class="eyebrow absolute right-3 top-3 bg-carbon-950/85 px-2 py-1 text-brand">{product.tow} tow</span>
+      )}
     </div>
     <div class="flex flex-1 flex-col p-5">
       <p class="eyebrow text-tow-500">{product.weaveLabel}</p>

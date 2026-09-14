@@ -45,7 +45,7 @@ export const applications: Application[] = [
     shortName: 'Aerospace',
     image: 'aerospace',
     photo: 'raw',
-    photoCaption: 'Carbon, glass, and knit reinforcements in stock',
+    photoCaption: 'Carbon, glass, and knit reinforcements',
     tagline: 'Where every gram is negotiated and nothing is approximate.',
     intro:
       'Aerospace was the market that made carbon fiber mainstream, and it remains the most demanding one we supply. Military and civilian programs use carbon reinforcements throughout primary and secondary structure — fuselage panels, wing and tail components, control surfaces, radomes, interior structure, and tooling — because nothing else delivers the same stiffness and fatigue performance per unit of weight.',
@@ -100,12 +100,12 @@ export const applications: Application[] = [
     ],
     faq: [
       {
-        q: 'Do you stock high modulus carbon fiber for aerospace?',
-        a: 'Yes. Our in-stock fabrics regularly include high modulus (HR40) and intermediate modulus materials in addition to 1K, 3K, 6K, and 12K standard modulus. High modulus is the usual answer when a part is deflection-limited rather than strength-limited.',
+        q: 'Do you supply high modulus carbon fiber for aerospace?',
+        a: 'Yes. Our range includes high modulus (HR40) and intermediate modulus materials in addition to 1K, 3K, 6K, and 12K standard modulus. High modulus is the usual answer when a part is deflection-limited rather than strength-limited.',
       },
       {
         q: 'Can you supply aerospace fiberglass as well as carbon?',
-        a: 'Yes — aerospace-grade fiberglass is one of our stocked specialties, and it is frequently used alongside carbon for radomes, galvanic isolation layers, and applications where radio transparency or dielectric properties matter.',
+        a: 'Yes — aerospace-grade fiberglass is one of our specialties, and it is frequently used alongside carbon for radomes, galvanic isolation layers, and applications where radio transparency or dielectric properties matter.',
       },
       {
         q: 'What is the difference between 3K and 12K tow for aerospace parts?',
@@ -194,7 +194,7 @@ export const applications: Application[] = [
       },
     ],
     seoDescription:
-      'Carbon fiber reinforcements for marine structures — masts, hulls, foils, and decks. ±45° non-crimp knits for torsional stiffness, plus woven and unidirectional fabrics, in stock and ready to ship.',
+      'Carbon fiber reinforcements for marine structures — masts, hulls, foils, and decks. ±45° non-crimp knits for torsional stiffness, plus woven and unidirectional fabrics.',
   },
 
   {

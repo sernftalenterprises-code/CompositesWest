@@ -36,7 +36,7 @@ export const products: Product[] = [
     description:
       'Hexcel style 282 balanced plain weave carbon fiber fabric, woven from 3K standard-modulus tow at 5.8 oz/yd² (197 gsm) in a 50-inch width. The tight over/under plain weave gives this fabric excellent stability and weave-angle control, making it a go-to choice for flat sheets, tubes, and gentle 2D curves.',
     seoDescription:
-      'Hexcel 282 3K balanced plain weave carbon fiber fabric, 5.8 oz/yd² (197 gsm), 50″ wide. In stock and ready to ship from Composites West.',
+      'Hexcel 282 3K balanced plain weave carbon fiber fabric, 5.8 oz/yd² (197 gsm), 50″ wide. From Composites West.',
   },
   {
     slug: 'hexcel-twill-weave',
@@ -56,7 +56,7 @@ export const products: Product[] = [
     description:
       'Hexcel style 284 balanced 2×2 twill weave carbon fiber fabric, 3K tow, 5.8 oz/yd² (197 gsm), 50-inch width. The twill pattern offers great pliability for forming complex contours with fewer crimps and stress concentrations — the classic cosmetic carbon look used throughout the automotive industry.',
     seoDescription:
-      'Hexcel 284 3K balanced 2×2 twill weave carbon fiber fabric, 5.8 oz/yd² (197 gsm), 50″ wide. The classic cosmetic carbon twill, in stock at Composites West.',
+      'Hexcel 284 3K balanced 2×2 twill weave carbon fiber fabric, 5.8 oz/yd² (197 gsm), 50″ wide. The classic cosmetic carbon twill, from Composites West.',
   },
   {
     slug: 'toray-t300-balanced-till-weave-carbon-fiber-fabric',
@@ -76,7 +76,7 @@ export const products: Product[] = [
     description:
       'Toray TC 795 balanced twill weave carbon fiber fabric woven from T300 3K tow at 6.1 oz/yd² (205 gsm) in an extra-wide 60-inch format. Toray T300 is one of the most widely certified aerospace-grade fibers in the world, and the wide format reduces seams and waste on larger parts.',
     seoDescription:
-      'Toray TC 795 T300 3K balanced twill weave carbon fiber fabric, 6.1 oz/yd² (205 gsm), 60″ wide roll. Aerospace-grade fiber in stock at Composites West.',
+      'Toray TC 795 T300 3K balanced twill weave carbon fiber fabric, 6.1 oz/yd² (205 gsm), 60″ wide roll. Aerospace-grade fiber from Composites West.',
   },
   {
     slug: '8h-satin-weave-carbon-fiber-fabric',
@@ -116,7 +116,7 @@ export const products: Product[] = [
     description:
       'Style TC 741 heavyweight balanced 2×2 twill woven from Toray T700S 12K tow at 19.8 oz/yd² (670 gsm), 50-inch width. T700S delivers higher tensile strength than standard T300, and the heavy areal weight builds thickness fast — ideal for tooling and structural laminates that need fewer plies.',
     seoDescription:
-      'Toray T700S 12K balanced 2×2 twill carbon fiber fabric, 19.8 oz/yd² (670 gsm), 50″ wide. Heavyweight structural fabric in stock at Composites West.',
+      'Toray T700S 12K balanced 2×2 twill carbon fiber fabric, 19.8 oz/yd² (670 gsm), 50″ wide. Heavyweight structural fabric from Composites West.',
   },
   {
     slug: 'unidirectional-carbon-fiber',
@@ -173,7 +173,7 @@ export const products: Product[] = [
     description:
       'FCIM 151 mid-weight ±45° knit carbon fiber fabric, 8.9 oz/yd² (303 gsm), 50-inch width. Stitched non-crimp construction keeps fibers straight on the bias for superior shear and torsional properties, building thickness faster than lightweight knits.',
     seoDescription:
-      'FCIM ±45° knit carbon fiber fabric, 8.9 oz/yd² (303 gsm), 50″ wide. Mid-weight non-crimp bias reinforcement in stock at Composites West.',
+      'FCIM ±45° knit carbon fiber fabric, 8.9 oz/yd² (303 gsm), 50″ wide. Mid-weight non-crimp bias reinforcement from Composites West.',
   },
   {
     slug: 'fcim-105x50-45-degree-knit-carbon-fiber-fabric',
@@ -190,7 +190,7 @@ export const products: Product[] = [
     features: ['Knit', 'Non-crimp', 'Heavy Weight'],
     typicalUse: ['Torsional reinforcement', 'Structural laminates'],
     description:
-      'FCIM 105 heavyweight ±45° knit carbon fiber fabric, 12 oz/yd² (408 gsm), 50-inch width. The heaviest of our stocked bias knits — stitched non-crimp fibers on a true ±45° orientation deliver maximum shear stiffness per ply for structural and torsional applications.',
+      'FCIM 105 heavyweight ±45° knit carbon fiber fabric, 12 oz/yd² (408 gsm), 50-inch width. The heaviest of our bias knits — stitched non-crimp fibers on a true ±45° orientation deliver maximum shear stiffness per ply for structural and torsional applications.',
     seoDescription:
       'FCIM ±45° knit carbon fiber fabric, 12 oz/yd² (408 gsm), 50″ wide. Heavyweight non-crimp bias reinforcement from Composites West.',
   },
