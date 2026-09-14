@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import logo from '../assets/logo.png';
 import { company } from '../data/products';
 
@@ -11,6 +11,9 @@ const nav = [
   { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
 ];
+
+/* Same file the header renders, as a CSS mask for the twill fill. */
+const mask = await getImage({ src: logo, width: 504, format: 'png' });
 
 const path = Astro.url.pathname;
 /* Section landing pages also mark their child routes as current. */
@@ -28,15 +31,12 @@ const isCurrent = (href: string) =>
   </div>
 
   <div class="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8">
-    <!-- "Spool" logo entrance: emblem seats, wordmark lays off it in six plies.
-         Seven copies of one optimized image (one network fetch); the first is
-         the emblem, the rest are horizontal ply bands clipped to the wordmark. -->
-    <a href="/" id="logo-spool" class="relative block h-8 shrink-0 sm:h-9" aria-label="Composites West home">
-      <Image src={logo} alt="" aria-hidden="true" class="ply emblem" loading="eager" fetchpriority="high" width={168} densities={[1, 2, 3]} />
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <Image src={logo} alt={i === 5 ? 'Composites West, Inc.' : ''} aria-hidden={i === 5 ? undefined : 'true'} class="ply band" style={`--i: ${i}`} loading="eager" width={168} densities={[1, 2, 3]} />
-      ))}
-      <span class="roller" aria-hidden="true"></span>
+    <!-- "Twill" logo entrance: the silhouette fills with a drifting 2×2 twill,
+         takes a pass of brand yellow, then resolves into the mark. -->
+    <a href="/" id="logo-twill" class="relative block h-8 shrink-0 sm:h-9" aria-label="Composites West home" style={`--mask: url(${mask.src})`}>
+      <span class="layer twill" aria-hidden="true"></span>
+      <span class="layer tint" aria-hidden="true"></span>
+      <Image src={logo} alt="Composites West, Inc." class="mark" loading="eager" fetchpriority="high" width={168} densities={[1, 2, 3]} />
     </a>
 
     <nav aria-label="Main" class="hidden items-center gap-7 lg:flex">
@@ -110,24 +110,34 @@ const isCurrent = (href: string) =>
 </header>
 
 <style>
-  #logo-spool { aspect-ratio: 569 / 122; }
-  #logo-spool .ply { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  #logo-spool .emblem { clip-path: inset(0 79.5% 0 0); transform-origin: 10.2% 50%; }
-  /* Six horizontal bands, each 1/6 of the height, clipped to the wordmark (right of the emblem). */
-  #logo-spool .band { clip-path: inset(calc(var(--i) * 16.6%) 0 calc((5 - var(--i)) * 16.6%) 19.5%); }
-  #logo-spool .roller {
-    position: absolute; top: -6%; left: 19.5%; width: 2px; height: 112%;
-    background: var(--color-brand); opacity: 0; transform: skewX(-18deg);
-    box-shadow: 0 0 10px 1px rgba(255, 212, 0, 0.35);
+  #logo-twill { aspect-ratio: 569 / 122; }
+  #logo-twill .mark { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  #logo-twill .layer {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    -webkit-mask-image: var(--mask); mask-image: var(--mask);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   }
+  /* 2×2 twill at a scale that survives 36px tall */
+  #logo-twill .twill {
+    background-color: var(--color-carbon-800);
+    background-image:
+      repeating-linear-gradient(45deg, rgb(242 241 236 / 0) 0 3px, rgb(242 241 236 / 0.34) 3px 6px),
+      repeating-linear-gradient(-45deg, rgb(5 5 6 / 0) 0 3px, rgb(5 5 6 / 0.6) 3px 6px),
+      linear-gradient(90deg, var(--color-tow-700), var(--color-tow-300), var(--color-tow-700));
+    background-size: 12px 12px, 12px 12px, 200% 100%;
+  }
+  #logo-twill .tint { background: var(--color-brand); mix-blend-mode: multiply; }
   @media (prefers-reduced-motion: no-preference) {
-    #logo-spool[data-play] .emblem { animation: spool-seat 0.85s cubic-bezier(0.34, 1.4, 0.4, 1) both; }
-    #logo-spool[data-play] .band { animation: spool-ply 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(0.5s + var(--i) * 0.08s); }
-    #logo-spool[data-play] .roller { animation: spool-roll 0.95s cubic-bezier(0.4, 0, 0.2, 1) 0.55s both; }
+    #logo-twill[data-play] .twill { animation: twill-in 0.3s ease-out both, twill-drift 1.4s linear both, twill-out 0.4s ease-in 0.95s both; }
+    #logo-twill[data-play] .tint { animation: twill-tint 0.6s ease-in-out 0.5s both; }
+    #logo-twill[data-play] .mark { animation: twill-mark 0.5s ease-out 0.9s both; }
   }
-  @keyframes spool-seat { from { opacity: 0; transform: rotate(-150deg) scale(0.55); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
-  @keyframes spool-ply { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
-  @keyframes spool-roll { 0% { opacity: 1; left: 19.5%; } 85% { opacity: 1; } 100% { left: 102%; opacity: 0; } }
+  @keyframes twill-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes twill-drift { from { background-position: 0 0, 0 0, 0% 0; } to { background-position: 24px 24px, -24px 24px, 100% 0; } }
+  @keyframes twill-out { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes twill-tint { 0% { opacity: 0; } 50% { opacity: 0.55; } 100% { opacity: 0; } }
+  @keyframes twill-mark { from { opacity: 0; } to { opacity: 1; } }
 </style>
 
 <script>
@@ -147,15 +157,94 @@ const isCurrent = (href: string) =>
 
   boot('header', () => {
     /* Logo entrance plays once per browser session, not on every navigation. */
-    const spool = document.getElementById('logo-spool');
-    if (spool && !reduceMotion()) {
+    const logoEl = document.getElementById('logo-twill');
+    if (logoEl && !reduceMotion()) {
+      let seen = false;
+      try {
+        seen = sessionStorage.getItem('cw-logo') === '1';
+        sessionStorage.setItem('cw-logo', '1');
+      } catch {}
+      if (!seen) {
+        const play = () => logoEl.setAttribute('data-play', '');
+        // On the home page the preloader covers the header; start when it lifts.
+        if (document.documentElement.classList.contains('is-loading')) {
+          document.addEventListener('cw:reveal', play, { once: true });
+        } else {
+          play();
+        }
+      }
+    }
+
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const label = toggle?.querySelector('[data-label]');
+    document.body.classList.remove('overflow-hidden');
+    toggle?.addEventListener('click', () => {
+      const open = menu?.classList.toggle('hidden') === false;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (label) label.textContent = open ? 'Close' : 'Menu';
+      document.body.classList.toggle('overflow-hidden', open);
+      onScroll();
+    });
+    onScroll();
+  });
+</script><style>
+  #logo-twill { aspect-ratio: 569 / 122; }
+  #logo-twill .mark { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  #logo-twill .layer {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    -webkit-mask-image: var(--mask); mask-image: var(--mask);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  /* 2×2 twill at a scale that survives 36px tall */
+  #logo-twill .twill {
+    background-color: var(--color-carbon-800);
+    background-image:
+      repeating-linear-gradient(45deg, rgb(242 241 236 / 0) 0 3px, rgb(242 241 236 / 0.34) 3px 6px),
+      repeating-linear-gradient(-45deg, rgb(5 5 6 / 0) 0 3px, rgb(5 5 6 / 0.6) 3px 6px),
+      linear-gradient(90deg, var(--color-tow-700), var(--color-tow-300), var(--color-tow-700));
+    background-size: 12px 12px, 12px 12px, 200% 100%;
+  }
+  #logo-twill .tint { background: var(--color-brand); mix-blend-mode: multiply; }
+  @media (prefers-reduced-motion: no-preference) {
+    #logo-twill[data-play] .twill { animation: twill-in 0.3s ease-out both, twill-drift 1.4s linear both, twill-out 0.4s ease-in 0.95s both; }
+    #logo-twill[data-play] .tint { animation: twill-tint 0.6s ease-in-out 0.5s both; }
+    #logo-twill[data-play] .mark { animation: twill-mark 0.5s ease-out 0.9s both; }
+  }
+  @keyframes twill-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes twill-drift { from { background-position: 0 0, 0 0, 0% 0; } to { background-position: 24px 24px, -24px 24px, 100% 0; } }
+  @keyframes twill-out { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes twill-tint { 0% { opacity: 0; } 50% { opacity: 0.55; } 100% { opacity: 0; } }
+  @keyframes twill-mark { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
+<script>
+  import { boot, reduceMotion } from '../scripts/boot';
+
+  /* Header state is re-read from the live DOM on every call, so the single
+     scroll listener keeps working across client-side navigations. */
+  const onScroll = () => {
+    const header = document.getElementById('site-header');
+    const toggle = document.getElementById('menu-toggle');
+    if (!header) return;
+    const scrolled = window.scrollY > 24 || toggle?.getAttribute('aria-expanded') === 'true';
+    if (scrolled) header.setAttribute('data-scrolled', '');
+    else header.removeAttribute('data-scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  boot('header', () => {
+    /* Logo entrance plays once per browser session, not on every navigation. */
+    const logoEl = document.getElementById('logo-spool');
+    if (logoEl && !reduceMotion()) {
       let seen = false;
       try {
         seen = sessionStorage.getItem('cw-spool') === '1';
         sessionStorage.setItem('cw-spool', '1');
       } catch {}
       if (!seen) {
-        const play = () => spool.setAttribute('data-play', '');
+        const play = () => logoEl.setAttribute('data-play', '');
         // On the home page the preloader covers the header; start when it lifts.
         if (document.documentElement.classList.contains('is-loading')) {
           document.addEventListener('cw:reveal', play, { once: true });
