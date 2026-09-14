@@ -14,10 +14,19 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true }
 );
 const image = images[`../assets/products/${product.image}.png`].default;
+
+/* Hover readout: the three numbers a buyer qualifies on, then what it's for. */
+const readout = [
+  product.tow ? `${product.tow} tow` : product.weave,
+  `${product.weightOz} oz · ${product.weightGsm} gsm`,
+  `${product.widthIn}″ wide`,
+];
+const uses = product.typicalUse.slice(0, 4);
+const quoteHref = `/contact/?product=${encodeURIComponent(product.name)}&src=card`;
 ---
 
 <article
-  class="card group flex h-full flex-col"
+  class="card pc group flex h-full flex-col"
   data-brand={product.brand}
   data-weave={product.weave}
   data-tow={product.tow ?? ''}
@@ -25,7 +34,7 @@ const image = images[`../assets/products/${product.image}.png`].default;
   data-width={product.widthIn}
 >
   <a href={`/product/${product.slug}/`} class="flex h-full flex-col">
-    <div class="relative aspect-[4/3] overflow-hidden border-b border-line bg-carbon-950">
+    <div class="pc-media relative aspect-[4/3] overflow-hidden border-b border-line bg-carbon-950">
       <Image
         src={image}
         alt={product.name}
@@ -34,36 +43,172 @@ const image = images[`../assets/products/${product.image}.png`].default;
         class="h-full w-full object-cover opacity-90 transition-all duration-500 ease-out group-hover:scale-[1.04] group-hover:opacity-100"
         loading={eager ? 'eager' : 'lazy'}
       />
+      <!-- Cursor-tracked glare on the fabric -->
+      <span class="pc-glare" aria-hidden="true"></span>
+      <!-- Scan line + lock-on brackets -->
+      <span class="pc-scan" aria-hidden="true"></span>
+      <span class="pc-bracket pc-tl" aria-hidden="true"></span>
+      <span class="pc-bracket pc-tr" aria-hidden="true"></span>
+      <span class="pc-bracket pc-bl" aria-hidden="true"></span>
+      <span class="pc-bracket pc-br" aria-hidden="true"></span>
+
       <span class="eyebrow absolute left-3 top-3 bg-carbon-950/85 px-2 py-1 text-filament">
         {product.brand}
       </span>
       {product.tow && (
         <span class="eyebrow absolute right-3 top-3 bg-carbon-950/85 px-2 py-1 text-brand">{product.tow} tow</span>
       )}
+
+      <!-- Spec readout: types in on hover -->
+      <div class="pc-hud" aria-hidden="true">
+        {readout.map((line, i) => (
+          <span class="pc-line" style={`--i: ${i}`}>{line}</span>
+        ))}
+      </div>
     </div>
+
     <div class="flex flex-1 flex-col p-5">
       <p class="eyebrow text-tow-500">{product.weaveLabel}</p>
       <h3 class="mt-2 font-display text-[17px] font-bold leading-snug text-filament [font-variation-settings:'wdth'_110]">
         {product.shortName}
       </h3>
-      <dl class="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-4 font-mono text-[11px] uppercase tracking-[0.08em]">
-        <div>
-          <dt class="text-tow-700">Weight</dt>
-          <dd class="mt-0.5 text-tow-300">{product.weightGsm} gsm</dd>
+
+      <!-- Spec grid at rest; typical uses take its place on hover -->
+      <div class="pc-swap mt-4 border-t border-line pt-4">
+        <dl class="pc-specs grid grid-cols-3 gap-2 font-mono text-[11px] uppercase tracking-[0.08em]">
+          <div>
+            <dt class="text-tow-700">Weight</dt>
+            <dd class="mt-0.5 text-tow-300">{product.weightGsm} gsm</dd>
+          </div>
+          <div>
+            <dt class="text-tow-700">Width</dt>
+            <dd class="mt-0.5 text-tow-300">{product.widthIn}&Prime;</dd>
+          </div>
+          <div>
+            <dt class="text-tow-700">Tow</dt>
+            <dd class="mt-0.5 text-tow-300">{product.tow ?? '—'}</dd>
+          </div>
+        </dl>
+        <div class="pc-uses" aria-hidden="true">
+          <p class="eyebrow text-brand">Built for</p>
+          <ul class="mt-2 flex gap-1.5 overflow-hidden whitespace-nowrap">
+            {uses.map((u, i) => (
+              <li class="pc-chip" style={`--i: ${i}`}>{u}</li>
+            ))}
+          </ul>
         </div>
-        <div>
-          <dt class="text-tow-700">Width</dt>
-          <dd class="mt-0.5 text-tow-300">{product.widthIn}&Prime;</dd>
-        </div>
-        <div>
-          <dt class="text-tow-700">Tow</dt>
-          <dd class="mt-0.5 text-tow-300">{product.tow ?? '—'}</dd>
-        </div>
-      </dl>
+      </div>
+
       <p class="eyebrow mt-auto flex items-center gap-2 pt-5 text-filament">
         View spec
         <span class="inline-block h-px w-6 bg-line-strong transition-all duration-200 group-hover:w-10 group-hover:bg-brand"></span>
       </p>
     </div>
   </a>
+
+  <!-- Direct path to a quote: sits over the footer row, outside the main link -->
+  <a href={quoteHref} class="pc-quote" aria-label={`Request a quote for ${product.shortName}`}>
+    Quote <span aria-hidden="true">&rarr;</span>
+  </a>
 </article>
+
+<style>
+  .pc { --mx: 50%; --my: 50%; }
+
+  /* ---- image layer ---- */
+  .pc-glare {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(220px circle at var(--mx) var(--my), rgb(255 212 0 / 0.16), rgb(255 255 255 / 0.05) 35%, transparent 65%);
+    mix-blend-mode: screen; transition: opacity 0.3s ease-out;
+  }
+  .pc-scan {
+    position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none; opacity: 0;
+    background: var(--color-brand); box-shadow: 0 0 12px 1px rgb(255 212 0 / 0.5);
+  }
+  .pc-bracket {
+    position: absolute; width: 14px; height: 14px; pointer-events: none; opacity: 0;
+    border: 0 solid var(--color-brand); transition: opacity 0.2s ease-out, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .pc-tl { top: 10px; left: 10px; border-top-width: 1.5px; border-left-width: 1.5px; transform: translate(-8px, -8px); }
+  .pc-tr { top: 10px; right: 10px; border-top-width: 1.5px; border-right-width: 1.5px; transform: translate(8px, -8px); }
+  .pc-bl { bottom: 10px; left: 10px; border-bottom-width: 1.5px; border-left-width: 1.5px; transform: translate(-8px, 8px); }
+  .pc-br { bottom: 10px; right: 10px; border-bottom-width: 1.5px; border-right-width: 1.5px; transform: translate(8px, 8px); }
+
+  .pc-hud {
+    position: absolute; left: 12px; bottom: 10px; display: grid; gap: 2px; pointer-events: none;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-filament);
+  }
+  .pc-line {
+    display: inline-block; max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
+    padding: 2px 6px; background: rgb(5 5 6 / 0.85); border-left: 2px solid var(--color-brand);
+  }
+
+  /* ---- body swap: specs at rest, uses on hover ---- */
+  .pc-swap { position: relative; }
+  .pc-uses {
+    position: absolute; inset: 0; top: 16px; opacity: 0; pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent); mask-image: linear-gradient(90deg, #000 82%, transparent);
+  }
+  .pc-chip {
+    flex: none;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 7px; border: 1px solid var(--color-line-strong); color: var(--color-tow-300);
+    opacity: 0; transform: translateY(4px);
+  }
+
+  /* ---- quote action ---- */
+  .pc-quote {
+    position: absolute; right: 20px; bottom: 18px; z-index: 2;
+    font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    font-variation-settings: "wdth" 115; color: var(--color-carbon-950); background: var(--color-brand);
+    padding: 7px 11px; text-decoration: none; white-space: nowrap;
+    opacity: 0; transform: translateY(6px); transition: opacity 0.2s ease-out, transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.15s;
+  }
+  .pc-quote:hover { background: var(--color-brand-bright); }
+  .pc-quote:focus-visible { opacity: 1; transform: none; outline: 2px solid var(--color-brand); outline-offset: 2px; }
+
+  /* Touch: no hover state, so the quote path is always visible */
+  @media (hover: none) { .pc-quote { opacity: 1; transform: none; } }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .pc:hover .pc-glare { opacity: 1; }
+    .pc:hover .pc-scan { animation: pc-scan 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+    .pc:hover .pc-bracket { opacity: 1; transform: none; }
+    .pc:hover .pc-line { animation: pc-type 0.45s steps(18, end) forwards; animation-delay: calc(0.12s + var(--i) * 0.11s); }
+    .pc:hover .pc-specs { opacity: 0; transition: opacity 0.15s; }
+    .pc:hover .pc-uses { opacity: 1; transition: opacity 0.2s 0.1s; }
+    .pc:hover .pc-chip { animation: pc-chip 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; animation-delay: calc(0.15s + var(--i) * 0.06s); }
+    .pc:hover .pc-quote { opacity: 1; transform: none; }
+  }
+  /* Hover without motion: still show the useful parts */
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .pc:hover .pc-bracket, .pc:hover .pc-quote, .pc:hover .pc-uses { opacity: 1; transform: none; }
+    .pc:hover .pc-line { max-width: 100%; opacity: 1; }
+    .pc:hover .pc-chip { opacity: 1; transform: none; }
+    .pc:hover .pc-specs { opacity: 0; }
+  }
+
+  @keyframes pc-scan { 0% { opacity: 1; top: 0; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+  @keyframes pc-type { from { max-width: 0; opacity: 1; } to { max-width: 100%; opacity: 1; } }
+  @keyframes pc-chip { to { opacity: 1; transform: none; } }
+</style>
+
+<script>
+  /* One delegated listener drives the glare on every card, on every page. */
+  const w = window as Window & { __cwCardGlare?: boolean };
+  if (!w.__cwCardGlare) {
+    w.__cwCardGlare = true;
+    document.addEventListener(
+      'pointermove',
+      (e) => {
+        const media = (e.target as Element | null)?.closest?.('.pc-media');
+        if (!media) return;
+        const r = media.getBoundingClientRect();
+        const card = media.closest<HTMLElement>('.pc')!;
+        card.style.setProperty('--mx', `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+        card.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
+      },
+      { passive: true }
+    );
+  }
+</script>
